@@ -1,0 +1,40 @@
+{% load static %}
+<div class="navbar-default sidebar" role="navigation">
+    <div class="sidebar-nav navbar-collapse">
+        <ul class="nav" id="side-menu">
+            <li>
+                <a href="{% url 'accueil' %}" class="active"><i class="fa fa-dashboard fa-fw"></i> DASHBOARD</a>
+            </li>
+            <li>
+                <a href="{% url 'projets' %}" class="active"><i class="fa fa-dashboard fa-fw"></i> GESTION PROJETS</a>
+            </li>
+{#            <li>#}
+{#                <a href="{% url 'pepiniere' %}" class="active"><i class="fa fa-dashboard fa-fw"></i> GESTION PEPINIERES</a>#}
+{#            </li>#}
+            <li>
+                <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> CAMPAGNES AGRICOLES<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li>
+                        <a href="#">Flot Charts</a>
+                    </li>
+                    <li>
+                        <a href="#">Morris.js Charts</a>
+                    </li>
+                </ul>
+                <!-- /.nav-second-level -->
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-table fa-fw"></i> GESTION PRIMES</a>
+            </li>
+            <li>
+                <a href="{% url 'localisation' %}" target="_blank" ><i class="fa fa-map fa-fw"></i> CARTOGRAPHIE</a>
+            </li>
+            <li>
+                <a href="{% url 'pepinieres' %}" target="_blank" ><i class="fa fa-map fa-fw"></i> SITES PEPINIERES</a>
+            </li>
+            <li>
+                <a href="{% url 'site_pepinieres' %}" target="_blank" ><i class="fa fa-map fa-fw"></i> CARTOGRAPHIE PEPINIERES</a>
+            </li>
+        </ul>
+    </div>
+</div>

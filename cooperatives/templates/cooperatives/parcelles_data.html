@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% include '_partials/css.html' %}
+    <title>Mes Parcelles</title>
+</head>
+<body>
+
+    {% block content %}
+        <div class="container">
+            <div class="row pt-5">
+               <div class="col-sm-12 text-center">
+                   <button class="btn btn-primary btn-get-data">
+                       Charger Les Parcelles
+                   </button>
+
+                   <div class="content-data mt-4" data-url="{% url 'cooperatives:parcelles_data' %}">
+                       Afficher Les données Ici.....
+                   </div>
+               </div>
+            </div>
+        </div>
+    {% endblock %}
+
+
+    {% include '_partials/js.html' %}
+    <script>
+        $('.btn-get-data').on('click', function(){
+            $.ajax({
+                 url: $('.content-data').data('url'),
+                type: 'GET',
+                dataType : 'json',
+                success: function(){
+                    $(".content-data").html(resp);
+                },
+                error: function(resp){
+                    console.log('Une Erreure est Survenue Désolé...');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

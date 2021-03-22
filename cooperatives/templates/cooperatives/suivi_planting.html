@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load bootstrap4 %}
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+{% block title %}
+{% if instance.code %}
+     {{ instance.parcelle.code }} |
+{% else %}
+     {{ instance.parcelle.producteur.nom }} {{ instance.parcelle.producteur.prenoms }} |
+{% endif %}
+{% endblock %}
+{% block content %}
+    <div id="wrapper">
+            <!-- Navigation -->
+            {% include 'cooperatives/coop_nav.html' %}
+            <div id="page-wrapper">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h1 class="page-header">
+                                {% if instance.code %}
+                                     {{ instance.parcelle.code }}
+                                {% else %}
+                                     {{ instance.parcelle.producteur.nom }} {{ instance.parcelle.producteur.prenoms }}
+                                {% endif %}
+                            </h1>
+                        </div>
+                        <!-- /.col-lg-12 -->
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4">
+                            <div class="panel panel-green">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="glyphicon glyphicon-calendar fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ instance.date|date:'d/m/Y' }}</div>
+                                            <div>Date Réception des Plants</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-tree fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ instance.nb_plant }}</div>
+                                            <div>Nombre de Plant Réçcus</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4">
+                            <div class="panel panel-yellow">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="glyphicon glyphicon-calendar fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">0</div>
+                                            <div>Nombres Plants Vivants</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="panel panel-info">
+                                <div class="panel-heading"><strong>Détails</strong></div>
+                                <div class="panel-body">
+                                    <p class="text-capitalize text-center">{{ instance.details|linebreaks }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="panel panel-info">
+                                <div class="panel-heading"><strong>Observation</strong></div>
+                                <div class="panel-body">
+                                    <p class="text-capitalize text-center">{{ instance.observation|linebreaks }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <i class="fa fa-tree" style="margin-bottom: 10px"></i> Details Plants Réçus et Plantés
+                                    <button type="button" class="btn btn-success pull-right" style="font-size:1.8vmin; margin-top: -5px" data-toggle="modal" data-target="#SuiviPlantingModal" data-whatever="@mdo">
+                                        Faire Un Planting
+                                    </button>
+                                </div>
+                                <!-- /.panel-heading -->
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                            <thead>
+                                                <tr>
+                                                    <th>Projet</th>
+                                                    <th>Espèces</th>
+                                                    <th>Plantés</th>
+                                                    <th>Date</th>
+                                                    <th>Morts</th>
+                                                    <th>Remplacés</th>
+                                                    <th>Vivants</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for detail in details %}
+                                                    <tr class="odd gradeX">
+                                                        <td class="center">{{ detail.projet }}</td>
+                                                        <td class="center">{{ detail.espece }}</td>
+                                                        <td class="center">{{ detail.plante }}</td>
+                                                        <td class="center">{{ detail.date | date:'d/m/Y' }}</td>
+                                                        <td class="center">{{ detail.mort }}</td>
+                                                        <td class="center">{{ detail.remplace }}</td>
+                                                        <td class="center">{{ detail.mature }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <!-- /.panel-body -->
+                            </div>
+                            <!-- /.panel -->
+                        </div>
+                        <!-- /.col-lg-8 -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- /.container-fluid -->
+                <div class="modal fade"  data-keyboard="false" data-backdrop="static" id="SuiviPlantingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <h4 class="modal-title" id="exampleModalLabel" style="font-weight:bold">AJOUTER UN SUIVI PLANTING</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top: -25px">x</button>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="col-sm-12">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                 <div class="form-group">
+                                                    <label>Projet</label>
+                                                    {% render_field suiviForm.projet class="form-control" %}
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Espèce</label>
+                                                    {% render_field suiviForm.espece class="form-control" %}
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Plants Plantés</label>
+                                                    {% render_field suiviForm.plante class="form-control" placeholder="Nombre de Plant" %}
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Date planting</label>
+                                                    {% render_field suiviForm.date type="date" class="form-control", placeholder="Date Planting" %}
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                 <div class="form-group">
+                                                    <label>Plants Remplacés</label>
+                                                    {% render_field suiviForm.plante class="form-control" placeholder="Nombre de Plant Remplacés" %}
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Plants Morts</label>
+                                                    {% render_field suiviForm.plante class="form-control" placeholder="Nombre de Plant Remplacés" %}
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Plants Matures</label>
+                                                    {% render_field suiviForm.mature class="form-control" placeholder="Nombre de Plant Mature" %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+        {#                            <Button ID="btnAnnuler" style="font-size:1.7vmin; width:100px" class="btn btn-danger"  data-dismiss="modal" >Annuler</Button>#}
+                                    <input type="submit" name="btnValider" value="Valider" id="btnValider" class="btn btn-success btn-block" style="font-size:1.7vmin" />
+                                </div>
+                            </div>
+                        </form>
+                </div>
+            </div>
+            </div>
+            <!-- /#page-wrapper -->
+        </div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% load static %}
+<div class="navbar-default sidebar" role="navigation">
+    <div class="sidebar-nav navbar-collapse">
+        <ul class="nav" id="side-menu">
+            <li>
+                <a href="{% url 'cooperatives:dashboard' %}" class="active"><i class="fa fa-dashboard fa-fw"></i> DASHBOARD</a>
+            </li>
+            <li>
+                <a href="{% url 'cooperatives:section' %}"><i class="fa fa-list fa-fw"></i> SECTIONS</a>
+            </li>
+            <li>
+                <a href="{% url 'cooperatives:sous_sections' %}"><i class="fa fa-list-ol fa-fw"></i> SOUS SECTIONS</a>
+            </li>
+            <li>
+                <a href="{% url 'cooperatives:producteurs' %}"><i class="fa fa-users fa-fw"></i> PRODUCTEURS</a>
+            </li>
+            <li>
+                <a href="{% url 'cooperatives:parcelles' %}"><i class="glyphicon glyphicon-map-marker"></i> PARCELLES</a>
+            </li>
+            <li>
+                <a href="{% url 'cooperatives:pepinieres' %}"><i class="glyphicon glyphicon-grain"></i> PEPINIERES</a>
+            </li>
+            <li>
+                <a href="{% url 'cooperatives:formations' %}"><i class="fa fa-bookmark fa-fw"></i> FORMATIONS</a>
+            </li>
+            <li>
+                <a href="{% url 'cooperatives:planting' %}"><i class="glyphicon glyphicon-tree-deciduous"></i> RECEPTION PLANTS</a>
+            </li>
+            <li>
+                <a href=""><i class="fa fa-balance-scale fa-fw"></i> CHARGEMENT PRODUITS</a>
+            </li>
+            <li>
+                <a href=""><i class="fa fa-truck fa-fw"></i> LIVRAISON PRODUITS</a>
+            </li>
+            <li>
+                <a href="{% url 'cooperatives:localisation' %}"><i class="fa fa-map-o fa-fw"></i> CARTOGRAPHIE</a>
+            </li>
+            <li>
+                <a href="{% url 'cooperatives:site_pepiniere' %}"><i class="fa fa-map-o fa-fw"></i> SITE PEPINIERES</a>
+            </li>
+        </ul>
+    </div>
+</div>

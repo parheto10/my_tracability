@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block title %}
+    calcule de Distance
+{% endblock %}
+
+{% block content %}
+    <br/>
+    <br/>
+
+{#    <!-- Modal -->#}
+    {% for p in latlon %}
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Parcelle N° {{ p.code }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body text-center">
+                  <p>{{ p.producteur }}</p><br>
+                  <p>{{ p.producteur.section }}</p><br>
+                  <p>{{ p.certification }}</p><br>
+                  <p>{{ p.projet }}</p><br>
+                  <p>{{ p.culture }}</p><br>
+              </div>
+            </div>
+          </div>
+        </div>
+    {% endfor %}
+
+{#    <p style="margin-top: 10px">#}
+{#        la distance entre {{ depart }} et {{ arrive }} est de {{ distance }} KM#}
+{#    </p>#}
+{#    <hr/>#}
+{#    <form action="" method="post" autocomplete="off">#}
+{#        {% csrf_token %}#}
+{#        {% bootstrap_form form %}#}
+{##}
+{#        <button type="submit" class="btn btn-primary">#}
+{#            Calculer#}
+{#        </button>#}
+{#    </form>calcul_dstce#}
+    <br/>
+
+    <p class="text-center" style="margin-top: 0px">
+        {{ carte|safe }}
+    </p>
+
+{#    This product includes GeoLite2 data created by MaxMind, available from#}
+{#    <a href="https://www.maxmind.com">https://www.maxmind.com</a>.#}
+
+    {% if p %}
+        <script>
+            $(window).on('load', function () {
+                $('#exampleModal').modal('show')
+            })
+        </script>
+    {% endif %}
+{% endblock %}

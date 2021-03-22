@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}
+details {{ instance.localisation }} |
+{% endblock %}
+{% block content %}
+    <div id="wrapper">
+            <!-- Navigation -->
+            {% include 'admin_nav.html' %}
+            <div id="page-wrapper">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h1 class="page-header">{{ instance.localisation }} - {{ instance.technicien }} <small>({{ instance.contacts }})</small></h1>
+                        </div>
+                        <!-- /.col-lg-12 -->
+                    </div>
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <i class="fa fa-database fa-fw"></i> {{ instance.localisation }} - SEMENCES RECUES
+                                </div>
+                                <!-- /.panel-heading -->
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                            <thead>
+                                                <tr>
+                                                    <th>ESPECE RECU</th>
+                                                    <th>QTE RECUE</th>
+                                                    <th>DATE RECEPTION</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for detail in details_semances %}
+                                                    <tr class="odd gradeX">
+                                                        <td class="center">{{ detail.espece_recu }}</td>
+                                                        <td class="center">{{ detail.qte_recu }}</td>
+                                                        <td class="center">{{ detail.date|date:'d/m/Y' }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <!-- /.panel-body -->
+                            </div>
+                            <!-- /.panel -->
+                        </div>
+                        <!-- /.col-lg-8 -->
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel panel-green">
+                                <div class="panel-heading">
+                                    <i class="fa fa-database fa-fw"></i> {{ instance.localisation }} - PLANTS RETIRES
+                                </div>
+                                <!-- /.panel-heading -->
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                            <thead>
+                                                <tr>
+                                                    <th>DESTINATION</th>
+                                                    <th>ESPECE</th>
+                                                    <th>NBRE PLANTS</th>
+                                                    <th>DATE RETRAIT</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for detail in details_retraits %}
+                                                    <tr class="odd gradeX">
+                                                        <td class="center">{{ detail.destination }}</td>
+                                                        <td class="center">{{ detail.espece }}</td>
+                                                        <td class="center">{{ detail.plant_retire }}</td>
+                                                        <td class="center">{{ detail.date|date:'d/m/Y' }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <!-- /.panel-body -->
+                            </div>
+                            <!-- /.panel -->
+                        </div>
+                        <!-- /.col-lg-8 -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+            <!-- /#page-wrapper -->
+        </div>
+{% endblock %}

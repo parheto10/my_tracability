@@ -1,0 +1,40 @@
+{% load static %}
+<div class="navbar-default sidebar" role="navigation">
+    <div class="sidebar-nav navbar-collapse">
+        <ul class="nav" id="side-menu">
+            <li>
+                <a href="{% url 'clients:detail_coop' cooperative.id %}" class="active"><i class="fa fa-dashboard fa-fw"></i> DASHBOARD</a>
+            </li>
+{#            <li>#}
+{#                <a href="{% url 'clients:section_coop' cooperative.id %}"><i class="fa fa-list fa-fw"></i> Sections</a>#}
+{#            </li>#}
+{#            <li>#}
+{#                <a href="{% url 'clients:sous_section_coop' cooperative.id %}"><i class="fa fa-list-ol fa-fw"></i> Sous Sections</a>#}
+{#            </li>#}
+            <li>
+                <a href="{% url 'clients:prod_coop' cooperative.id %}"><i class="fa fa-users fa-fw"></i> PRODUCTEURS</a>
+            </li>
+            <li>
+                <a href="{% url 'clients:parcelle_coop' cooperative.id %}"><i class="glyphicon glyphicon-grain"></i> PARCELLES</a>
+            </li>
+            <li>
+                <a href="{% url 'clients:planting_coop' cooperative.id %}"><i class="glyphicon glyphicon-tree-deciduous"></i> SUIVI PARCELLES</a>
+            </li>
+            <li>
+                <a href="{% url 'clients:formations' cooperative.id %}"><i class="fa fa-list-ul fa-fw"></i> FORMATIONS</a>
+            </li>
+{#            <li>#}
+{#                <a href="#"><i class="fa fa-truck fa-fw"></i> Chargement Produits</a>#}
+{#            </li>#}
+{#            <li>#}
+{#                <a href="#"><i class="fa fa-balance-scale fa-fw"></i> Livraison Produits</a>#}
+{#            </li>#}
+            <li>
+                <a href="{% url 'clients:localisation_coop' cooperative.id %}" target="_blank"><i class="fa fa-map-marker fa-fw"></i> CARTE PARCELLES</a>
+            </li>
+            <li>
+                <a href="{% url 'clients:coop_pepiniere' cooperative.id %}" target="_blank"><i class="fa fa-map-pin fa-fw"></i> SITES PEPINIERES</a>
+            </li>
+        </ul>
+    </div>
+</div>
