@@ -6,12 +6,6 @@
                 <a href="{% url 'cooperatives:dashboard' %}" class="active"><i class="fa fa-dashboard fa-fw"></i> DASHBOARD</a>
             </li>
             <li>
-                <a href="{% url 'cooperatives:section' %}"><i class="fa fa-list fa-fw"></i> SECTIONS</a>
-            </li>
-            <li>
-                <a href="{% url 'cooperatives:sous_sections' %}"><i class="fa fa-list-ol fa-fw"></i> SOUS SECTIONS</a>
-            </li>
-            <li>
                 <a href="{% url 'cooperatives:producteurs' %}"><i class="fa fa-users fa-fw"></i> PRODUCTEURS</a>
             </li>
             <li>
@@ -33,10 +27,25 @@
                 <a href=""><i class="fa fa-truck fa-fw"></i> LIVRAISON PRODUITS</a>
             </li>
             <li>
-                <a href="{% url 'cooperatives:localisation' %}"><i class="fa fa-map-o fa-fw"></i> CARTOGRAPHIE</a>
+                <a href="{% url 'cooperatives:localisation' %}"><i class="fa fa-map fa-fw"></i> CARTOGRAPHIE</a>
             </li>
             <li>
                 <a href="{% url 'cooperatives:site_pepiniere' %}"><i class="fa fa-map-o fa-fw"></i> SITE PEPINIERES</a>
+            </li>
+            <li style="margin-top: 100px">
+                <a href="#"><i class="fa fa-gear fa-fw"></i> PARAMETRES<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li>
+                        <a href="{% url 'cooperatives:section' %}"><i class="fa fa-list fa-fw"></i> SECTIONS</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'cooperatives:sous_sections' %}"><i class="fa fa-list-ol fa-fw"></i> SOUS SECTIONS</a>
+                    </li>
+                    <li>
+                        <a style="color: red" href="{% url 'logout' %}"><i class="fa fa-sign-out fa-fw"></i> Déconnexion</a>
+                    </li>
+                </ul>
+                <!-- /.nav-second-level -->
             </li>
         </ul>
     </div>

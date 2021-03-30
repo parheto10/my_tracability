@@ -55,7 +55,7 @@
                         <div class="panel panel-info">
                             <div class="panel-heading">
                                 <a href="{% url 'clients:export_prod_xls' cooperative.id %}" class="btn btn-success"><i class="fa fa-file-excel-o fa-fw"></i>  Exporter En Excel</a>
-                                <a href="#" class="btn btn-danger"><i class="fa fa-file-pdf-o fa-fw"></i>  Exporter En PDF</a>
+                                <a href="{% url 'clients:export_prods_to_pdf' cooperative.id %}" class="btn btn-danger"><i class="fa fa-file-pdf-o fa-fw"></i>  Exporter En PDF</a>
                             </div>
                             <!-- /.panel-heading -->
                             <div class="panel-body" style="font-size: 13px">

@@ -2,6 +2,7 @@ import datetime
 
 import datetime
 
+import requests
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import Group
@@ -15,9 +16,16 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 import folium
 import json
-
+from django.template.loader import get_template
+from django.views.generic import TemplateView
+from xhtml2pdf import pisa
 from django.views import View
 from xlrd.formatting import Format
+
+# Import django Serializer Features #
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
 
 from parametres.forms import UserForm
 from parametres.models import Projet
@@ -158,9 +166,18 @@ def update_section(request, id=None):
 
 def delete_section(request, id=None):
     item = get_object_or_404(Section, id=id)
-    item.delete()
-    messages.success(request, "Section Supprimer avec Succès")
-    return HttpResponseRedirect(reverse('cooperatives:section'))
+    if request.method == "POST":
+        item.delete()
+        messages.error(request, "Section Supprimée Avec Succès")
+        return redirect('cooperatives:section')
+    context = {
+        # 'pepiniere': pepiniere,
+        'item': item,
+    }
+    return render(request, 'cooperatives/section_delete.html', context)
+    # item.delete()
+    # messages.success(request, "Section Supprimer avec Succès")
+    # return HttpResponseRedirect(reverse('cooperatives:section'))
 
 def add_sous_section(request):
     cooperative = Cooperative.objects.get(user_id=request.user.id)
@@ -203,9 +220,15 @@ def update_sous_section(request, id=None):
 
 def delete_sous_section(request, id=None):
     item = get_object_or_404(Sous_Section, id=id)
-    item.delete()
-    messages.success(request, "Sous Section Supprimer avec Succès")
-    return HttpResponseRedirect(reverse('cooperatives:sous_sections'))
+    if request.method == "POST":
+        item.delete()
+        messages.error(request, "Sous Section Supprimée Avec Succès")
+        return redirect('cooperatives:sous_sections')
+    context = {
+        # 'pepiniere': pepiniere,
+        'item': item,
+    }
+    return render(request, 'cooperatives/sous_section_delete.html', context)
 
 def my_section(request):
     cooperative = request.GET.get("user_id")#Cooperative.objects.get(user_id=request.user.id)
@@ -921,6 +944,85 @@ class ParcellesView(View):
     # parcelles_list = serializers.serialize('json', parcelles)
     # return HttpResponse(parcelles_list, content_type="text/json-comment-filtered")
 
+# DJango Serializer Views#
+#@csrf_exempt
+#def parcelle_list(request):
+    # """
+    # List all code snippets, or create a new snippet.
+    # """
+    # if request.method == 'GET':
+    #     parcelles = Parcelle.objects.all()
+    #     parcelles_serializers = serializers.serialize('json', parcelles)
+    #     return JsonResponse(parcelles_serializers, safe=False)
+class ParcellesMapView(TemplateView):
 
+    template_name = "map.html"
+
+    def get_context_data(self, **kwargs):
+        """Return the view context data."""
+        context = super().get_context_data(**kwargs)
+        context["parcelles"] = json.loads(serialize("geojson", Parcelle.objects.all()))
+        return context
+
+
+
+
+def ok(request):
+    return render(request, 'ok.html')
+
+def covid(request):
+    response = requests.get('https://api.covid19api.com/countries').json()
+    context = {
+        'response': response
+    }
+    return render(request, 'covid.html', context)
+
+#Export To PDF
+def export_prods_to_pdf(request):
+    cooperative = request.user.cooperative #Cooperative.objects.get(user_id=request.user.id)
+    producteurs = Producteur.objects.all().filter(cooperative_id=cooperative)
+    template_path = 'cooperatives/prods_pdf.html'
+    context = {
+        'cooperative':cooperative,
+        'producteurs':producteurs,
+    }
+    # Create a Django response object, and specify content_type as pdf
+    response = HttpResponse(content_type='application/csv')
+    #response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'filename="Producteurs.pdf"'
+    # find the template and render it.
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # create a pdf
+    pisa_status = pisa.CreatePDF(html, dest=response)       
+    # if error then show some funy view
+    if pisa_status.err:
+       return HttpResponse('Une Erreure est Survenue, Réessayer SVP... <pre>' + html + '</pre>')
+    return response
+
+
+def export_parcelles_to_pdf(request):
+    cooperative = request.user.cooperative #Cooperative.objects.get(user_id=request.user.id)
+    parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative)
+    template_path = 'cooperatives/parcelles_pdf.html'
+    context = {
+        'cooperative':cooperative,
+        'parcelles':parcelles,
+    }
+    # Create a Django response object, and specify content_type as pdf
+    response = HttpResponse(content_type='application/csv')
+    #response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'filename="Parcelles.pdf"'
+    # find the template and render it.
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # create a pdf
+    pisa_status = pisa.CreatePDF(html, dest=response)       
+    # if error then show some funy view
+    if pisa_status.err:
+       return HttpResponse('Une Erreure est Survenue, Réessayer SVP... <pre>' + html + '</pre>')
+    return response
 
 

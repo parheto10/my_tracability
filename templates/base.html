@@ -9,6 +9,8 @@
         <meta name="author" content="">
         <title>{% block title %}{% endblock %} AGROMAP-Traçability</title>
         {% include '_partials/css.html' %}
+        {% block extra_css %}{% endblock extra_css %}         
+        
     </head>
     <body>
         {% block content %}

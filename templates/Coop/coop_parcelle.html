@@ -59,7 +59,8 @@
                         <div class="panel panel-info">
                             <div class="panel-heading">
                                 <i class="fa fa-users fa-fw"></i> Liste des Parcelles
-                                <a href="{% url 'cooperatives:export_parcelle_xls' %}" class="btn btn-success">Exporter En Excel</a>
+                                <a href="{% url 'export_parcelle_xls' cooperative.id %}" class="btn btn-success"><i class="fa fa-file-excel-o fa-fw"></i>  Exporter En Excel</a>
+                                <a href="{% url 'export_parcelles_to_pdf' cooperative.id %}" class="btn btn-danger"><i class="fa fa-file-pdf-o fa-fw"></i>  Exporter En PDF</a>
                             </div>
                             <!-- /.panel-heading -->
                             <div class="panel-body" style="font-size: 12px">

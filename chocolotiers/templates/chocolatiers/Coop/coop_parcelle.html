@@ -59,7 +59,7 @@
                         <div class="panel panel-info">
                             <div class="panel-heading">
                                 <a href="{% url 'clients:export_parcelle_xls' cooperative.id %}" class="btn btn-success"><i class="fa fa-file-excel-o fa-fw"></i>  Exporter En Excel</a>
-                                <a href="#" class="btn btn-danger"><i class="fa fa-file-pdf-o fa-fw"></i>  Exporter En PDF</a>
+                                <a href="{% url 'clients:export_parcelles_to_pdf' cooperative.id %}" class="btn btn-danger"><i class="fa fa-file-pdf-o fa-fw"></i>  Exporter En PDF</a>
                             </div>
                             <!-- /.panel-heading -->
                             <div class="panel-body" style="font-size: 12px">
@@ -68,7 +68,6 @@
                                         <thead>
                                             <tr>
                                                 <th>CODE</th>
-                                                <th>PROJET</th>
                                                 <th>PRODUCTEUR</th>
                                                 <th>CERTIFICATION</th>
                                                 <th>CULTURE</th>
@@ -82,7 +81,6 @@
                                             {% for parcelle in coop_parcelles %}
                                                 <tr class="odd gradeX">
                                                     <td class="center">{{ parcelle.code }}</td>
-                                                    <td class="center">{{ parcelle.projet.accronyme }}</td>
                                                     <td class="center">{{ parcelle.producteur }}</td>
                                                     <td class="center">{{ parcelle.certification|upper }}</td>
                                                     <td>{{ parcelle.culture|upper }}</td>

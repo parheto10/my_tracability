@@ -9,11 +9,13 @@ from django.core.mail import send_mail
 from django.db.models import Sum
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
+from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.http import JsonResponse
 from twisted.words.protocols.jabber.jstrports import client
+from xhtml2pdf import pisa
 
 from chocolotiers.models import Client
 from parametres.models import (
@@ -457,6 +459,54 @@ def export_plant_xls(request, id=None):
             ws.write(row_num, col_num, row[col_num], font_style)
 
     wb.save(response)
+    return response
+
+#Export To PDF
+def export_prods_to_pdf(request, id=None):
+    cooperative = get_object_or_404(Cooperative, id=id)
+    producteurs = Producteur.objects.all().filter(cooperative_id=cooperative)
+    template_path = 'cooperatives/prods_pdf.html'
+    context = {
+        'cooperative':cooperative,
+        'producteurs':producteurs,
+    }
+    # Create a Django response object, and specify content_type as pdf
+    response = HttpResponse(content_type='application/csv')
+    #response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'filename="Producteurs.pdf"'
+    # find the template and render it.
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # create a pdf
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    # if error then show some funy view
+    if pisa_status.err:
+       return HttpResponse('Une Erreure est Survenue, Réessayer SVP... <pre>' + html + '</pre>')
+    return response
+
+
+def export_parcelles_to_pdf(request, id=None):
+    cooperative = get_object_or_404(Cooperative, id=id)
+    parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative)
+    template_path = 'cooperatives/parcelles_pdf.html'
+    context = {
+        'cooperative':cooperative,
+        'parcelles':parcelles,
+    }
+    # Create a Django response object, and specify content_type as pdf
+    response = HttpResponse(content_type='application/csv')
+    #response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'filename="Parcelles.pdf"'
+    # find the template and render it.
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # create a pdf
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    # if error then show some funy view
+    if pisa_status.err:
+       return HttpResponse('Une Erreure est Survenue, Réessayer SVP... <pre>' + html + '</pre>')
     return response
 
 

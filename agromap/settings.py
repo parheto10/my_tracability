@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'sorl.thumbnail',
     'livereload',
     'django_humanize',
+    'rest_framework',
     # 'leaflet',
     # 'geojson',
     # 'djgeojson',

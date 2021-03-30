@@ -1,4 +1,5 @@
 import csv
+import datetime
 from itertools import product
 
 import xlwt
@@ -10,10 +11,12 @@ from django.core.mail import send_mail
 from django.db.models import Sum
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
+from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.http import JsonResponse
+from xhtml2pdf import pisa
 
 from .models import (
     Sous_Prefecture,
@@ -383,4 +386,235 @@ def export_producteur_csv(request, id=None):
         writer.writerow(p)
 
     return response
+def export_prod_xls(request, id=None):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="producteurs.xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Producteurs')
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = ['COOPERATIVE' ,'CODE', 'TYPE', 'SECTION', 'GENRE', 'NOM', 'PRENOMS', 'CONTACTS', 'LOCALITE']
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+    cooperative = get_object_or_404(Cooperative, id=id)
+    rows = Producteur.objects.all().filter(cooperative_id=cooperative.id).values_list(
+        'cooperative__sigle',
+        'code',
+        'type_producteur',
+        'section__libelle',
+        'genre',
+        'nom',
+        'prenoms',
+        'contacts',
+        'localite',
+    )
+    for row in rows:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+
+    wb.save(response)
+    return response
+
+def export_parcelle_xls(request, id=None):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="Parcelles.xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Parcelles')
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = ['COOPERATIVE', 'CODE', 'P.NOM', 'P.PRENOMS', 'CERTIFI', 'CULTURE', 'SUPER', 'LONG', 'LAT', 'SECTION']
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+    cooperative = get_object_or_404(Cooperative, id=id)
+    rows = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative.id).values_list(
+        'producteur__cooperative__sigle',
+        'code',
+        'producteur__nom',
+        'producteur__prenoms',
+        'certification',
+        'culture',
+        'superficie',
+        'longitude',
+        'latitude',
+        'sous_section__section__libelle',
+    )
+    for row in rows:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+
+    wb.save(response)
+    return response
+
+def export_formation_xls(request, id=None):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="Formations.xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Formations')
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = ['COOPERATIVE', 'PROJET', 'FORMATEUR', 'INTITULE', 'DEBUT', 'FIN']
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+    cooperative = get_object_or_404(Cooperative, id=id)
+    # format2 = xlwt.Workbook({'num_format': 'dd/mm/yy'})
+    rows = Formation.objects.all().filter(cooperative_id=cooperative.id).values_list(
+        'cooperative__sigle',
+        'projet__titre',
+        'formateur',
+        'libelle',
+        'debut',
+        'fin',
+    )
+    for row in rows:
+        row_num += 1
+        for col_num in range(len(row)):
+            if isinstance(row[col_num], datetime.datetime):
+                DEBUT = row[col_num].strftime('%d/%m/%Y')
+                FIN = row[col_num].strftime('%d/%m/%Y')
+                ws.write(row_num, col_num, DEBUT, FIN, font_style)
+            else:
+                ws.write(row_num, col_num, row[col_num], font_style)
+            # ws.write(row_num, col_num, row[col_num], font_style)
+
+    wb.save(response)
+    return response
+
+def export_plant_xls(request, id=None):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="Planting.xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Plants')
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = ['COOPERATIVE', 'P.CODE', 'P.NOM', 'P.PRENOMS', 'PARCELLE', 'ESPECE', 'NOMBRE', 'DATE']
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+    cooperative = get_object_or_404(Cooperative, id=id)
+    rows = Planting.objects.all().filter(parcelle__propietaire__cooperative_id=cooperative.id).values_list(
+        'parcelle__producteur__cooperative__sigle',
+        'parcelle__propietaire__code',
+        'parcelle__propietaire__nom',
+        'parcelle__propietaire__prenoms',
+        'parcelle__code',
+        'espece',
+        'nb_plant',
+        'date',
+    )
+    for row in rows:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+
+    wb.save(response)
+    return response
+
+#Export To PDF
+def export_prods_to_pdf(request, id=None):
+    cooperative = get_object_or_404(Cooperative, id=id)
+    producteurs = Producteur.objects.all().filter(cooperative_id=cooperative)
+    template_path = 'cooperatives/prods_pdf.html'
+    context = {
+        'cooperative':cooperative,
+        'producteurs':producteurs,
+    }
+    # Create a Django response object, and specify content_type as pdf
+    response = HttpResponse(content_type='application/csv')
+    #response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'filename="Producteurs.pdf"'
+    # find the template and render it.
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # create a pdf
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    # if error then show some funy view
+    if pisa_status.err:
+       return HttpResponse('Une Erreure est Survenue, Réessayer SVP... <pre>' + html + '</pre>')
+    return response
+
+
+def export_parcelles_to_pdf(request, id=None):
+    cooperative = get_object_or_404(Cooperative, id=id)
+    parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative)
+    template_path = 'cooperatives/parcelles_pdf.html'
+    context = {
+        'cooperative':cooperative,
+        'parcelles':parcelles,
+    }
+    # Create a Django response object, and specify content_type as pdf
+    response = HttpResponse(content_type='application/csv')
+    #response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'filename="Parcelles.pdf"'
+    # find the template and render it.
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # create a pdf
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    # if error then show some funy view
+    if pisa_status.err:
+       return HttpResponse('Une Erreure est Survenue, Réessayer SVP... <pre>' + html + '</pre>')
+    return response
+
+import json
+
+from django.core.serializers import serialize
+from django.views.generic.base import TemplateView
+
+from cooperatives.models import Parcelle
+
+
+class ParcellesMapView(TemplateView):
+    """Markers map view."""
+
+    template_name = "map.html"
+
+    def get_context_data(self, **kwargs):
+        """Return the view context data."""
+        context = super().get_context_data(**kwargs)
+        context["parcelles"] = json.loads(serialize("geojson", Parcelle.objects.all()))
+        return context
+
 # Create your views here.

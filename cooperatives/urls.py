@@ -6,7 +6,7 @@ from django.conf.urls.static import static
 from .views import (
     coop_dashboard,
     add_section,
-    add_sous_section,
+    add_sous_section, export_parcelles_to_pdf,
     producteurs,
     cooperative,
     prod_update,
@@ -24,11 +24,13 @@ from .views import (
     # use Ajax and jquery request
     my_section,
     export_producteur_csv,
+    export_prods_to_pdf,
     export_prod_xls,
     export_parcelle_xls,
     export_plant_xls, suivi_planting, edit_semence, Stats_semence, Editpepiniere, site_pepiniere, Editformation,
     delete_semence, parcelle_update, update_section, delete_section, export_section_xls, update_sous_section,
-    ParcellesView, export_sous_section_xls, export_formation_xls,
+    ParcellesView, export_sous_section_xls, export_formation_xls, delete_sous_section, covid,
+    ParcellesMapView,
     # delete_sous_section, export_sous_section_xls, export_formation_xls, my_parcelles, ParcellesView,
     # load_section
 )
@@ -44,9 +46,9 @@ urlpatterns = [
     path('parcelle/<int:id>/modifier', parcelle_update, name='edit_parcelle'),
     path('parcelle/<int:id>/supprimer', parcelle_delete, name='parcelle_delete'),
     path('section/<int:id>/modifier', update_section, name='update_section'),
-    path('section/<int:id>/delete', delete_section, name='delete_section'),
+    path('section/<int:id>/delete/supprimer', delete_section, name='delete_section'),
     path('sous_section/<int:id>/modifier', update_sous_section, name='update_sous_section'),
-    #path('sous_section/<int:id>/delete', delete_sous_section, name='delete_sous_section'),
+    path('sous_section/<int:id>/supprimer', delete_sous_section, name='delete_sous_section'),
     path('dashboard/', coop_dashboard, name='dashboard'),
     path('sections/', add_section, name='section'),
     path('sous_sections/', add_sous_section, name='sous_sections'),
@@ -71,6 +73,9 @@ urlpatterns = [
 
     #get Ajax Data
     path('parcelles/data', ParcellesView.as_view(), name="parcelles_data"),
+    # path('parcelle_list/', parcelle_list, name="parcelle_list"),
+    path('parcelle_list/', ParcellesMapView.as_view(), name="parcelle_list"),
+    path('covid_datas/', covid, name="covid"),
 
     #path('my-section/', my_section, name='my_section'),
     # path('ajax/load-section/', load_section, name='ajax_load_section'),
@@ -87,4 +92,8 @@ urlpatterns = [
     # path('settings/', profile_setting, name='settings'),
     # path('add_patient/', add_patient, name="add_patient"),
     # path('rdv/', rdv_patient, name="checkout"),
+
+    #Export Données EN PDF
+    path('producteurs/pdf/', export_prods_to_pdf, name='export_prods_to_pdf'),
+    path('parcelles/pdf/', export_parcelles_to_pdf, name='export_parcelles_to_pdf'),
 ]

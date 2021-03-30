@@ -14,7 +14,7 @@ from .views import (
     sous_section_coop,
     planting_coop, Stats_coop, Stats_semences, Production_plan, plants_coop, semences_coop, formations,
     detail_formation, site_pepinieres, coop_pepiniere, export_prod_xls,
-    export_parcelle_xls, export_plant_xls, export_formation_xls
+    export_parcelle_xls, export_plant_xls, export_formation_xls, export_prods_to_pdf, export_parcelles_to_pdf
 )
 
 app_name='clients'
@@ -52,4 +52,8 @@ urlpatterns = [
     path('cooperative/<int:id>/parcelles/xls/', export_parcelle_xls, name='export_parcelle_xls'),
     path('cooperative/<int:id>/plants/xls/', export_plant_xls, name='export_plant_xls'),
     path('cooperative/<int:id>/formations/xls/', export_formation_xls, name='export_formation_xls'),
+
+    # Export Données EN PDF
+    path('producteurs/pdf/<int:id>', export_prods_to_pdf, name='export_prods_to_pdf'),
+    path('parcelles/pdf/<int:id>', export_parcelles_to_pdf, name='export_parcelles_to_pdf'),
 ]

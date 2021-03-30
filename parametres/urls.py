@@ -19,7 +19,8 @@ from .views import (
     sous_section_coop,
     planting_coop, Stats_coop, Production_plan,
     Stats_semences, stat_prod_coop, plants_coop, semences_coop, formations, detail_formation, site_pepinieres,
-    coop_pepiniere, pepiniere, pepiniere_coop,
+    coop_pepiniere, pepiniere, pepiniere_coop, export_prods_to_pdf, export_parcelles_to_pdf, export_prod_xls,
+    export_parcelle_xls, export_plant_xls, export_formation_xls, ParcellesMapView,
     # detail_formation,
 )
 
@@ -54,4 +55,19 @@ urlpatterns = [
     # path('formation/<int:id>', detail_formation, name='formation'),
     path('detail_coop/<int:id>', detail_coop, name='detail_coop'),
     # path('chart/<int:id>', chart, name='chart'),
+
+#Export to Excel
+    path('cooperative/<int:id>/producteurs/xls/', export_prod_xls, name='export_prod_xls'),
+    # path('sections/xls/', export_section_xls, name='export_section_xls'),
+    # path('sous_sections/xls/', export_sous_section_xls, name='export_sous_section_xls'),
+    path('cooperative/<int:id>/parcelles/xls/', export_parcelle_xls, name='export_parcelle_xls'),
+    path('cooperative/<int:id>/plants/xls/', export_plant_xls, name='export_plant_xls'),
+    path('cooperative/<int:id>/formations/xls/', export_formation_xls, name='export_formation_xls'),
+
+    # Export Données EN PDF
+    path('producteurs/pdf/<int:id>', export_prods_to_pdf, name='export_prods_to_pdf'),
+    path('parcelles/pdf/<int:id>', export_parcelles_to_pdf, name='export_parcelles_to_pdf'),
+
+    #map leaflet
+    path('map/', ParcellesMapView.as_view(), name="map")
 ]
