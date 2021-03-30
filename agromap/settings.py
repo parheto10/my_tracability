@@ -61,7 +61,7 @@ INSTALLED_APPS = [
     'livereload',
     'django_humanize',
     'rest_framework',
-    # 'leaflet',
+    'leaflet',
     # 'geojson',
     # 'djgeojson',
 

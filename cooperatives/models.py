@@ -202,8 +202,8 @@ class Producteur(models.Model):
     type_document = models.CharField(max_length=50, verbose_name="TYPE DOCUMENT", choices=NATURE_DOC, default="AUCUN")
     num_document = models.CharField(max_length=150, verbose_name="N° PIECE", null=True, blank=True)
     document = models.FileField(verbose_name="Documents", upload_to=producteurs_documents, blank=True, null=True)
-    # add_le = models.DateTimeField(auto_now_add=True)
-    # update_le = models.DateTimeField(auto_now=True)
+    add_le = models.DateTimeField(auto_now_add=True)
+    update_le = models.DateTimeField(auto_now=True)
     objects = models.Manager()
 
     def __str__(self):
@@ -292,8 +292,8 @@ class Parcelle(models.Model):
     superficie = models.DecimalField(max_digits=5, decimal_places=3, null=True, blank=True)
     culture = models.CharField(max_length=50, verbose_name="CULTURE", choices=CULTURE, default="cacao")
     certification = models.CharField(max_length=50, verbose_name="CERTIFICATION", choices=CERTIFICATION, default="utz")
-    # add_le = models.DateTimeField(auto_now_add=True)
-    # update_le = models.DateTimeField(auto_now=True)
+    add_le = models.DateTimeField(auto_now_add=True)
+    update_le = models.DateTimeField(auto_now=True)
     objects = models.Manager()
 
     def __str__(self):
@@ -304,9 +304,9 @@ class Parcelle(models.Model):
 
     def clean(self):
        # numerotation automatique
-       if not self.id:
-           # tot = Parcelle.objects.count()
-           tot = Producteur.objects.annotate(Count('parcelle'))
+       if not self.id and self.code == "":
+           tot = Parcelle.objects.count()
+           # tot = Producteur.objects.annotate(Count('parcelle'))
            # tot = Producteur.objects.annotate(nombre_parcelle=Count('parcelle'))
            num = tot
            self.code = "%s"%(num)
@@ -316,6 +316,9 @@ class Parcelle(models.Model):
 
     def coordonnees(self):
         return str(self.longitude) + ', ' + str(self.latitude)
+
+    # def coordonnees(self):
+    #     return str(self.latitude) + ', ' + str(self.longitude)
 
     class Meta:
         verbose_name_plural = "PARCELLES"

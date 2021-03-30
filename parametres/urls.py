@@ -20,7 +20,7 @@ from .views import (
     planting_coop, Stats_coop, Production_plan,
     Stats_semences, stat_prod_coop, plants_coop, semences_coop, formations, detail_formation, site_pepinieres,
     coop_pepiniere, pepiniere, pepiniere_coop, export_prods_to_pdf, export_parcelles_to_pdf, export_prod_xls,
-    export_parcelle_xls, export_plant_xls, export_formation_xls, ParcellesMapView,
+    export_parcelle_xls, export_plant_xls, export_formation_xls, ParcellesMapView
     # detail_formation,
 )
 
@@ -69,5 +69,6 @@ urlpatterns = [
     path('parcelles/pdf/<int:id>', export_parcelles_to_pdf, name='export_parcelles_to_pdf'),
 
     #map leaflet
-    path('map/', ParcellesMapView.as_view(), name="map")
+    path('map/', ParcellesMapView.as_view(), name="map"),
+    # path('parcelles/data', ParcellesView.as_view(), name="data"),
 ]

@@ -238,7 +238,7 @@ def my_section(request):
 
 def producteurs(request):
     cooperative = request.user.cooperative #Cooperative.objects.get(user_id=request.user.id)
-    producteurs = Producteur.objects.all().filter(cooperative_id=cooperative)
+    producteurs = Producteur.objects.all().filter(cooperative_id=cooperative).order_by("-add_le")
     sections = Section.objects.filter(cooperative_id=cooperative)
     sous_sections = Sous_Section.objects.all().filter(section__cooperative_id=cooperative)
 
@@ -297,7 +297,7 @@ def parcelles(request):
     cooperative = Cooperative.objects.get(user_id=request.user.id)
     prods = Producteur.objects.filter(cooperative_id=cooperative)
     s_sections = Sous_Section.objects.all().filter(section__cooperative_id=cooperative)
-    parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative)
+    parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative).order_by("-add_le")
     parcelleForm = ParcelleForm(request.POST or None)
     if request.method == 'POST':
         parcelleForm = ParcelleForm(request.POST, request.FILES)

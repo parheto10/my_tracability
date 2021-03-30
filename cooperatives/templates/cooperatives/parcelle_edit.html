@@ -111,12 +111,8 @@
                     {% csrf_token %}
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                        <i class="glyphicon glyphicon-edit" style="margin-bottom: 10px"></i> MODIFIER PARCELLE {{ instance.code }} {{ instance.producteur }}
-{#                                    <Button ID="btnAnnuler" style="font-size:1.7vmin; width:100px" class="btn btn-danger"  data-dismiss="modal" >Fermer</Button>#}
-                        <button ID="btnAnnuler" type="button" data-dismiss="modal" class="btn btn-danger pull-right" style="font-size:1.8vmin; margin-top: -5px">
-                            <i class="fa fa-close"></i>
-                        </button>
-                    </div>
+                            <i class="glyphicon glyphicon-edit" style="margin-bottom: 10px"></i> MODIFIER PARCELLE {{ instance.code }} {{ instance.producteur }}
+                        </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <div class="col-sm-12">

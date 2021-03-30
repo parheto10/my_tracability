@@ -188,7 +188,7 @@ def sous_section_coop(request):
 
 def prod_coop(request, id=None):
     cooperative = get_object_or_404(Cooperative, id=id)
-    coop_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative)
+    coop_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative).order_by("-update_le")
     # coop_parcelles = Parcelle.objects.all().filter(producteur__section__cooperative_id=cooperative)
     context = {
         'cooperative': cooperative,
