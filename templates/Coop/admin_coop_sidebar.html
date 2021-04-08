@@ -1,0 +1,31 @@
+{% load static %}
+<div class="navbar-default sidebar" role="navigation">
+    <div class="sidebar-nav navbar-collapse">
+        <ul class="nav" id="side-menu">
+            <li>
+                <a href="{% url 'detail_coop' cooperative.id %}" class="active"><i class="fa fa-dashboard fa-fw"></i> DASHBOARD</a>
+            </li>
+            <li>
+                <a href="{% url 'prod_coop' cooperative.id %}"><i class="fa fa-users fa-fw"></i> PRODUCTEURS</a>
+            </li>
+            <li>
+                <a href="{% url 'parcelle_coop' cooperative.id %}"><i class="glyphicon glyphicon-grain"></i> PARCELLES</a>
+            </li>
+            <li>
+                <a href="{% url 'formations' cooperative.id %}"><i class="fa fa-list-ul fa-fw"></i> FORMATIONS</a>
+            </li>
+            <li>
+                <a href="{% url 'planting_coop' cooperative.id %}"><i class="glyphicon glyphicon-tree-deciduous"></i> PLANTING</a>
+            </li>
+            <li>
+                <a href="{% url 'localisation_coop' cooperative.id %}" target="_blank"><i class="fa fa-map-o fa-fw"></i> CARTOGRAPHIE</a>
+            </li>
+            <li>
+                <a href="{% url 'pepiniere_coop' cooperative.id %}" target="_blank" ><i class="fa fa-map fa-fw"></i> SITES PEPINIERES</a>
+            </li>
+            <li>
+                <a href="{% url 'coop_pepiniere' cooperative.id %}" target="_blank" ><i class="fa fa-map fa-fw"></i> CARTE PEPINIERES</a>
+            </li>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+{% load static %}
+{% load widget_tweaks %}
+{% load bootstrap4 %}
+{# Load CSS and JavaScript #}
+{#{% bootstrap_css %}#}
+{#{% bootstrap_javascript %}#}
+{% bootstrap_messages %}
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Agro - Map | Traçability</title>
+{% include '_partials/css.html' %}
+{% include '_partials/js.html' %}
+{#<link rel="stylesheet" href="{% static 'dist/css/bootstrap2.min.css' %}">#}
+{#<script src="{% static 'dist/js/jquery-3.5.1.min.js' %}"></script>#}
+{#<script src="{% static 'dist/js/bootstrap2.min.js' %}"></script>#}
+<script>
+	$(document).ready(function(){
+		$("#ProducteursModal").modal('show');
+	});
+</script>
+</head>
+<body>
+<div class="modal fade"  data-keyboard="false" data-backdrop="static" id="ProducteursModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="modal-title text-center" id="exampleModalLabel" style="font-weight:bold; text-align: center">MODIFIER PRODUCTEUR {{ instance.nom }} {{ instance.prenoms }}</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Code</label>
+                                    {% render_field form.code class="form-control" placeholder="Code" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>Origine</label>
+                                    {% render_field form.origine class="form-control" placeholder="Origine" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>Sous Préfecture</label>
+                                    {% render_field form.sous_prefecture class="form-control" placeholder="sous préfecture" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>Type Producteur</label>
+                                    {% render_field form.type_producteur class="form-control" placeholder="Type Producteur" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>Genre</label>
+                                    {% render_field form.genre class="form-control" placeholder="Type Producteur" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>Nom</label>
+                                    {% render_field form.nom class="form-control" placeholder="Nom" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>Prénoms</label>
+                                    {% render_field form.prenoms class="form-control" placeholder="Prénoms" %}
+                                </div>
+                                <div class="change-avatar">
+                                    <div class="upload-img">
+                                        <div class="form-group">
+                                            <span><i class="fa fa-upload fa-fw"></i> Photo Producteur</span><br>
+                                            {% render_field form.image type="file" class="form-control" placeholder="Image" accept="image/*" class="form-control-file" %}
+                                        </div>
+                                        <small class="form-text text-muted">Format(JPG, GIF or PNG, Taile Max 2MB)</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Date de naissance</label>
+                                    {% render_field form.dob type="date" class="form-control" placeholder="date naissance" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>Contacts</label>
+                                    {% render_field form.contacts class="form-control" placeholder="Contacts" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>Localité</label>
+                                    {% render_field form.localite class="form-control" placeholder="Adresse" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>Section</label>
+                                    {% render_field form.section class="form-control" placeholder="Section" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>Sous Section</label>
+                                    {% render_field form.sous_section class="form-control" placeholder="Sous Section" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>Nombre Parcelle</label>
+                                    {% render_field form.nb_parcelle class="form-control" placeholder="Nombre Parcelle" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>Type Document</label>
+                                    {% render_field form.type_document class="form-control" placeholder="Type Document" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>N° Document</label>
+                                    {% render_field form.num_document class="form-control" placeholder="Numéro Document" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>Document</label>
+                                    {% render_field form.document class="form-control" placeholder="Document" %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <input type="submit" name="btnValider" value="VALIDER" id="btnValider" class="btn btn-success btn-block" style="font-size:1.7vmin" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

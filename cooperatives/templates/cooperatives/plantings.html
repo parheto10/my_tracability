@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load bootstrap4 %}
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+{% block title %}
+    Plantings {{ cooperative.sigle }} |
+{% endblock %}
+{% block content %}
+    <div id="wrapper">
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    {% if user.is_authenticated %}
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{% url 'cooperatives:dashboard' %}">{{ cooperative.sigle }} / {{ cooperative.get_projet_values }}</a>
+        </div>
+    {% endif %}
+
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+    </button>
+
+    <ul class="nav navbar-right navbar-top-links">
+        {% if user.is_authenticated %}
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-user fa-fw"></i> {{ user.username }} <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out fa-fw"></i> Déconnexion</a></li>
+                </ul>
+            </li>
+        {% endif %}
+    </ul>
+    <!-- /.navbar-top-links -->
+    {% include 'cooperatives/coop_sidebar.html' %}
+</nav>
+        <div id="page-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">
+                          <i class="glyphicon glyphicon-tree-deciduous"></i> Planting
+                        </h1>
+                    </div>
+                    <!-- /.col-lg-12 -->
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        {% include '_partials/messages_display.html' %}
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <a href="{% url 'cooperatives:export_plant_xls' %}" class="btn btn-success">Exporter En Excel</a>
+                                <button type="button" class="btn btn-success pull-right" style="font-size:1.8vmin; margin-top: -5px" data-toggle="modal" data-target="#ParcelleModal" data-whatever="@mdo">
+                                    <i class="fa fa-plus"> </i> Ajouter
+                                </button>
+                            </div>
+                            <!-- /.panel-heading -->
+                            <div class="panel-body" style="font-size: 12px">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                        <thead>
+                                            <tr>
+                                                <th>PRODUCTEUR</th>
+                                                <th>PARCELLE</th>
+                                                <th>NBRE PLANTS RECUS</th>
+                                                <th>DATE</th>
+                                                <th>SUIVI</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for planting in plantings %}
+                                                <tr class="odd gradeX">
+{#                                                    <td class="center">{{ planting.parcelle.projet.titre }} - ({{ planting.parcelle.projet.accronyme }})</td>#}
+                                                    <td class="center">
+                                                        {{ planting.parcelle.producteur.nom }} {{ planting.parcelle.producteur.prenoms }}
+                                                    </td>
+                                                    <td class="center">{{ planting.parcelle.code }}</td>
+                                                    <td class="center">{{ planting.nb_plant }}</td>
+                                                    <td class="center">{{ planting.date | date:'d/m/Y' }}</td>
+                                                    <td class="center">
+                                                        <a href="{% url 'cooperatives:suivi_planting' planting.id %}" class="btn btn-success">
+                                                             Suivi <i class="fa fa-chevron-right"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /.panel-body -->
+                        </div>
+                        <!-- /.panel -->
+                    </div>
+                    <!-- /.col-lg-8 -->
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+
+            <div class="modal fade"  data-keyboard="false" data-backdrop="static" id="ParcelleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h4 class="modal-title" id="exampleModalLabel" style="font-weight:bold">AJOUTER UN SUIVI</h4>
+                                <button ID="btnAnnuler" type="button" data-dismiss="modal" class="btn btn-danger pull-right" style="font-size:1.8vmin;margin-top: -30px">
+                                    <i class="fa fa-close"></i>
+                                </button>
+                            </div>
+                            <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-10 col-sm-offset-1">
+                                    <div class="form-group">
+                                        <label>Parcelle :</label>
+                                        <input type="text" list="parcelle" placeholder="Rechercher parcelle..." class="form-control" style="width: 100%">
+                                            <datalist id="parcelle">
+                                                {% for parcelle in parcelles.all %}
+                                                    <option value="{{ parcelle.code }} - {{ parcelle.producteur.nom }} {{ parcelle.producteur.prenoms }}"></option>
+                                                {% if forloop.last %}} {% else %}}, {% endif %}{% endfor %}
+                                            </datalist>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                        <label>Date</label>
+                                        {% render_field plantingForm.date type="date" class="form-control", placeholder="Date" %}
+                                    </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                        <label>Nombre de Plant</label>
+                                        {% render_field plantingForm.nb_plant class="form-control" placeholder="Nombre de Plant" %}
+                                    </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                        <label>Details</label>
+                                        {% render_field plantingForm.details class="form-control" %}
+                                    </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                        <label>Observations</label>
+                                        {% render_field plantingForm.observation class="form-control" %}
+                                    </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                            <div class="panel-footer">
+{#                            <Button ID="btnAnnuler" style="font-size:1.7vmin;" class="btn btn-danger"  data-dismiss="modal" >Annuler</Button>#}
+                            <input type="submit" name="btnValider" value="Valider" id="btnValider" class="btn btn-success btn-block" style="font-size:1.7vmin;" />
+                        </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

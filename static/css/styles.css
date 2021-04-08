@@ -1,0 +1,35 @@
+#map {
+    width: 100%;
+    height: calc(100vh);
+}
+
+.map-coordonnes{
+    position: absolute;
+    bottom: 0;
+    left: 40%;
+    padding: 8px;
+    transform: translateX(-50);
+    background-color: #007bff;
+    font-weight: bold;
+    color: #fff;
+    font-size: 18px;
+    border: 1px solid black;'VILLES' : marker,
+     'ABIDJAN': singleMarker
+    border-radius: 5px;
+}
+
+.full-screen {
+    padding: 5px;
+    background-color: #fff;
+    position: absolute;
+    right: 10px;
+    top: 220px;
+}
+
+.zoom {
+    padding: 5px;
+    background-color: #fff;
+    position: absolute;
+    right: 10px;
+    top: 270px;
+}

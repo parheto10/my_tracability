@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load bootstrap4 %}
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+{% block title %}
+    Producteurs |
+{% endblock %}
+{% block content %}
+    <div id="wrapper">
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    {% if user.is_authenticated %}
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{% url 'accueil' %}">PANNEAU D'ADMINISTRATION - {{ cooperative.sigle }} / {{ cooperative.get_projet_values }}</a>
+        </div>
+    {% endif %}
+
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+    </button>
+
+    <ul class="nav navbar-right navbar-top-links">
+        {% if user.is_authenticated %}
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-user fa-fw"></i> {{ user.username }} <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out fa-fw"></i> Déconnexion</a>
+                    </li>
+                </ul>
+            </li>
+        {% endif %}
+    </ul>
+    <!-- /.navbar-top-links -->
+    {% include 'Coop/admin_coop_sidebar.html' %}
+</nav>
+        <div id="page-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">Producteurs - {{ cooperative.sigle }}</h1>
+                    </div>
+                    <!-- /.col-lg-12 -->
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        {% include '_partials/messages_display.html' %}
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <a href="{% url 'export_prod_xls' cooperative.id %}" class="btn btn-success"><i class="fa fa-file-excel-o fa-fw"></i>  Exporter En Excel</a>
+                                <a href="{% url 'export_prods_to_pdf' cooperative.id %}" class="btn btn-danger"><i class="fa fa-file-pdf-o fa-fw"></i>  Exporter En PDF</a>
+{#                                <button type="button" class="btn btn-primary pull-right" style="font-size:1.8vmin; margin-top: -5px" data-toggle="modal" data-target="#ProducteursModal" data-whatever="@mdo">#}
+{#                                    Ajouter un nouveau producteur#}
+{#                                </button>#}
+                            </div>
+                            <!-- /.panel-heading -->
+                            <div class="panel-body" style="font-size: 13px">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                        <thead class="text-center">
+                                            <tr>
+                                                <th>Photo</th>
+                                                <th>CODE</th>
+                                                <th>TYPE</th>
+                                                <th>SECTION</th>
+                                                <th>GENRE</th>
+                                                <th>NOM</th>
+                                                <th>PRENOMS</th>
+                                                <th>NEE LE</th>
+                                                <th>CONTACTS</th>
+                                                <th>LOCALITE</th>
+                                                <th>ACTIONS</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center">
+                                            {% for prod in coop_producteurs %}
+                                                <tr class="odd gradeX">
+                                                    {% if not prod.image %}
+                                                        <td><img class="img-rounded" width="45" height="45" src="{% static 'img/logo_homme.jpeg' %}" alt="{{ prod.code }}"></td>
+                                                    {% else %}
+                                                        <td><img class="img-rounded" width="45" height="45" src="{{ prod.image.url }}" alt="{{ prod.code }}"></td>
+                                                    {% endif %}
+                                                    <td><b>{{ prod.code }}</b></td>
+                                                    <td>{{ prod.type_producteur }}</td>
+                                                    <td>{{ prod.section.libelle }}</td>
+                                                    <td>{{ prod.genre }}</td>
+                                                    <td class="center"><b>{{ prod.nom }}</b></td>
+                                                    <td class="center"><b>{{ prod.prenoms }}</b></td>
+                                                    <td class="center">{{ prod.dob|date:'d/m/Y' }}</td>
+                                                    <td class="center">{{ prod.contacts }}</td>
+                                                    {% if prod.localite %}
+                                                        <td class="center">{{ prod.localite }}</td>
+                                                    {% else %}
+                                                        <td>Localité Non Définie</td>
+                                                    {% endif %}
+                                                    <td class="center">
+                                                        <a href="{% url 'cooperatives:modifier' prod.code %}" class="btn btn-primary">
+                                                            <i class="fa fa-edit fa-fw"></i>
+                                                        </a>
+                                                        <a href="{% url 'cooperatives:del_producteur' prod.code %}" class="btn btn-danger">
+                                                            <i class="fa fa-trash fa-fw"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <div class="modal fade"  data-keyboard="false" data-backdrop="static" id="DelprodModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h4 class="modal-title text-center" id="exampleModalLabel">
+                                                                    <i class="fa fa-warning fa-fw"></i> Le Producteur <strong>{{ item.code }} {{ item.nom }} {{ item.prenoms }}</strong> sera supprimer voulez-vous Continuez ?
+                                                                </h4>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /.panel-body -->
+                        </div>
+                        <!-- /.panel -->
+                    </div>
+                    <!-- /.col-lg-8 -->
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+{#            <div class="modal fade"  data-keyboard="false" data-backdrop="static" id="ProducteursModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">#}
+{#                <div class="modal-dialog modal-lg" role="document">#}
+{#                    <div class="modal-content">#}
+{#                        <form method="post" enctype="multipart/form-data" novalidate>#}
+{#                            {% csrf_token %}#}
+{#                            <div class="modal-header">#}
+{#                                <h4 class="modal-title" id="exampleModalLabel" style="font-weight:bold">NOUVEAU PRODUCTEUR</h4>#}
+{#                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top: -25px">x</button>#}
+{#                            </div>#}
+{#                            <div class="model-body">#}
+{#                                <div class="col-sm-12">#}
+{#                                    <div class="row">#}
+{#                                        <div class="col-sm-4">#}
+{#                                            <div class="form-group">#}
+{#                                                <label>Code</label>#}
+{#                                                {% render_field prodForm.code class="form-control" placeholder="Code" %}#}
+{#                                            </div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label>Origine</label>#}
+{#                                                {% render_field prodForm.origine class="form-control" placeholder="Origine" %}#}
+{#                                            </div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label>Sous Préfecture</label>#}
+{#                                                {% render_field prodForm.sous_prefecture class="form-control" placeholder="sous préfecture" %}#}
+{#                                            </div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label>Type Producteur</label>#}
+{#                                                {% render_field prodForm.type_producteur class="form-control" placeholder="Type Producteur" %}#}
+{#                                            </div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label>¨Photo </label>#}
+{#                                                {% render_field prodForm.image class="form-control" placeholder="Type Producteur" %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="col-sm-4">#}
+{#                                            <div class="form-group">#}
+{#                                                <label>Genre</label>#}
+{#                                                {% render_field prodForm.genre class="form-control" placeholder="Type Producteur" %}#}
+{#                                            </div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label>Nom</label>#}
+{#                                                {% render_field prodForm.nom class="form-control" placeholder="Nom" %}#}
+{#                                            </div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label>Prénoms</label>#}
+{#                                                {% render_field prodForm.prenoms class="form-control" placeholder="Prénoms" %}#}
+{#                                            </div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label>Date de naissance</label>#}
+{#                                                {% render_field prodForm.dob type="date" class="form-control" placeholder="date naissance" %}#}
+{#                                            </div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label>Contacts</label>#}
+{#                                                {% render_field prodForm.contacts type="" class="form-control" placeholder="Contacts" %}#}
+{#                                            </div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label>Localité</label>#}
+{#                                                {% render_field prodForm.localite class="form-control" placeholder="Localité" %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="col-sm-4">#}
+{#                                            <div class="form-group">#}
+{#                                                <label>Section</label>#}
+{#                                                {% render_field prodForm.section class="form-control" placeholder="Section" %}#}
+{#                                                    <select name="section" placeholder="Section" class="form-control" id="id_section">#}
+{#                                                        {% for section in sections %}#}
+{#                                                            <option value="{{ section.id }}">{{ section.libelle }}</option>#}
+{#                                                        {% endfor %}#}
+{#                                                    </select>#}
+{#                                            </div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label>Sous Section</label>#}
+{#                                                {% render_field prodForm.sous_section class="form-control" placeholder="Sous Section" %}#}
+{#                                            </div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label>Nombre de Parcelle</label>#}
+{#                                                {% render_field prodForm.nb_parcelle class="form-control" placeholder="Nombre Parcelle" %}#}
+{#                                            </div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label>Type Document</label>#}
+{#                                                {% render_field prodForm.type_document class="form-control" placeholder="Type Document" %}#}
+{#                                            </div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label>N° Document</label>#}
+{#                                                {% render_field prodForm.num_document class="form-control" placeholder="Numéro Document" %}#}
+{#                                            </div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label>Documents</label>#}
+{#                                                {% render_field prodForm.document class="form-control" placeholder="Document Scanner" %}#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <div class="modal-footer">#}
+{#                                <Button ID="btnAnnuler" style="font-size:1.7vmin; width:100px" class="btn btn-default"  data-dismiss="modal" >Annuler</Button>#}
+{#                                <input type="submit" name="btnValider" value="Valider" id="btnValider" class="btn btn-primary" style="font-size:1.7vmin;width:250px" />#}
+{#                            </div>#}
+{#                        </form>#}
+{#                        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>#}
+{#                    </div>#}
+{##}
+{#                </div>#}
+{#            </div>#}
+        </div>
+    </div>
+{% endblock %}

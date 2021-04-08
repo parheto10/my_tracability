@@ -1,0 +1,332 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanizelib %}
+{% block title %}
+    Accueil |
+{% endblock %}
+{% block content %}
+    <div id="wrapper">
+            <!-- Navigation -->
+            {% include 'chocolatiers/Coop/client_nav.html' %}
+            <div id="page-wrapper">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h1 class="page-header">Tableau de Bord - {{ cooperative.sigle }}</h1>
+                        </div>
+                        <!-- /.col-lg-12 -->
+                    </div>
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-users fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            {% if coop_nb_producteurs %}
+                                                <div class="huge">{{ coop_nb_producteurs }}</div>
+                                                <div>Producteurs</div>
+                                            {% else %}
+                                                <div class="huge">{{ coop_nb_producteurs }}</div>
+                                                <div>Producteurs</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'clients:prod_coop' cooperative.id %}">
+                                    <div class="panel-footer">
+                                        <span class="pull-left"> Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-green">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="glyphicon glyphicon-grain fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            {% if coop_nb_parcelles %}
+                                                <div class="huge">{{ coop_nb_parcelles }}</div>
+                                                <div>Plantations</div>
+                                            {% else %}
+                                                <div class="huge">0</div>
+                                                <div>Plantations</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'clients:parcelle_coop' cooperative.id %}">
+                                    <div class="panel-footer">
+                                        <span class="pull-left"> Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-yellow">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="glyphicon glyphicon-map-marker fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            {% if coop_superficie %}
+                                                <div class="huge">{{ coop_superficie | floatformat:2 }}</div>
+                                                <div>Superficie Totale (Ha)</div>
+                                            {% else %}
+                                                <div class="huge">0</div>
+                                                <div>Superf. Totale (Ha)</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="#">
+                                    <div class="panel-footer">
+                                        <span class="pull-left"> Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-red">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-list-alt fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            {% if nb_formations %}
+                                                <div class="huge">{{ nb_formations }}</div>
+                                                <div>Formations</div>
+                                            {% else %}
+                                                <div class="huge">0</div>
+                                                <div>Formations</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'clients:formations' cooperative.id %}">
+                                    <div class="panel-footer">
+                                        <span class="pull-left"> Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-2">
+                                            <i class="fa fa-database fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-10 text-right">
+                                            <div class="huge">0</div>
+                                            <div>Prod. toutes campagnes</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="#">
+                                    <div class="panel-footer">
+                                        <span class="pull-left"> Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-success">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-2">
+                                            <i class="fa fa-database fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-10 text-right">
+                                            <div class="huge">0</div>
+                                            <div>Grande Campagne</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="#">
+                                    <div class="panel-footer">
+                                        <span class="pull-left"> Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-warning">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-2">
+                                            <i class="fa fa-database fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-10 text-right">
+                                            <div class="huge">0</div>
+                                            <div>Petite Campagne</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="#">
+                                    <div class="panel-footer">
+                                        <span class="pull-left"> Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-danger">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-2">
+                                            <i class="glyphicon glyphicon-tree-deciduous fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-10 text-right">
+                                            {% if coop_plants_total %}
+                                                <div class="huge">{{ coop_plants_total }}</div>
+                                            {% else %}
+                                                <div class="huge">0</div>
+                                            {% endif %}
+                                            <div>Nombre de plants</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="#">
+                                    <div class="panel-footer">
+                                        <span class="pull-left"> Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-sm-6">
+                               <div class="panel panel-primary">
+                                   <div class="panel-heading">
+                                        <i class="fa fa-bar-chart-o fa-fw"></i> Semences Réçus
+                                    </div>
+                                    <!-- /.panel-heading -->
+                                   <div class="panel-body">
+                                       <canvas id="stats-semences" data-url="{% url 'clients:semences_coop' cooperative.id %}"></canvas>
+                                   </div>
+                                    <!-- /.panel-body -->
+                               </div>
+                           </div>
+                        <div class="col-sm-6">
+                               <div class="panel panel-green">
+                                   <div class="panel-heading">
+                                        <i class="fa fa-bar-chart-o fa-fw"></i> Plants Rétirés
+                                    </div>
+                                    <!-- /.panel-heading -->
+                                   <div class="panel-body">
+                                       <canvas id="stats-plant" data-url="{% url 'clients:plants_coop' cooperative.id %}"></canvas>
+                                   </div>
+                                    <!-- /.panel-body -->
+                               </div>
+                           </div>
+                        <!-- /.col-lg-8 -->
+                    </div>
+                    <!-- /.row -->
+
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+            <!-- /#page-wrapper -->
+        </div>
+        <script src="{% static 'js/jquery.min.js' %}"></script>
+        <script src="{% static 'js/Chart.min.js' %}"></script>
+        <script>
+        $(function () {
+            var $statistiquePlant = $("#stats-plant");
+            $.ajax({
+                url: $statistiquePlant.data("url"),
+                success:function (data) {
+                    var ctx = $statistiquePlant[0].getContext("2d");
+                    new Chart(ctx, {
+                        type:'bar',
+                        data : {
+                            labels : data.labels,
+                            datasets : [{
+                                label : 'Plants Rétirés',
+                                backgroundColor: 'Green',
+                                borderWidth: 2,
+                                data : data.data
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            legend : {
+                                position : 'top',
+                            },
+                            title : {
+                                display : true,
+                                text: 'Graphe des Plants Enlevés'
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+        <script>
+        $(function () {
+            var $statistiqueSemences = $("#stats-semences");
+            $.ajax({
+                url: $statistiqueSemences.data("url"),
+                success:function (data) {
+                    var ctx = $statistiqueSemences[0].getContext("2d");
+                    new Chart(ctx, {
+                        type:'bar',
+                        data : {
+                            labels : data.labels,
+                            datasets : [{
+                                label : 'Semences Réçues(Kg)',
+                                backgroundColor: 'Blue',
+                                borderWidth: 2,
+                                data : data.data
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            legend : {
+                                position : 'top',
+                            },
+                            title : {
+                                display : true,
+                                text: 'Graphe des Semences Réçus'
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}
+

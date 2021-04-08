@@ -1,0 +1,2 @@
+- Geolocalisation sur la page Admin et Clients Ajouter Filtre Coopérative, Section
+- Géolocatisation sur la Page Cooperative Ajouter Filre Par Section

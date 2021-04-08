@@ -1,0 +1,410 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanizelib %}
+{% block title %}
+    Accueil |
+{% endblock %}
+{% block content %}
+    <div id="wrapper">
+            <!-- Navigation -->
+            {% include 'chocolatiers/client_nav.html' %}
+            <div id="page-wrapper">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {% if user.is_authenticated %}
+                                <h1 class="page-header">TABLEAU DE BORD - <strong class="text-uppercase">{{ user.username }}</strong></h1>
+                            {% endif %}
+                        </div>
+                        <!-- /.col-lg-12 -->
+                    </div>
+                    <!-- /.row -->
+                    <div class="row">
+                       <div class="col-lg-4 col-md-offset-4">
+                           {% include '_partials/messages_display.html' %}
+                       </div>
+                        <!-- /.col-lg-8 -->
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-list-alt fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            {% if nb_cooperatives %}
+                                                <div class="huge">{{ nb_cooperatives }}</div>
+                                                <div>Coopératives</div>
+                                            {% else %}
+                                                <div class="huge">0</div>
+                                                <div>Coopératives</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-red">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-users fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            {% if nb_producteurs %}
+                                                <div class="huge">{{ nb_producteurs }}</div>
+                                                <div>Producteurs</div>
+                                            {% else %}
+                                                <div class="huge">0</div>
+                                                <div>Producteurs</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-green">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="glyphicon glyphicon-grain fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            {% if nb_parcelles %}
+                                                <div class="huge">{{ nb_parcelles }}</div>
+                                                <div>Plantations</div>
+                                            {% else %}
+                                                <div class="huge">0</div>
+                                                <div>Plantations</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-yellow">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="glyphicon glyphicon-map-marker fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            {% if Superficie %}
+                                                <div class="huge">{{ Superficie | floatformat:2 }}</div>
+                                                <div>Superficie Totale(Ha)</div>
+                                            {% else %}
+                                                <div class="huge">0</div>
+                                                <div>Superficie Totale(Ha)</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-2">
+                                            <i class="fa fa-database fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-10 text-right">
+                                            <div class="huge">0</div>
+                                            <div>Prod. toutes campagnes</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-danger">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-2">
+                                            <i class="fa fa-database fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-10 text-right">
+                                            <div class="huge">0</div>
+                                            <div>Grande Campagne</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-success">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-2">
+                                            <i class="fa fa-database fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-10 text-right">
+                                            <div class="huge">0</div>
+                                            <div>Petite Campagne</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-warning">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-2">
+                                            <i class="glyphicon glyphicon-tree-deciduous fa-4x"></i>
+                                        </div>
+                                        <div class="col-xs-10 text-right">
+                                            {% if Total_plant %}
+                                                <div class="huge">{{ Total_plant }}</div>
+                                            {% else %}
+                                                <div class="huge">0</div>
+                                            {% endif %}
+                                            <div>Nombre de plants</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel panel-success">
+                                <div class="panel-heading">
+                                    <i class="fa fa-bar-chart-o fa-fw"></i> Cooperatives membres
+                                </div>
+                                <!-- /.panel-heading -->
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                            <thead>
+                                                <tr>
+                                                    <th>REGION</th>
+                                                    <th>SIGLE</th>
+                                                    <th>NATURE ACTIVITE</th>
+                                                    <th>CONTACTS</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for coop in cooperatives %}
+                                                    <tr class="odd gradeX">
+                                                        <td>{{ coop.region }}</td>
+                                                        <td>{{ coop.sigle }}</td>
+                                                        <td>{{ coop.activite }}</td>
+                                                        <td class="center">{{ coop.contacts }}</td>
+                                                        <td class="center"><a href="{% url 'clients:detail_coop' coop.pk %}" class="btn btn-primary btn-xs">Accéder</a></td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <!-- /.panel-body -->
+                            </div>
+                            <!-- /.panel -->
+                        </div>
+                        <!-- /.col-lg-8 -->
+                    </div>
+                    <!-- /.row -->
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-sm-6">
+                           <div class="panel panel-primary">
+                               <div class="panel-heading">
+                                    <i class="fa fa-bar-chart-o fa-fw"></i> Semences Réçus
+                                </div>
+                                <!-- /.panel-heading -->
+                               <div class="panel-body">
+                                   <canvas id="stats-semences" data-url="{% url 'clients:stats_semences' %}"></canvas>
+                               </div>
+                                <!-- /.panel-body -->
+                           </div>
+                       </div>
+                        <div class="col-sm-6">
+                           <div class="panel panel-green">
+                               <div class="panel-heading">
+                                    <i class="fa fa-bar-chart-o fa-fw"></i> Plants Rétirés
+                                </div>
+                                <!-- /.panel-heading -->
+                               <div class="panel-body">
+                                   <canvas id="stats-plant" data-url="{% url 'clients:stats_coop' %}"></canvas>
+                               </div>
+                                <!-- /.panel-body -->
+                           </div>
+                       </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                               <div class="panel panel-primary">
+                                   <div class="panel-heading">
+                                        <i class="fa fa-bar-chart-o fa-fw"></i> Production Plants
+                                    </div>
+                                    <!-- /.panel-heading -->
+                                   <div class="panel-body">
+                                       <canvas id="stats-plants" data-url="{% url 'clients:production_plan' %}"></canvas>
+                                   </div>
+                                    <!-- /.panel-body -->
+                               </div>
+                           </div>
+                        <div class="col-sm-6">
+                               <div class="panel panel-green">
+                                   <div class="panel-heading">
+                                        <i class="fa fa-bar-chart-o fa-fw"></i> Nbre Producteur / Coopérative
+                                    </div>
+                                    <!-- /.panel-heading -->
+                                   <div class="panel-body">
+{#                                       <canvas id="stats-prod" data-url="{% url 'stat_prod_coop' %}"></canvas>#}
+                                   </div>
+                                    <!-- /.panel-body -->
+                               </div>
+                           </div>
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+            <!-- /#page-wrapper -->
+        </div>
+        <script src="{% static 'js/jquery.min.js' %}"></script>
+        <script src="{% static 'js/Chart.min.js' %}"></script>
+        <script>
+        $(function () {
+            var $statistiquePlant = $("#stats-plant");
+            $.ajax({
+                url: $statistiquePlant.data("url"),
+                success:function (data) {
+                    var ctx = $statistiquePlant[0].getContext("2d");
+                    new Chart(ctx, {
+                        type:'bar',
+                        data : {
+                            labels : data.labels,
+                            datasets : [{
+                                label : 'Plants Rétirés',
+                                backgroundColor: 'Green',
+                                borderWidth: 2,
+                                data : data.data
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            legend : {
+                                position : 'top',
+                            },
+                            title : {
+                                display : true,
+                                text: 'Liste des Espèces de Plants'
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+        <script>
+        $(function () {
+            var $statistiqueSemences = $("#stats-semences");
+            $.ajax({
+                url: $statistiqueSemences.data("url"),
+                success:function (data) {
+                    var ctx = $statistiqueSemences[0].getContext("2d");
+                    new Chart(ctx, {
+                        type:'bar',
+                        data : {
+                            labels : data.labels,
+                            datasets : [{
+                                label : 'Semences Réçues(Kg)',
+                                backgroundColor: 'Blue',
+                                borderWidth: 2,
+                                data : data.data
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            legend : {
+                                position : 'top',
+                            },
+                            title : {
+                                display : true,
+                                text: 'Qté Semences Réçus / Coopérative (Kg)'
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+        <script>
+        $(function () {
+            var $plants = $("#stats-plants");
+            $.ajax({
+                url: $plants.data("url"),
+                success:function (data) {
+                    var ctx = $plants[0].getContext("2d");
+                    new Chart(ctx, {
+                        type:'bar',
+                        data : {
+                            labels : data.labels,
+                            datasets : [{
+                                label : 'Production Plant',
+                                backgroundColor: 'Blue',
+                                borderWidth: 2,
+                                data : data.data
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            legend : {
+                                position : 'top',
+                            },
+                            title : {
+                                display : true,
+                                text: 'Qté Plants / Coopérative'
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+        <script>
+        $(function () {
+            var $coopProd = $("#stats-prod");
+            $.ajax({
+                url: $coopProd.data("url"),
+                success:function (data) {
+                    var ctx = $coopProd[0].getContext("2d");
+                    new Chart(ctx, {
+                        type:'bar',
+                        data : {
+                            labels : data.labels,
+                            datasets : [{
+                                label : 'Producteur',
+                                backgroundColor: 'Blue',
+                                borderWidth: 2,
+                                data : data.data
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            legend : {
+                                position : 'top',
+                            },
+                            title : {
+                                display : true,
+                                text: 'Producteurs / Coopérative'
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,154 @@
+{% load static %}
+{% load leaflet_tags %}
+{% load geojson_tags %}
+
+{% block extra_assets %}
+  {% leaflet_js %}
+  {% leaflet_css %}
+{% endblock %}
+
+{% block content %}
+
+    map.on('load', function() {
+  map.addLayer({
+    "id": "some-other-id",
+    "type": "fill",
+    "source": {
+      type: 'geojson',
+      data: {
+        "type": "FeatureCollection",
+        "features": [{% for point in parcelles %}
+          {
+            "type": "Feature",
+            "properties": {
+              "pk": "{{ point.pk }}"
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [{{ point.coordonnees }}]
+            }
+          {% if forloop.last %}} {% else %}}, {% endif %}{% endfor %}
+        ]
+      }
+    },
+    "paint": {
+      "fill-color": "#888888",
+      "fill-opacity": 0.4
+    }
+  });
+});
+
+{#    map.on('load', function () {#}
+{##}
+{#      map.addSource('some-id', {#}
+{#         type: 'geojson',#}
+{#         data: {#}
+{#             "type": "FeatureCollection",#}
+{#             "features": [{% for point in parcelles %}#}
+{#               {#}
+{#                 "type": "Feature",#}
+{#                 "properties": {#}
+{#                   "pk": "{{ point.id }}"#}
+{#                 },#}
+{#                 "geometry": {#}
+{#                   "type": "Point",#}
+{#                   "coordinates": [{{ point.coordonnees }}]#}
+{#                 }#}
+{#               {% if forloop.last %}} {% else %}}, {% endif %}{% endfor %}#}
+{#             ]#}
+{#         }#}
+{#      });#}
+{##}
+{#      map.addLayer({#}
+{#        "id": "some-other-id",#}
+{#        "type": "fill",#}
+{#        "source": "some-id", // Here is the part where you add the source to a layer.#}
+{#        "paint": {#}
+{#          "fill-color": "#888888",#}
+{#          "fill-opacity": 0.4#}
+{#        }coordonne#}
+{#      });#}
+{#    });#}
+
+{#    <script type="text/javascript">#}
+{#      var collection = {{ parcelles|geojsonfeature|safe }};#}
+{#      function map_init(map, options) {#}
+{#          L.geoJson(collection).addTo(map);#}
+{#      }#}
+{#    </script>#}
+
+{#    <script type="text/javascript">#}
+{##}
+{#    parcelles.forEach(item => {#}
+{#        let map = L.map(item.id + "-map").setView([item.latitude, item.longitude], 10);#}
+{#        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {#}
+{#            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'#}
+{#        }).addTo(map);#}
+{#    });#}
+{##}
+{#    </script>#}
+{##}
+{#    {% leaflet_map "Parcelles" callback="window.item" %}#}
+
+{#    {% for location in parcelles %}#}
+{#        <div class="card">#}
+{#          {% leaflet_map location.div_id callback=location.callback %}#}
+{#        </div>#}
+{#    {% endfor %}#}
+{#    {% for location in parcelles %}#}
+{#    function {{ location.callback }}(map) {#}
+{#        map_init(map, "{{ location.latitude }}", "{{ location.longitude }}")#}
+{#      }#}
+{#    {% endfor %}#}
+
+{#    <script type="text/javascript">#}
+{#      function map_init_basic (map, latitude, longitude) {#}
+{#        // zoom to point & add it to map#}
+{#        map.setView([latitude, longitude], 8);#}
+{#        L.marker([latitude, longitude]).addTo(map);#}
+{#      }#}
+{#    </script>#}
+
+
+
+{#    {% leaflet_map "Parcelles" callback="window.map_init" %}#}
+
+{#    {% for location in parcelles %}#}
+{#          {% leaflet_map location.div_id callback=location.callback %}#}
+{#    {% endfor %}#}
+
+{#    {% for location in parcelles %}#}
+{#    function {{ location.callback }}(map) {#}
+{#        map_init(map, "{{ location.latitude }}", "{{ location.longitude }}")#}
+{#      }#}
+{#    {% endfor %}#}
+{##}
+{#    {% if parcelles %}#}
+{#        {% for parcelle in parcelles %}#}
+{#            <script type="text/javascript">#}
+{#              function map_init_basic (map, {{parcelle.latitude}}, {{parcelle.longitude}}) {#}
+{#                // zoom to point & add it to map#}
+{#                map.setView([{{parcelle.latitude}}, {{parcelle.longitude}}], 8);#}
+{#                L.marker([parcelle.latitude, parcelle.longitude]).addTo(map);#}
+{#              }#}
+{#            </script>#}
+{#        {% endfor %}#}
+{##}
+{#    {% endif %}#}
+{##}
+{#    <script src="{% static 'js/leaflet.ajax.js' %}" charset="utf-8"></script>#}
+
+{#    <script type="text/javascript">#}
+{#        function place_pos(map, options){#}
+{#            var dataset = new L.GeoJSON.AJAX("{% url 'localisation' %}",{#}
+{#            onEachFeature: function(feature, layer){#}
+{#            layer.bindPopup(feature.properties.producteur.nom)#}
+{#            }#}
+{#            });#}
+{#            dataset.addTo(map)#}
+{#        }#}
+{#    </script>#}
+
+{#    {% leaflet_map "Parcelles" callback="window.place_pos" %}#}
+
+{% endblock %}

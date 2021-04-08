@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+{% load static %}
+{% load widget_tweaks %}
+{% load bootstrap4 %}
+{% bootstrap_messages %}
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Agro - Map | Traçability</title>
+{% include '_partials/css.html' %}
+{% include '_partials/js.html' %}
+<script>
+	$(document).ready(function(){
+		$("#FormationModal").modal('show');
+	});
+</script>
+</head>
+<body>
+<div class="modal fade"  data-keyboard="false" data-backdrop="static" id="FormationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="modal-title text-center" id="exampleModalLabel" style="font-weight:bold; text-align: center;">MODIFIER FORMATION {{ instance.libelle }}</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label>PROJET</label>
+                                    {% render_field form.projet class="form-control" placeholder="Formateur" %}
+                                </div>
+                            </div>
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <label>FORMATEUR</label>
+                                    {% render_field form.formateur class="form-control" placeholder="Formateur" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>INTITULE</label>
+                                        {% render_field form.libelle class="form-control" placeholder="Intitulé" %}
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label>DATE DEBUT</label>
+                                    {% render_field form.debut type="date" class="form-control" placeholder="Date debut" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>DATE FIN</label>
+                                    {% render_field form.fin type="date" class="form-control" placeholder="Date fin" %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>DETAILS FORMATION</label>
+                                        {% render_field form.details class="form-control" placeholder="Détails Formation" %}
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>OBSERVATION</label>
+                                        {% render_field form.observation class="form-control" placeholder="Observation Formation"%}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <input type="submit" name="btnValider" value="Valider" id="btnValider" class="btn btn-success btn-block" style="font-size:1.7vmin;" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

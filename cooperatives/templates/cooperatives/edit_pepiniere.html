@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+{% load static %}
+{% load widget_tweaks %}
+{% load bootstrap4 %}
+{% bootstrap_messages %}
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Agro - Map | Traçability</title>
+{% include '_partials/css.html' %}
+{% include '_partials/js.html' %}
+<script>
+	$(document).ready(function(){
+		$("#PepiniereModal").modal('show');
+	});
+</script>
+</head>
+<body>
+<div class="modal fade"  data-keyboard="false" data-backdrop="static" id="PepiniereModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="modal-title text-center" id="exampleModalLabel" style="font-weight:bold; text-align: center">MODIFIER PEPINIERE {{ instance.site }} - {{ instance.ville }}</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                            <label>REGION</label>
+                            {% render_field form.region class="form-control" placeholder="Région" %}
+                        </div>
+                                <div class="form-group">
+                                    <label>VILLE</label>
+                                    {% render_field form.ville class="form-control" placeholder="Ville" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>SITE</label>
+                                    {% render_field form.site class="form-control" placeholder="Site" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>LATITUDE</label>
+                                    {% render_field form.latitude class="form-control" placeholder="Latitude" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>LONGITUDE</label>
+                                    {% render_field form.longitude class="form-control" placeholder="Longitude" %}
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label>TECHNICIEN</label>
+                                    {% render_field form.technicien class="form-control" placeholder="technicien" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>CONTACT TECHNICIEN</label>
+                                    {% render_field form.contacts_technicien class="form-control" placeholder="Contact Technicien" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>SUPERVISEUR</label>
+                                    {% render_field form.superviseur class="form-control" placeholder="Superviseur" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>CONTACT SUPERVISEUR</label>
+                                    {% render_field form.contacts_superviseur class="form-control" placeholder="Contact Superviseur" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>SACHETS RECUS</label>
+                                    {% render_field form.sachet_recus class="form-control" placeholder="Sachets Réçus" %}
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label>NOMBRE PLANTS A PRODUIRE</label>
+                                    {% render_field form.production_plant class="form-control" placeholder="Nbre plants à Produire" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>NOMBRE PLANTS PRODUITS</label>
+                                    {% render_field form.production_realise class="form-control" placeholder="Nbre plants à Produire" %}
+                                </div>
+                                <div class="form-group">
+                                <label>NBRE PLANTS MATURE</label>
+                                    {% render_field form.plant_mature class="form-control" placeholder="Nombre PLants Matures" %}
+                                </div>
+                                <div class="form-group">
+                                    <label>NBRE PLANTS ENLEVES</label>
+                                    {% render_field form.plant_retire class="form-control" placeholder="Nombre PLants Enlevés" %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <input type="submit" name="btnValider" value="Valider" id="btnValider" class="btn btn-success btn-block" style="font-size:1.7vmin" />
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+</body>
+</html>

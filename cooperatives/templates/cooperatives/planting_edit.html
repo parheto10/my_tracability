@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+{% load static %}
+{% load widget_tweaks %}
+{% load bootstrap4 %}
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Example of Auto Loading Bootstrap Modal on Page Load</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script>
+	$(document).ready(function(){
+		$("#PlantingModal").modal('show');
+	});
+</script>
+</head>
+<body>
+<div class="modal fade"  data-keyboard="false" data-backdrop="static" id="PlantingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content col-sm-8 col-sm-offset-2">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title" id="exampleModalLabel" style="font-weight:bold">MODIFIER UN SUIVI</h4>
+                </div>
+                <div class="model-body">
+                    <div class="form-group">
+                        <label>Parcelle</label>
+                        {% render_field form.parcelle class="form-control" %}
+                    </div>
+                    <div class="form-group">
+                        <label>Espèce</label>
+                        {% render_field form.espece class="form-control" %}
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        {% render_field form.date class="form-control", placeholder="Date" %}
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre de Plant</label>
+                        {% render_field form.nb_plant class="form-control" placeholder="Nombre de Plant" %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" name="btnValider" value="Valider" id="btnValider" class="btn btn-primary btn-block" style="font-size:1.7vmin;" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
