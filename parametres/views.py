@@ -42,7 +42,7 @@ from cooperatives.models import (
 )
 
 from .forms import UserForm, LoginForm
-from .serializers import ProducteurSerializer, ParcelleSerializer
+from .serializers import ProducteurSerializer, ParcelleSerializer, PepiniereSerializer, FormationSerializer
 
 
 def connexion(request):
@@ -624,12 +624,24 @@ class ProducteurApiView(ListAPIView):
     queryset = Producteur.objects.all()
     serializer_class = ProducteurSerializer
 
-class GeoJson(TemplateView):
+class ParcelleJson(TemplateView):
     template_name = 'new_map.html'
     # template_name = 'parametres/parcelles.html'
 
-class ParcelleApiView(ListCreateAPIView):
+class PepiniereApiView(ListAPIView):
+    queryset = Pepiniere.objects.all()
+    serializer_class = PepiniereSerializer
+
+class PepiniereJson(TemplateView):
+    template_name = 'pepinieres_json.html'
+    # template_name = 'parametres/parcelles.html'
+
+class ParcelleApiView(ListAPIView):
     queryset = Parcelle.objects.all()
     serializer_class = ParcelleSerializer
+
+class FormationApiView(ListCreateAPIView):
+    queryset = Formation.objects.all()
+    serializer_class = FormationSerializer
 
 # Create your views here.

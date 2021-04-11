@@ -281,7 +281,7 @@ class Producteur(models.Model):
 
 class Parcelle(models.Model):
     code = models.CharField(max_length=150, blank=True, null=True, verbose_name='CODE PARCELLE', help_text="LE CODE PARCELLE EST GENERE AUTOMATIQUEMENT")
-    producteur = models.ForeignKey(Producteur, on_delete=models.CASCADE)
+    producteur = models.ForeignKey(Producteur, related_name='parcelles', on_delete=models.CASCADE)
     # section = models.ForeignKey(Section, on_delete=models.CASCADE)
     # projet = models.ForeignKey(Projet, on_delete=models.CASCADE)
     sous_section = models.ForeignKey(Sous_Section, related_name="sous_section_parcelle", on_delete=models.SET_NULL, null=True)

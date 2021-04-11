@@ -21,7 +21,7 @@ from .views import (
     Stats_semences, stat_prod_coop, plants_coop, semences_coop, formations, detail_formation, site_pepinieres,
     coop_pepiniere, pepiniere, pepiniere_coop, export_prods_to_pdf, export_parcelles_to_pdf, export_prod_xls,
     export_parcelle_xls, export_plant_xls, export_formation_xls, ParcellesMapView, ProducteurApiView, ParcelleApiView,
-    GeoJson
+    ParcelleJson, PepiniereJson, PepiniereApiView, FormationApiView
     # detail_formation,
 )
 
@@ -72,10 +72,12 @@ urlpatterns = [
     #Api Urls
     path('api/producteurs', ProducteurApiView.as_view(), name="producteurs_api"),
     path('api/parcelles', ParcelleApiView.as_view(), name="parcelles_api"),
+    path('api/pepinieres', PepiniereApiView.as_view(), name="pepinieres_api"),
+    path('api/formations', FormationApiView.as_view(), name="formations_api"),
 
     #map leaflet
-    path('map/', ParcellesMapView.as_view(), name="map"),
-    path('geolocalisation/', GeoJson.as_view(), name='geolocalisation'),
+    path('pepinieres_json/', PepiniereJson.as_view(), name="pepinieres_json"),
+    path('geolocalisation/', ParcelleJson.as_view(), name='geolocalisation'),
     # path('parcelles/data', ParcellesView.as_view(), name="data"),
 
 

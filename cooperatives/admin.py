@@ -71,7 +71,7 @@ class ParcelleResource(resources.ModelResource):
 class ParcelleAdmin(ImportExportModelAdmin):
     list_display = ["id", "code", "producteur", "acquisition", "culture", "certification", "coordonnees"]
     list_filter = ["sous_section__libelle", "producteur__cooperative", ]
-    search_fields = ["code", "sction__libelle", "sous_sction__libelle", "producteur__nom", "producteur__prenoms", ]
+    search_fields = ["code", "sction__libelle", "sous_sction__libelle", "producteur__nom", "producteur__prenoms", "latitude", "longitude", "superficie"]
 
 class DetailsPlantingAdmin(admin.TabularInline):
    model = Details_planting
