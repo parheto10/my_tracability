@@ -47,7 +47,7 @@ data1.forEach(({id, cooperative, region, ville, site, latitude, longitude, techn
                     <td class="text-uppercase"><strong>${technicien} - ${contacts_technicien}</strong></td>                     
                 </tr>
                 <tr>
-                    <th scope="col"><b>NBRE DE PLANTS A PRODUIRES :</b></th>
+                    <th scope="col"><b>PLANTS A PRODUIRES :</b></th>
                     <td class="text-uppercase">${production_plant}</td>                    
                 </tr>
             </tbody>

@@ -18,7 +18,7 @@
                 <a href="{% url 'cooperatives:formations' %}"><i class="fa fa-bookmark fa-fw"></i> FORMATIONS</a>
             </li>
             <li>
-                <a href="{% url 'cooperatives:planting' %}"><i class="glyphicon glyphicon-tree-deciduous"></i> RECEPTION PLANTS</a>
+                <a href="{% url "cooperatives:receptions" %}"><i class="glyphicon glyphicon-tree-deciduous"></i> RECEPTION PLANTS</a>
             </li>
             <li>
                 <a href=""><i class="fa fa-balance-scale fa-fw"></i> CHARGEMENT PRODUITS</a>
@@ -41,11 +41,11 @@
                     <li>
                         <a href="{% url 'cooperatives:sous_sections' %}"><i class="fa fa-list-ol fa-fw"></i> SOUS SECTIONS</a>
                     </li>
-                    <li>
-                        <a style="color: red" href="{% url 'logout' %}"><i class="fa fa-sign-out fa-fw"></i> Déconnexion</a>
-                    </li>
                 </ul>
                 <!-- /.nav-second-level -->
+            </li>
+            <li>
+                <a class="btn btn-outline-danger" style="margin-top: 20px; color: red" href="{% url 'logout' %}"><i class="fa fa-sign-out fa-fw"></i> Déconnexion</a>
             </li>
         </ul>
     </div>

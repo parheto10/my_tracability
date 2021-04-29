@@ -37,8 +37,8 @@
                                                 <th style="margin-left: -110px;">PRODUCTEUR</th>
                                                 <th style="margin-left: -20px;">CERTIFICATION</th>
                                                 <th style="margin-left: -20px;">CULTURE</th>
-                                                <th style="margin-left: -20px;">SUPERFICIE (Ha)</th>                                                
-                                                <th style="margin-left: -20px;">SECTION</th>                                            
+                                                <th style="margin-left: -20px;">SECTION</th>
+                                                <th style="margin-left: -20px;">SUPERFICIE (Ha)</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -47,9 +47,9 @@
                                                     <td>{{ parcelle.code }}</td>
                                                     <td style="margin-left: -50px;">{{ parcelle.producteur }}</td>
                                                     <td style="margin-left: 50px;">{{ parcelle.certification|upper }}</td>
-                                                    <td style="margin-left: 50px;">{{ parcelle.culture|upper }}</td>
-                                                    <td style="margin-left: 50px;">{{ parcelle.superficie }}</td>                                                    
-                                                    <td style="margin-left: 50px;">{{ parcelle.producteur.section }}</td>                                                    
+                                                    <td style="margin-left: 40px;">{{ parcelle.culture|upper }}</td>
+                                                    <td style="margin-left: 40px;">{{ parcelle.producteur.section }}</td>
+                                                    <td style="margin-left: 45px;">{{ parcelle.superficie }}</td>
                                                 </tr>
                                             {% endfor %}
                                         </tbody>                        

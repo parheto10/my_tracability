@@ -166,7 +166,7 @@
                                             {% else %}
                                                 <div class="huge">0</div>
                                             {% endif %}
-                                            <div>Nombre de plants</div>
+                                            <div>Nombre d'Arbres</div>
                                         </div>
                                     </div>
                                 </div>
@@ -188,6 +188,7 @@
                                                 <tr>
                                                     <th class="text-center">REGION</th>
                                                     <th class="text-center">SIGLE</th>
+                                                    <th class="text-center">SIEGE/LOCALITE</th>
                                                     <th class="text-center">NATURE ACTIVITE</th>
                                                     <th class="text-center">CONTACTS</th>
                                                     <th></th>
@@ -198,6 +199,11 @@
                                                     <tr class="odd gradeX text-center">
                                                         <td>{{ coop.region }}</td>
                                                         <td>{{ coop.sigle }}</td>
+                                                        {% if coop.siege %}
+                                                            <td>{{ coop.siege }}</td>
+                                                        {% else %}
+                                                            <td>Localité Non Précisée</td>
+                                                        {% endif %}
                                                         <td>{{ coop.activite }}</td>
                                                         <td class="center">{{ coop.contacts }}</td>
                                                         <td class="center"><a href="{% url 'detail_coop' coop.pk %}" class="btn btn-primary btn-xs">Accéder</a></td>

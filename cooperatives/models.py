@@ -92,6 +92,7 @@ MODEL_AGRO = (
 class Cooperative(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
+    siege = models.CharField(max_length=255, verbose_name="SIEGE/LOCALITE", blank=True, null=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     projet = models.ManyToManyField(Projet)
     sigle = models.CharField(max_length=500)
@@ -120,6 +121,7 @@ class Cooperative(models.Model):
 
     def save(self, force_insert=False, force_update=False):
         self.sigle = self.sigle.upper()
+        self.siege = self.siege.upper()
         self.user.last_name = self.user.last_name.upper()
         self.user.first_name = self.user.first_name.upper()
         super(Cooperative, self).save(force_insert, force_update)
@@ -334,43 +336,87 @@ class Parcelle(models.Model):
         verbose_name = "parcelle"
         # ordering = ["code"]
 
-class Planting(models.Model):
+class Reception(models.Model):
     parcelle = models.ForeignKey(Parcelle, on_delete=models.CASCADE)
-    campagne = models.ForeignKey(Campagne, on_delete=models.CASCADE, default=1)
-    # projet = models.ForeignKey(Projet, on_delete=models.CASCADE)
-    nb_plant = models.PositiveIntegerField(default=0, verbose_name="NOMBRE TOTAL DE PLANTS RECUS")
-    # espece = models.ForeignKey(Espece, on_delete=models.CASCADE)
-    date = models.DateField()
-    details = models.TextField(blank=True, null=True)
-    observation = models.TextField(blank=True, null=True)
+    total_plant_recus = models.PositiveIntegerField(default=0, verbose_name="NOMBRE TOTAL DE PLANTS RECUS")
+    date = models.DateField(verbose_name="Date Reception")
     add_le = models.DateTimeField(auto_now_add=True)
     update_le = models.DateTimeField(auto_now=True)
     objects = models.Manager()
 
     def __str__(self):
-        return '%s - (%s) plants reçus' % (self.parcelle.producteur, self.nb_plant)
+        return '%s (%s)' %(self.parcelle, self.total_plant_recus)
+
+    class Meta:
+        verbose_name_plural = "RECEPTIONS"
+        verbose_name = "reception"
+        # ordering = ["code"]
+
+class DetailsReception(models.Model):
+    reception = models.ForeignKey(Reception, on_delete=models.CASCADE)
+    espece = models.ForeignKey(Espece, on_delete=models.CASCADE, default=1)
+    nb_plant_recu = models.PositiveIntegerField(default=0, verbose_name="NOMBRE PLANT RECUS")
+    add_le = models.DateTimeField(auto_now_add=True)
+    update_le = models.DateTimeField(auto_now=True)
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name_plural = "DETAILS RECEPTIONS"
+        verbose_name = "detail reception"
+
+class Planting(models.Model):
+    parcelle = models.ForeignKey(Parcelle, on_delete=models.CASCADE)
+    nb_plant_exitant = models.PositiveIntegerField(default=0, verbose_name="NBRE PLANTS EXISTANTS")
+    plant_recus = models.PositiveIntegerField(default=0, verbose_name="NOMBRE DE PLANTS RECUS")
+    plant_total = models.PositiveIntegerField(default=0, verbose_name="NOMBRE TOTAL DE PLANTS")
+    plant_recu = models.CharField(max_length=4, blank=True, null=True)
+    campagne = models.ForeignKey(Campagne, on_delete=models.CASCADE, default=1)
+    projet = models.ForeignKey(Projet, on_delete=models.CASCADE, default=1)
+    date = models.DateField()
+    details = models.TextField(blank=True, null=True)
+    add_le = models.DateTimeField(auto_now_add=True)
+    update_le = models.DateTimeField(auto_now=True)
+    objects = models.Manager()
+
+    def __str__(self):
+        return '%s - (%s) plants reçus' % (self.parcelle.producteur, self.parcelle)
+
+    def save(self, force_insert=False, force_update=False):
+        self.plant_total = (self.nb_plant_exitant) + (self.plant_recus)
+        super(Planting, self).save(force_insert, force_update)
 
     class Meta:
         verbose_name_plural = "PLANTINGS"
         verbose_name = "planting"
         #ordering = ["code"]
 
-class Details_planting(models.Model):
+class DetailPlanting(models.Model):
     planting = models.ForeignKey(Planting, on_delete=models.CASCADE)
-    projet = models.ForeignKey(Projet, on_delete=models.CASCADE, default="1")
-    espece = models.ForeignKey(Espece, on_delete=models.CASCADE)
-    plante = models.PositiveIntegerField(default=0, verbose_name="NBRE PLANTS PLANTE")
-    remplace = models.PositiveIntegerField(default=0, verbose_name="NBRE PLANTS REMPLACES")
+    espece = models.ForeignKey(Espece, on_delete=models.CASCADE, default=1)
+    nb_plante = models.PositiveIntegerField(default=0, verbose_name="NBRE PLANTS PLANTE/ESPECE")
+    add_le = models.DateTimeField(auto_now_add=True)
+    update_le = models.DateTimeField(auto_now=True)
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name_plural = "DETAILS PLANTINGS"
+        verbose_name = "details planting"
+
+
+class Monitoring(models.Model):
+    planting = models.ForeignKey(Planting, on_delete=models.CASCADE)
     mort = models.PositiveIntegerField(default=0, verbose_name="NBRE PLANTS MORTS")
-    mature = models.PositiveIntegerField(default=0, verbose_name="NBRE PLANTS MATURE")
+    remplace = models.PositiveIntegerField(default=0, verbose_name="NBRE PLANTS REMPLACES")
+    mature = models.PositiveIntegerField(default=0, verbose_name="NBRE PLANTS VIVANTS")
+    observation = models.TextField(blank=True, null=True)
     date = models.DateField()
     add_le = models.DateTimeField(auto_now_add=True)
     update_le = models.DateTimeField(auto_now=True)
     objects = models.Manager()
 
     class Meta:
-        verbose_name_plural = "DETAILS PLANTING"
-        verbose_name = "detail planting"
+        verbose_name_plural = "MONITORINGS"
+        verbose_name = "monitoring"
     # Create your models here.
 
 class Formation(models.Model):
@@ -379,8 +425,6 @@ class Formation(models.Model):
     campagne = models.ForeignKey(Campagne, on_delete=models.CASCADE, default=1)
     formateur = models.CharField(max_length=255, verbose_name="FORMATEUR")
     libelle = models.CharField(max_length=500, verbose_name='INTITULE DE LA FORMATION')
-    # nb_participant = models.PositiveIntegerField(default=0, verbose_name="NOMBRE PATICIPANTS")
-    # participant = models.ManyToManyField(Producteur)
     debut = models.DateField(verbose_name="DATE DEBUT")
     fin = models.DateField(verbose_name="DATE FIN")
     observation = models.TextField(blank=True, null=True)
@@ -512,6 +556,12 @@ class Retrait_plant(models.Model):
 
     def __str__(self):
         return '%s - %s' %(self.destination, self.date)
+
+    def save(self, force_insert=False, force_update=False):
+        self.pepiniere.site = self.pepiniere.site.upper()
+        self.client = self.client.upper()
+        self.destination = self.destination.upper()
+        super(Retrait_plant, self).save(force_insert, force_update)
 
     class Meta:
         verbose_name_plural = "RETRAITS PLANTS"

@@ -10,13 +10,15 @@ from django.contrib.auth.models import User, Group
 from django.core.mail import send_mail
 from django.db.models import Sum
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.http import JsonResponse
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import ListCreateAPIView, ListAPIView
+from rest_framework.views import APIView
 from xhtml2pdf import pisa
 
 from .models import (
@@ -36,7 +38,7 @@ from cooperatives.models import (
     Producteur,
     Parcelle,
     Planting,
-    Details_planting,
+    # Details_planting,
     Section,
     Sous_Section, Detail_Retrait_plant, Semence_Pepiniere, Formation, Detail_Formation, Pepiniere,
 )
@@ -84,7 +86,7 @@ def index(request, id=None):
     nb_producteurs = Producteur.objects.all().count()
     nb_parcelles = Parcelle.objects.all().count()
     Superficie = Parcelle.objects.aggregate(total=Sum('superficie'))['total']
-    Total_plant = Planting.objects.aggregate(total=Sum('nb_plant'))['total']
+    Total_plant = Planting.objects.aggregate(total=Sum('plant_total'))['total']
     # cooperative = get_object_or_404(Cooperative, id=id)
     # coop_nb_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative).count()
     # coop_parcelles = Parcelle.objects.all().filter(producteur__section__cooperative_id=cooperative)
@@ -155,7 +157,7 @@ def detail_coop(request, id=None):
     coop_parcelles = Parcelle.objects.all().filter(producteur__section__cooperative_id=cooperative)
     coop_nb_parcelles = Parcelle.objects.all().filter(producteur__section__cooperative_id=cooperative).count()
     coop_superficie = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative).aggregate(total=Sum('superficie'))['total']
-    plants = Details_planting.objects.values("espece__libelle").filter(planting__parcelle__producteur__cooperative_id=cooperative).annotate(plante=Sum('plante'))
+    # plants = Details_planting.objects.values("espece__libelle").filter(planting__parcelle__producteur__cooperative_id=cooperative).annotate(plante=Sum('plante'))
     coop_plants_total = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative).aggregate(total=Sum('nb_plant'))['total']
 
     context = {
@@ -164,7 +166,7 @@ def detail_coop(request, id=None):
         'coop_nb_parcelles': coop_nb_parcelles,
         'coop_superficie': coop_superficie,
         'nb_formations': nb_formations,
-        'plants': plants,
+        # 'plants': plants,
         'coop_plants_total': coop_plants_total,
         # 'labels': labels,
         # 'data': data,
@@ -252,15 +254,15 @@ def parcelle_coop(request, id=None):
     }
     return render(request, 'Coop/coop_parcelle.html', context)
 
-def planting_coop(request, id=None):
-    cooperative = get_object_or_404(Cooperative, id=id)
-    # coop_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative)
-    coop_plants = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative)
-    context = {
-        'cooperative': cooperative,
-        'coop_plants' : coop_plants,
-    }
-    return render(request, 'Coop/coop_plantings.html', context)
+# def planting_coop(request, id=None):
+#     cooperative = get_object_or_404(Cooperative, id=id)
+#     # coop_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative)
+#     coop_plants = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative)
+#     context = {
+#         'cooperative': cooperative,
+#         'coop_plants' : coop_plants,
+#     }
+#     return render(request, 'Coop/coop_plantings.html', context)
 
 def projet(request):
     projets = Projet.objects.all()
@@ -644,4 +646,41 @@ class FormationApiView(ListCreateAPIView):
     queryset = Formation.objects.all()
     serializer_class = FormationSerializer
 
+# Django rest framework Detail view
+# class CooperativeDetail(APIView):
+#     def get_object(self, category_slug):
+#         try:
+#             return Category.objects.get(slug=category_slug)
+#         except Product.DoesNotExist:
+#             raise Http404
+#
+#     def get(self, request, category_slug, format=None):
+#         category = self.get_object(category_slug)
+#         serializer = CategorySerializer(category)
+#         return Response(serializer.data)
+# class ParcelleCooperativeApi(ListAPIView, ):
+#     # cooperative = get_object_or_404(Cooperative, id=id)
+#     # queryset = Parcelle.objects.all().filter(producteur__section__cooperative_id=cooperative)
+#     # serializer_class = ParcelleSerializer
+#     # filter_backends = [DjangoFilterBackend]
+#     # filterset_fields = ['cooperative']
+#     serializer_class = ParcelleSerializer
+#     def get_queryset(self, id):
+#         cooperative = get_object_or_404(Cooperative, id=id)
+#         user = self.request.user
+#         return Parcelle.objects.filter(producteur__section__cooperative_id=cooperative)
+#
+# class ReportFieldDetail(APIView):
+#     cooperative = get_object_or_404(Cooperative, id=id)
+#     def get_object(self, cooperative):
+#         try:
+#             # return ReportField.objects.get(pk=pk)
+#             return Parcelle.objects.filter(producteur__section__cooperative_id=cooperative)
+#         except Parcelle.DoesNotExist:
+#             raise Http404
+#
+#     def get(self, request, pk, format=None):
+#         report_field = self.get_object(pk)
+#         serialized_report_field = ReportFieldSerializers(report_field)
+#         return Response(serialized_report_field.data)
 # Create your views here.

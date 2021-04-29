@@ -20,7 +20,7 @@ class SectionWidget(s2forms.ModelSelect2Widget):
     ]
 
 from cooperatives.models import Cooperative, Producteur, Section, Sous_Section, Parcelle, Planting, Formation, \
-    Detail_Formation, Pepiniere, Details_planting, Semence_Pepiniere, Retrait_plant, Detail_Retrait_plant
+    Detail_Formation, Pepiniere, Semence_Pepiniere, Retrait_plant, Detail_Retrait_plant
 # from cooperatives.views import cooperative
 from parametres.models import Region, Projet, Activite, Origine, Sous_Prefecture, Espece
 from ajax_select.fields import AutoCompleteSelectMultipleField, AutoCompleteField
@@ -225,29 +225,29 @@ class EditParcelleForm(forms.ModelForm):
             'superficie'
         ]
 
-class PlantingForm(forms.ModelForm):
-    #this is the extrafield for linking patient and their assigend doctor
-    #this will show dropdown __str__ method doctor model is shown on html so override it
-    #to_field_name this will fetch corresponding value  user_id present in Doctor model and return it
-    # parcelle = forms.ModelChoiceField(queryset=Parcelle.objects.all(), empty_label="Parcelle")
-    # espece = forms.ModelChoiceField(queryset=Espece.objects.all(), empty_label="Espèce")
-    # sous_section = forms.ModelChoiceField(queryset=Sous_Section.objects.all(), empty_label="Sous Section",required=False)
-
-    class Meta:
-        model=Planting
-        fields=[
-            # 'parcelle',
-            'date',
-            'nb_plant',
-            'details',
-            'observation',
-        ]
-
-    # def __init__(self, user=None, **kwargs):
-    #     super(PlantingForm, self).__init__(**kwargs)
-    #     if user:
-    #         cooperative = Cooperative.objects.get(user_id=user)
-    #         self.fields['parcelle'].queryset = Parcelle.objects.filter(section__cooperative_id=cooperative)
+# class PlantingForm(forms.ModelForm):
+#     #this is the extrafield for linking patient and their assigend doctor
+#     #this will show dropdown __str__ method doctor model is shown on html so override it
+#     #to_field_name this will fetch corresponding value  user_id present in Doctor model and return it
+#     # parcelle = forms.ModelChoiceField(queryset=Parcelle.objects.all(), empty_label="Parcelle")
+#     # espece = forms.ModelChoiceField(queryset=Espece.objects.all(), empty_label="Espèce")
+#     # sous_section = forms.ModelChoiceField(queryset=Sous_Section.objects.all(), empty_label="Sous Section",required=False)
+#
+#     class Meta:
+#         model=Planting
+#         fields=[
+#             # 'parcelle',
+#             'date',
+#             'nb_plant',
+#             'details',
+#             'observation',
+#         ]
+#
+#     # def __init__(self, user=None, **kwargs):
+#     #     super(PlantingForm, self).__init__(**kwargs)
+#     #     if user:
+#     #         cooperative = Cooperative.objects.get(user_id=user)
+#     #         self.fields['parcelle'].queryset = Parcelle.objects.filter(section__cooperative_id=cooperative)
 
 class PepiniereForm(forms.ModelForm):
 
@@ -293,20 +293,20 @@ class EditPepiniereForm(forms.ModelForm):
             'plant_retire',
         ]
 
-class SuiviPlantingForm(forms.ModelForm):
-
-    class Meta:
-        model=Details_planting
-        fields=[
-            # 'planting',
-            'projet',
-            'espece',
-            'plante',
-            'date',
-            'mort',
-            'remplace',
-            'mature',
-        ]
+# class SuiviPlantingForm(forms.ModelForm):
+#
+#     class Meta:
+#         model=Details_planting
+#         fields=[
+#             # 'planting',
+#             'projet',
+#             'espece',
+#             'plante',
+#             'date',
+#             'mort',
+#             'remplace',
+#             'mature',
+#         ]
 
 class SemenceForm(forms.ModelForm):
 

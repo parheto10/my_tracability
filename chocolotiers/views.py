@@ -34,7 +34,7 @@ from cooperatives.models import (
     Parcelle,
     Planting,
     Section,
-    Sous_Section, Details_planting, Semence_Pepiniere, Detail_Retrait_plant, Formation, Detail_Formation, Pepiniere
+    Sous_Section, Semence_Pepiniere, Detail_Retrait_plant, Formation, Detail_Formation, Pepiniere
 )
 
 def client_index(request, id=None):
@@ -63,7 +63,7 @@ def detail_coop(request, id=None):
     nb_formations = Formation.objects.all().filter(cooperative_id=cooperative).count()
     coop_nb_parcelles = Parcelle.objects.all().filter(producteur__section__cooperative_id=cooperative).count()
     coop_superficie = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative).aggregate(total=Sum('superficie'))['total']
-    plants = Details_planting.objects.values("espece__libelle").filter(planting__parcelle__producteur__cooperative_id=cooperative).annotate(plante=Sum('plante'))
+    # plants = Details_planting.objects.values("espece__libelle").filter(planting__parcelle__producteur__cooperative_id=cooperative).annotate(plante=Sum('plante'))
     coop_plants_total = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative).aggregate(total=Sum('nb_plant'))['total']
 
     context = {
@@ -71,7 +71,7 @@ def detail_coop(request, id=None):
         'coop_nb_producteurs': coop_nb_producteurs,
         'coop_nb_parcelles': coop_nb_parcelles,
         'coop_superficie': coop_superficie,
-        'plants': plants,
+        # 'plants': plants,
         'nb_formations':nb_formations,
         'coop_plants_total': coop_plants_total,
     }

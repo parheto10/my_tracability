@@ -13,8 +13,8 @@ from .views import (
     prod_delete,
     parcelles,
     parcelle_delete,
-    planting,
-    planting_update,
+    # planting,
+    # planting_update,
     formation,
     detail_formation,
     pepiniere,
@@ -27,10 +27,9 @@ from .views import (
     export_prods_to_pdf,
     export_prod_xls,
     export_parcelle_xls,
-    export_plant_xls, suivi_planting, edit_semence, Stats_semence, Editpepiniere, site_pepiniere, Editformation,
+    export_plant_xls, edit_semence, Stats_semence, Editpepiniere, site_pepiniere, Editformation,
     delete_semence, parcelle_update, update_section, delete_section, export_section_xls, update_sous_section,
-    ParcellesView, export_sous_section_xls, export_formation_xls, delete_sous_section, covid,
-    ParcellesMapView,
+    export_sous_section_xls, export_formation_xls, delete_sous_section, ParcellesMapView, parcelle_list, ReceptionView,
     # delete_sous_section, export_sous_section_xls, export_formation_xls, my_parcelles, ParcellesView,
     # load_section
 )
@@ -63,19 +62,18 @@ urlpatterns = [
     path('producteurs/', producteurs, name='producteurs'),
     path('parcelles/', parcelles, name='parcelles'),
     #path('my_parcelles/', my_parcelles, name='my_parcelles'),
-    path('plantings/', planting, name='planting'),
+    # path('plantings/', planting, name='planting'),
     path('Stats_coop/', Stats_coop, name='stats_coop'),
     path('Stats_semence/', Stats_semence, name='Stats_semence'),
-    path('plantings/<int:id>/', suivi_planting, name='suivi_planting'),
+    # path('plantings/<int:id>/', suivi_planting, name='suivi_planting'),
     path('localisation/', localisation, name='localisation'),
     path('site_pepiniere/', site_pepiniere, name='site_pepiniere'),
-    path('plantings/<int:id>', planting_update, name='planting_update'),
+    path('receptions/', ReceptionView.as_view(), name='receptions'),
 
     #get Ajax Data
-    path('parcelles/data', ParcellesView.as_view(), name="parcelles_data"),
-    # path('parcelle_list/', parcelle_list, name="parcelle_list"),
-    path('parcelle_list/', ParcellesMapView.as_view(), name="parcelle_list"),
-    path('covid_datas/', covid, name="covid"),
+    # path('parcelles/data', ParcellesView.as_view(), name="parcelles_data"),
+    path('parcelle_list/', parcelle_list, name="parcelle_list"),
+    path('parcelles_list/', ParcellesMapView.as_view(), name="parcelle_list"),
 
     #path('my-section/', my_section, name='my_section'),
     # path('ajax/load-section/', load_section, name='ajax_load_section'),
@@ -88,10 +86,6 @@ urlpatterns = [
     path('parcelles/xls/', export_parcelle_xls, name='export_parcelle_xls'),
     path('plants/xls/', export_plant_xls, name='export_plant_xls'),
     path('formations/xls/', export_formation_xls, name='export_formation_xls'),
-
-    # path('settings/', profile_setting, name='settings'),
-    # path('add_patient/', add_patient, name="add_patient"),
-    # path('rdv/', rdv_patient, name="checkout"),
 
     #Export Données EN PDF
     path('producteurs/pdf/', export_prods_to_pdf, name='export_prods_to_pdf'),

@@ -12,14 +12,16 @@ from .models import (
     Producteur,
     Parcelle,
     Planting,
-    Details_planting,
+    Reception,
+    DetailsReception,
+    Monitoring,
     Formation,
     Detail_Formation,
     Pepiniere,
     Semence_Pepiniere,
     Retrait_plant,
     Detail_Retrait_plant,
-    Stat
+    Stat, DetailsReception, DetailPlanting
 )
 
 class DetailsSemencePepiniereAdmin(admin.TabularInline):
@@ -63,7 +65,6 @@ class ProducteurAdmin(ImportExportModelAdmin):
     # form = ProdAdminForm
     resource_class = ProdResource
 
-
 class ParcelleResource(resources.ModelResource):
     class Meta:
         model = Parcelle
@@ -73,24 +74,29 @@ class ParcelleAdmin(ImportExportModelAdmin):
     list_filter = ["sous_section__libelle", "producteur__cooperative", ]
     search_fields = ["code", "sction__libelle", "sous_sction__libelle", "producteur__nom", "producteur__prenoms", "latitude", "longitude", "superficie"]
 
-class DetailsPlantingAdmin(admin.TabularInline):
-   model = Details_planting
+class DetailsReceptionAdmin(admin.TabularInline):
+   model = DetailsReception
    extra = 0
-   # fields = ('employe',)
-   # formset = EquipeEmployeInlineFormset
 
-   # def formfield_for_foreignkey(self,db_field,request,**kwargs):
-   #    #parent_obj_id = request.META['PATH_INFO'].rstrip('/').split('/')[-1]
-   #    #equipe = Equipe.objects.filter(pk=parent_obj_id)[0]
-   #    if db_field.name == "employe":
-   #       kwargs["queryset"] = Employe.objects.order_by('nom','prenoms')
-   #    return super(EquipeEmployeInlineAdmin,self).formfield_for_foreignkey(db_field,request,**kwargs)
+class DetailPlantingAdmin(admin.TabularInline):
+   model = DetailPlanting
+   extra = 0
+
+class MinitoringAdmin(admin.TabularInline):
+   model = Monitoring
+   extra = 0
 
 class PLantingAdmin(admin.ModelAdmin):
-   # fields = ('libequipe','service')
-   # list_display = ('libequipe','service')
-   # list_display_links = ('libequipe',)
-   inlines = [DetailsPlantingAdmin]
+   fields = ('parcelle','projet', "campagne", "nb_plant_exitant", "plant_recus", "plant_total", "plant_recu", "date")
+   list_display = ('parcelle','projet', "campagne", "nb_plant_exitant", "plant_recus", "plant_total", "date")
+   list_display_links = ('parcelle',)
+   inlines = [DetailPlantingAdmin]
+
+class ReceptionAdmin(admin.ModelAdmin):
+   fields = ("parcelle", "total_plant_recus", "date")
+   list_display = ("parcelle", "total_plant_recus", "date")
+   list_display_links = ('parcelle',)
+   inlines = [DetailsReceptionAdmin]
 
 # class StatAdmin(admin.ModelAdmin):
 #     cooperative = Cooperative.objects.get(user_id=request.user.id)
@@ -111,4 +117,7 @@ admin.site.register(Parcelle, ParcelleAdmin)
 admin.site.register(Planting, PLantingAdmin)
 admin.site.register(Pepiniere, PepiniereAdmin)
 admin.site.register(Retrait_plant, RetraitPlantAdmin)
+# admin.site.register(Monitoring)
+admin.site.register(Reception, ReceptionAdmin)
+# admin.site.register(DetailsReception)
 # Register your models here.

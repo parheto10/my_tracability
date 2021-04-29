@@ -61,7 +61,8 @@ INSTALLED_APPS = [
     'livereload',
     'django_humanize',
     'rest_framework',
-    'leaflet',
+    # 'leaflet',
+    'django_filters',
     # 'geojson',
     # 'djgeojson',
 
@@ -184,6 +185,10 @@ LEAFLET_CONFIG = {
 SERIALIZATION_MODULES = {
     "geojson": "django.contrib.gis.serializers.geojson",
  }
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
 
 map_attrs = {
     "style": "mapbox://styles/mapbox/outdoors-v11",

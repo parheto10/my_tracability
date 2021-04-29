@@ -1,5 +1,6 @@
 from django.urls import path
 
+from cooperatives.views import parcelle_list
 from .views import (
     index,
     connexion,
@@ -17,11 +18,11 @@ from .views import (
     localisation_coop,
     section_coop,
     sous_section_coop,
-    planting_coop, Stats_coop, Production_plan,
+    Stats_coop, Production_plan,
     Stats_semences, stat_prod_coop, plants_coop, semences_coop, formations, detail_formation, site_pepinieres,
     coop_pepiniere, pepiniere, pepiniere_coop, export_prods_to_pdf, export_parcelles_to_pdf, export_prod_xls,
     export_parcelle_xls, export_plant_xls, export_formation_xls, ParcellesMapView, ProducteurApiView, ParcelleApiView,
-    ParcelleJson, PepiniereJson, PepiniereApiView, FormationApiView
+    ParcelleJson, PepiniereJson, PepiniereApiView, FormationApiView #, ParcelleCooperativeApi
     # detail_formation,
 )
 
@@ -46,7 +47,7 @@ urlpatterns = [
     path('parcelles/<int:id>', parcelle_coop, name='parcelle_coop'),
     path('sections/<int:id>', section_coop, name='section_coop'),
     path('sous_sections/<int:id>', sous_section_coop, name='sous_section_coop'),
-    path('planting/<int:id>', planting_coop, name='planting_coop'),
+    # path('planting/<int:id>', planting_coop, name='planting_coop'),
     path('coordonnes/<int:id>', localisation_coop, name='localisation_coop'),
     path('localisation/', localisation, name='localisation'),
     path('detail_proj/<int:id>', detail_proj, name='detail_proj'),
@@ -72,6 +73,7 @@ urlpatterns = [
     #Api Urls
     path('api/producteurs', ProducteurApiView.as_view(), name="producteurs_api"),
     path('api/parcelles', ParcelleApiView.as_view(), name="parcelles_api"),
+    # path('api/parcelles_coop', ParcelleCooperativeApi.as_view(), name="coop_parcelles_api"),
     path('api/pepinieres', PepiniereApiView.as_view(), name="pepinieres_api"),
     path('api/formations', FormationApiView.as_view(), name="formations_api"),
 
@@ -79,6 +81,7 @@ urlpatterns = [
     path('pepinieres_json/', PepiniereJson.as_view(), name="pepinieres_json"),
     path('geolocalisation/', ParcelleJson.as_view(), name='geolocalisation'),
     # path('parcelles/data', ParcellesView.as_view(), name="data"),
+    path('parcelles/data', parcelle_list, name="data"),
 
 
 ]

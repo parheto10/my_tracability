@@ -28,12 +28,12 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 
 from parametres.forms import UserForm
-from parametres.models import Projet
-from .forms import CoopForm, ProdForm, EditProdForm, ParcelleForm, PlantingForm, SectionForm, Sous_SectionForm, \
-    PepiniereForm, SuiviPlantingForm, SemenceForm, RetraitForm, DetailRetraitForm, EditSemenceForm, FormationForm, \
+from parametres.models import Projet, Espece
+from .forms import CoopForm, ProdForm, EditProdForm, ParcelleForm, SectionForm, Sous_SectionForm, \
+    PepiniereForm, SemenceForm, RetraitForm, DetailRetraitForm, EditSemenceForm, FormationForm, \
     DetailFormation, EditPepiniereForm, EditFormationForm, EditParcelleForm, Edit_Sous_SectionForm
 from .models import Cooperative, Section, Sous_Section, Producteur, Parcelle, Planting, Formation, Detail_Formation, \
-    Pepiniere, Semence_Pepiniere, Retrait_plant, Detail_Retrait_plant, Details_planting
+    Pepiniere, Semence_Pepiniere, Retrait_plant, Detail_Retrait_plant
 
 
 def is_cooperative(user):
@@ -66,7 +66,7 @@ def coop_dashboard(request):
     parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative)
     nb_parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative).count()
     Superficie = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative).aggregate(total=Sum('superficie'))['total']
-    Plants = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative).aggregate(total=Sum('nb_plant'))['total']
+    Plants = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative).aggregate(total=Sum('plant_total'))['total']
     # querysets = Detail_Retrait_plant.objects.values("espece__libelle").filter(retait__pepiniere__cooperative_id=cooperative).annotate(plant_retire=Sum('plant_retire'))
     semences = Semence_Pepiniere.objects.values("espece_recu__libelle").filter(pepiniere__cooperative_id=cooperative).annotate(qte_recu=Sum('qte_recu'))
 
@@ -354,66 +354,80 @@ def parcelle_delete(request, id=None):
     # messages.success(request, "Parcelle Supprimer avec Succès")
     # return HttpResponseRedirect(reverse('cooperatives:parcelles'))
 
-def planting(request):
+def detail_parcelles(request, id=None):
     cooperative = Cooperative.objects.get(user_id=request.user.id)
-    # producteurs = Producteur.objects.all().filter(cooperative=cooperative)
     parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative)
     plantings = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative)
-    plantingForm = PlantingForm()
-    if request.method == 'POST':
-        plantingForm = PlantingForm(request.POST, request.FILES)
-        if plantingForm.is_valid():
-            planting = plantingForm.save(commit=False)
-            for parcelle in parcelles.iterator():
-                planting.parcelle_id = parcelle.id
-            planting = planting.save()
-            print(planting)
-            # print(planting.parcelle.producteur)
-        messages.success(request, "Parcelle Ajoutés avec succès")
-        return HttpResponseRedirect(reverse('cooperatives:planting'))
-    context = {
-        "cooperative":cooperative,
-        "parcelles": parcelles,
-        "plantings": plantings,
-        'plantingForm': plantingForm,
-    }
-    return render(request, "cooperatives/plantings.html", context)
-
-def suivi_planting(request, id=None):
     instance = get_object_or_404(Planting, id=id)
-    details = Details_planting.objects.all().filter(planting_id=instance)
+    # details = Details_planting.objects.all().filter(planting_id=instance)
 
-    suiviForm = SuiviPlantingForm()
-    if request.method == 'POST':
-        suiviForm = SuiviPlantingForm(request.POST, request.FILES)
-        if suiviForm.is_valid():
-            suivi = suiviForm.save(commit=False)
-            suivi.planting_id = instance.id
-            suivi = suivi.save()
-            print(suivi)
-        messages.success(request, "Planting Ajouté avec succès")
-        return HttpResponseRedirect(reverse('cooperatives:planting'))
     context = {
-        'instance':instance,
-        'details':details,
-        'suiviForm':suiviForm,
+
     }
-    return render(request, 'cooperatives/suivi_planting.html', context)
 
-def planting_update(request, id=None):
-	instance = get_object_or_404(Planting, id=id)
-	form = PlantingForm(request.POST or None, request.FILES or None, instance=instance)
-	if form.is_valid():
-		instance = form.save(commit=False)
-		instance.save()
-		messages.success(request, "Modification effectuée avec succès")
-		return HttpResponseRedirect(reverse('cooperatives:planting'))
+    return render(request, 'cooperatives/detail_parcelle', context)
 
-	context = {
-		"instance": instance,
-		"form":form,
-	}
-	return render(request, "cooperatives/planting_edit.html", context)
+
+# def planting(request):
+#     cooperative = Cooperative.objects.get(user_id=request.user.id)
+#     # producteurs = Producteur.objects.all().filter(cooperative=cooperative)
+#     parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative)
+#     plantings = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative)
+#     plantingForm = PlantingForm()
+#     if request.method == 'POST':
+#         plantingForm = PlantingForm(request.POST, request.FILES)
+#         if plantingForm.is_valid():
+#             planting = plantingForm.save(commit=False)
+#             for parcelle in parcelles.iterator():
+#                 planting.parcelle_id = parcelle.id
+#             planting = planting.save()
+#             print(planting)
+#             # print(planting.parcelle.producteur)
+#         messages.success(request, "Parcelle Ajoutés avec succès")
+#         return HttpResponseRedirect(reverse('cooperatives:planting'))
+#     context = {
+#         "cooperative":cooperative,
+#         "parcelles": parcelles,
+#         "plantings": plantings,
+#         'plantingForm': plantingForm,
+#     }
+#     return render(request, "cooperatives/plantings.html", context)
+
+# def suivi_planting(request, id=None):
+#     instance = get_object_or_404(Planting, id=id)
+#     # details = Details_planting.objects.all().filter(planting_id=instance)
+#
+#     # suiviForm = SuiviPlantingForm()
+#     # if request.method == 'POST':
+#     #     suiviForm = SuiviPlantingForm(request.POST, request.FILES)
+#     #     if suiviForm.is_valid():
+#     #         suivi = suiviForm.save(commit=False)
+#     #         suivi.planting_id = instance.id
+#     #         suivi = suivi.save()
+#     #         print(suivi)
+#     #     messages.success(request, "Planting Ajouté avec succès")
+#     #     return HttpResponseRedirect(reverse('cooperatives:planting'))
+#     # context = {
+#     #     'instance':instance,
+#     #     'details':details,
+#     #     'suiviForm':suiviForm,
+#     # }
+#     # return render(request, 'cooperatives/suivi_planting.html', context)
+
+# def planting_update(request, id=None):
+# 	instance = get_object_or_404(Planting, id=id)
+# 	# form = PlantingForm(request.POST or None, request.FILES or None, instance=instance)
+# 	if form.is_valid():
+# 		instance = form.save(commit=False)
+# 		instance.save()
+# 		messages.success(request, "Modification effectuée avec succès")
+# 		return HttpResponseRedirect(reverse('cooperatives:planting'))
+#
+# 	context = {
+# 		"instance": instance,
+# 		"form":form,
+# 	}
+# 	return render(request, "cooperatives/planting_edit.html", context)
 
 #-------------------------------------------------------------------------
 ## Export to Excel
@@ -774,6 +788,7 @@ def detail_formation(request, id=None):
     detailFormation = DetailFormation()
     if request.method == 'POST':
         detailFormation = DetailFormation(request.POST, request.FILES)
+        detailFormation = DetailFormation(request.POST, request.FILES)
         if detailFormation.is_valid():
             detail = detailFormation.save(commit=False)
             detail.formation_id = instance.id
@@ -935,49 +950,19 @@ def delete_semence(request, id=None):
 #     parcelles_list = serializers.serialize('json', parcelles)
 #     return HttpResponse(parcelles_list, content_type="text/json-comment-filtered")
 
-class ParcellesView(View):
-    def get(self, request, *args, **kwargs):
-        if request.is_ajax():
-            parcelles = Producteur.objects.all()
-            parcelles_serializers = serializers.serialize('json', parcelles)
-            return JsonResponse(parcelles_serializers, safe=False)
-        return JsonResponse({'message': 'Erreure Lors du Chargement.....'})
+# class ParcellesView(View):
+#     def get(self, request, *args, **kwargs):
+#         if request.is_ajax():
+#             parcelles = Producteur.objects.all()
+#             parcelles_serializers = serializers.serialize('json', parcelles)
+#             return JsonResponse(parcelles_serializers, safe=False)
+#         return JsonResponse({'message': 'Erreure Lors du Chargement.....'})
     # parcelles = Parcelle.objects.all()
     # parcelles_list = serializers.serialize('json', parcelles)
     # return HttpResponse(parcelles_list, content_type="text/json-comment-filtered")
 
 # DJango Serializer Views#
-#@csrf_exempt
-#def parcelle_list(request):
-    # """
-    # List all code snippets, or create a new snippet.
-    # """
-    # if request.method == 'GET':
-    #     parcelles = Parcelle.objects.all()
-    #     parcelles_serializers = serializers.serialize('json', parcelles)
-    #     return JsonResponse(parcelles_serializers, safe=False)
-class ParcellesMapView(TemplateView):
 
-    template_name = "map.html"
-
-    def get_context_data(self, **kwargs):
-        """Return the view context data."""
-        context = super().get_context_data(**kwargs)
-        context["parcelles"] = json.loads(serialize("geojson", Parcelle.objects.all()))
-        return context
-
-
-
-
-def ok(request):
-    return render(request, 'ok.html')
-
-def covid(request):
-    response = requests.get('https://api.covid19api.com/countries').json()
-    context = {
-        'response': response
-    }
-    return render(request, 'covid.html', context)
 
 #Export To PDF
 def export_prods_to_pdf(request):
@@ -1027,4 +1012,40 @@ def export_parcelles_to_pdf(request):
        return HttpResponse('Une Erreure est Survenue, Réessayer SVP... <pre>' + html + '</pre>')
     return response
 
+@csrf_exempt
+def parcelle_list(request):
+    cooperative = Cooperative.objects.get(user_id=request.user.id)
+    if request.method == 'GET':
+        parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative)
+        parcelles_serializers = serializers.serialize('json', parcelles)
+        return JsonResponse(parcelles_serializers, safe=False)
+
+class ParcellesMapView(TemplateView):
+
+    template_name = "map.html"
+
+    def get_context_data(self, **kwargs):
+        """Return the view context data."""
+        context = super().get_context_data(**kwargs)
+        context["parcelles_coop"] = json.loads(serialize("geojson", Parcelle.objects.all()))
+        # parcelles_serializers = serializers.serialize('json', parcelles)
+        # context["parcelles"] = json.loads(serialize("geojson", Parcelle.objects.all()))
+        return context
+
+class ReceptionView(View):
+    def get(self, request, *args, **kwargs):
+        cooperative = Cooperative.objects.get(user_id=request.user.id)
+        parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative)
+        parcelle_list = []
+        for parcelle in parcelles:
+        #     sub_category = SubCategories.objects.filter(is_active=1, category_id=category.id)
+            parcelle_list.append({"parcelle": parcelle})
+
+        # merchant_users = MerchantUser.objects.filter(auth_user_id__is_active=True)
+        especes_plants = Espece.objects.all()
+        context = {
+            "parcelles": parcelles,
+            "especes_plants" : especes_plants,
+        }
+        return render(self.request, "cooperatives/reception_create.html", context)
 

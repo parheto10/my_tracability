@@ -31,8 +31,8 @@ data1.forEach(({code, producteur, sous_section, acquisition, latitude, longitude
             </thead>
             <tbody style="align-items: center">            
                 <tr>
-                    <th scope="col"><b>ID PARCELLE :</b></th>
-                    <td class="text-uppercase"><strong>${id}</strong></td>                    
+                    <th scope="col"><b>LOCALITE :</b></th>
+                    <td class="text-uppercase"><strong>${producteur.localite}</strong></td>                    
                 </tr>
                 <tr>
                     <th scope="col"><b>COOPERATIVE :</b></th>
@@ -45,6 +45,10 @@ data1.forEach(({code, producteur, sous_section, acquisition, latitude, longitude
                 <tr>
                     <th scope="col"><b>CODE PARCELLE :</b></th>
                     <td class="text-uppercase"><strong>${code}</strong></td>                    
+                </tr>
+                <tr>
+                    <th scope="col"><b>COORDONNEES :</b></th>
+                    <td class="text-uppercase">${latitude}, ${longitude}</td>                    
                 </tr>
                 <tr>
                     <th scope="col"><b>SECTION / SOUS SECTION:</b></th>
@@ -64,7 +68,7 @@ data1.forEach(({code, producteur, sous_section, acquisition, latitude, longitude
                 </tr>
                 <tr>
                     <th scope="col"><b>SUPERFICIE</b></th>
-                    <td class="text-uppercase">${superficie} (Ha)</td>                    
+                    <td class="text-uppercase">${superficie} (Ha)</td>
                 </tr>
             </tbody>
           </table>    
@@ -123,6 +127,7 @@ var overLayMaps = {
  // 'ABIDJAN': singleMarker
 }
 L.control.layers(baseMaps, overLayMaps, {collapse :false, position: 'topleft'}).addTo(map);
+
 
 
 
