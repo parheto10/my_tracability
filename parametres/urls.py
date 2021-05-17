@@ -22,7 +22,8 @@ from .views import (
     Stats_semences, stat_prod_coop, plants_coop, semences_coop, formations, detail_formation, site_pepinieres,
     coop_pepiniere, pepiniere, pepiniere_coop, export_prods_to_pdf, export_parcelles_to_pdf, export_prod_xls,
     export_parcelle_xls, export_plant_xls, export_formation_xls, ParcellesMapView, ProducteurApiView, ParcelleApiView,
-    ParcelleJson, PepiniereJson, PepiniereApiView, FormationApiView #, ParcelleCooperativeApi
+    ParcelleJson, PepiniereJson, PepiniereApiView, FormationApiView, folium_map,
+    planting_coop  # , ParcelleCooperativeApi
     # detail_formation,
 )
 
@@ -47,7 +48,7 @@ urlpatterns = [
     path('parcelles/<int:id>', parcelle_coop, name='parcelle_coop'),
     path('sections/<int:id>', section_coop, name='section_coop'),
     path('sous_sections/<int:id>', sous_section_coop, name='sous_section_coop'),
-    # path('planting/<int:id>', planting_coop, name='planting_coop'),
+    path('planting/<int:id>', planting_coop, name='planting_coop'),
     path('coordonnes/<int:id>', localisation_coop, name='localisation_coop'),
     path('localisation/', localisation, name='localisation'),
     path('detail_proj/<int:id>', detail_proj, name='detail_proj'),
@@ -82,6 +83,11 @@ urlpatterns = [
     path('geolocalisation/', ParcelleJson.as_view(), name='geolocalisation'),
     # path('parcelles/data', ParcellesView.as_view(), name="data"),
     path('parcelles/data', parcelle_list, name="data"),
+
+    #Folium Map
+    path('folium_map/', folium_map, name="folium_map"),
+
+
 
 
 ]

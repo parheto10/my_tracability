@@ -21,15 +21,18 @@ from .views import (
     detail_pepiniere,
     localisation,
     Stats_coop,
+    AddPlantingView,
     # use Ajax and jquery request
     my_section,
     export_producteur_csv,
+    # PlantingDelete,
     export_prods_to_pdf,
     export_prod_xls,
     export_parcelle_xls,
     export_plant_xls, edit_semence, Stats_semence, Editpepiniere, site_pepiniere, Editformation,
     delete_semence, parcelle_update, update_section, delete_section, export_section_xls, update_sous_section,
     export_sous_section_xls, export_formation_xls, delete_sous_section, ParcellesMapView, parcelle_list, ReceptionView,
+    folium_map, PlantingList,
     # delete_sous_section, export_sous_section_xls, export_formation_xls, my_parcelles, ParcellesView,
     # load_section
 )
@@ -68,7 +71,9 @@ urlpatterns = [
     # path('plantings/<int:id>/', suivi_planting, name='suivi_planting'),
     path('localisation/', localisation, name='localisation'),
     path('site_pepiniere/', site_pepiniere, name='site_pepiniere'),
-    path('receptions/', ReceptionView.as_view(), name='receptions'),
+    path('add_planting/', AddPlantingView.as_view(), name='add_planting'),
+    # path('planting/<int:pk>', PlantingDelete.as_view(), name='planting-delete'),
+    path('folium_map/', folium_map, name='folium_map'),
 
     #get Ajax Data
     # path('parcelles/data', ParcellesView.as_view(), name="parcelles_data"),

@@ -122,6 +122,25 @@ var baseMaps = {
  'COUVERT FORESTIER': climat,
 }
 
+var markers = L.markerClusterGroup({
+	spiderfyShapePositions: function(count, centerPt) {
+        var distanceFromCenter = 35,
+            markerDistance = 45,
+            lineLength = markerDistance * (count - 1),
+            lineStart = centerPt.y - lineLength / 2,
+            res = [],
+            i;
+
+        res.length = count;
+
+        for (i = count - 1; i >= 0; i--) {
+            res[i] = new Point(centerPt.x + distanceFromCenter, lineStart + markerDistance * i);
+        }
+
+        return res;
+    }
+});
+
 var overLayMaps = {
  // 'VILLES' : marker,
  // 'ABIDJAN': singleMarker

@@ -2,6 +2,7 @@ import csv
 import datetime
 from itertools import product
 
+import folium
 import xlwt
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as dj_login, get_user_model, logout
@@ -17,6 +18,9 @@ from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.http import JsonResponse
 from django_filters.rest_framework import DjangoFilterBackend
+from django_pandas.io import read_frame
+from folium import plugins, raster_layers
+from folium.plugins import MarkerCluster
 from rest_framework.generics import ListCreateAPIView, ListAPIView
 from rest_framework.views import APIView
 from xhtml2pdf import pisa
@@ -158,7 +162,7 @@ def detail_coop(request, id=None):
     coop_nb_parcelles = Parcelle.objects.all().filter(producteur__section__cooperative_id=cooperative).count()
     coop_superficie = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative).aggregate(total=Sum('superficie'))['total']
     # plants = Details_planting.objects.values("espece__libelle").filter(planting__parcelle__producteur__cooperative_id=cooperative).annotate(plante=Sum('plante'))
-    coop_plants_total = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative).aggregate(total=Sum('nb_plant'))['total']
+    coop_plants_total = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative).aggregate(total=Sum('plant_total'))['total']
 
     context = {
         'cooperative': cooperative,
@@ -254,15 +258,15 @@ def parcelle_coop(request, id=None):
     }
     return render(request, 'Coop/coop_parcelle.html', context)
 
-# def planting_coop(request, id=None):
-#     cooperative = get_object_or_404(Cooperative, id=id)
-#     # coop_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative)
-#     coop_plants = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative)
-#     context = {
-#         'cooperative': cooperative,
-#         'coop_plants' : coop_plants,
-#     }
-#     return render(request, 'Coop/coop_plantings.html', context)
+def planting_coop(request, id=None):
+    cooperative = get_object_or_404(Cooperative, id=id)
+    # coop_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative)
+    coop_plants = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative)
+    context = {
+        'cooperative': cooperative,
+        'coop_plants' : coop_plants,
+    }
+    return render(request, 'Coop/coop_plantings.html', context)
 
 def projet(request):
     projets = Projet.objects.all()
@@ -684,3 +688,57 @@ class FormationApiView(ListCreateAPIView):
 #         serialized_report_field = ReportFieldSerializers(report_field)
 #         return Response(serialized_report_field.data)
 # Create your views here.
+
+def folium_map(request):
+    # cooperative = Cooperative.objects.get(user_id=request.user.id)
+    m = folium.Map(
+        location=[5.34939, -4.01705],
+        # tiles="CartoDB Dark_Matter",
+        zoom_start=6
+    )
+    marker_cluster = MarkerCluster().add_to(m)
+
+    map1 = raster_layers.TileLayer(tiles="CartoDB Dark_Matter").add_to(m)
+    map2 = raster_layers.TileLayer(tiles="CartoDB Positron").add_to(m)
+    map3 = raster_layers.TileLayer(tiles="Stamen Terrain").add_to(m)
+    map4 = raster_layers.TileLayer(tiles="Stamen Toner").add_to(m)
+    map5 = raster_layers.TileLayer(tiles="Stamen Watercolor").add_to(m)
+    folium.LayerControl().add_to(m)
+    parcelles = Parcelle.objects.all()
+    df = read_frame(parcelles,
+                        fieldnames=
+                        [
+                            'code',
+                            'producteur',
+                            'sous_section',
+                            'acquisition',
+                            'latitude',
+                            'longitude',
+                            'superficie',
+                            'culture',
+                            'certification',
+                        ]
+                    )
+    print(df)
+    for (index, row) in df.iterrows():
+        folium.Marker(
+            location=[
+                row.loc['latitude'],
+                row.loc['longitude']
+            ],
+            popup=[
+                # row.loc['producteur.cooperative'],
+                row.loc['culture'],
+                row.loc['producteur'],
+                # row.loc['producteur.prenoms'],
+            ],
+            icon=folium.Icon(color="green", icon="ok-sign"),
+        ).add_to(marker_cluster)
+    plugins.Fullscreen().add_to(m)
+    # plugins.MarkerCluster.add_to()
+    m = m._repr_html_()
+
+    context = {
+        "m":m
+    }
+    return render(request, "cooperatives/folium_map.html", context)

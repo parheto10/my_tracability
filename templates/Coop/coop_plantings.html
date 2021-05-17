@@ -12,11 +12,11 @@
 {% block content %}
     <div id="wrapper">
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    {% if user.is_authenticated %}
-        <div class="navbar-header">
-            <a class="navbar-brand" href="{% url 'accueil' %}">PANNEAU D'ADMINISTRATION - {{ cooperative.sigle }} / {{ cooperative.get_projet_values }}</a>
-        </div>
-    {% endif %}
+         {% if user.is_authenticated %}
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{% url 'cooperatives:dashboard' %}">{{ cooperative.sigle }} / {{ cooperative.get_projet_values }}</a>
+                </div>
+            {% endif %}
 
     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
         <span class="sr-only">Toggle navigation</span>
@@ -79,16 +79,16 @@
                                         <tbody>
                                             {% for planting in coop_plants %}
                                                 <tr class="odd gradeX">
-                                                    <td class="center">{{ planting.parcelle.projet.titre }} - ({{ planting.parcelle.projet.accronyme }})</td>
+                                                    <td class="center">{{ planting.projet.titre }} - ({{ planting.projet.accronyme }})</td>
                                                     <td class="center">
                                                         {{ planting.parcelle.producteur.nom }} {{ planting.parcelle.producteur.prenoms }}
                                                     </td>
                                                     <td class="center">{{ planting.parcelle.code }}</td>
-                                                    <td>{{ planting.espece }}</td>
-                                                    <td class="center">{{ planting.nb_plant }}</td>
+                                                    <td><a href="">Détails</a></td>
+                                                    <td class="center">{{ planting.plant_total }}</td>
                                                     <td class="center">{{ planting.date | date:'d/m/Y' }}</td>
                                                     <td class="center">
-                                                        <a href="{% url 'cooperatives:planting_update' planting.id %}" class="btn btn-primary btn-xs">
+                                                        <a href="#" class="btn btn-primary btn-xs">
                                                             <i class="fa fa-edit fa-fw"></i>
                                                         </a>
                                                     </td>

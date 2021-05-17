@@ -399,4 +399,37 @@ class DetailFormation(forms.ModelForm):
         #     search_fields=['participant_icontains']
         # )}
 
+from django.forms import ModelForm, inlineformset_factory
+
+from .models import Planting, DetailPlanting
+# from .models import FamilyMember, Profile
+
+
+class PLantingForm(ModelForm):
+    class Meta:
+        model = Planting
+        fields = [
+            "parcelle",
+            "nb_plant_exitant",
+            "plant_recus",
+            "campagne",
+            "projet",
+            "date",
+            "date",
+            "details",
+        ]
+
+class DetailPlantingForm(ModelForm):
+    class Meta:
+        model = DetailPlanting
+        fields = [
+            "planting",
+            "espece",
+            "nb_plante",
+        ]
+
+
+DetailPlantingFormSet = inlineformset_factory(
+    Planting, DetailPlanting, form=DetailPlantingForm, extra=1)
+
 

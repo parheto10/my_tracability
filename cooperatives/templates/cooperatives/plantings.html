@@ -14,7 +14,7 @@
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     {% if user.is_authenticated %}
         <div class="navbar-header">
-            <a class="navbar-brand" href="{% url 'cooperatives:dashboard' %}">{{ cooperative.sigle }} / {{ cooperative.get_projet_values }}</a>
+            <a class="navbar-brand text-uppercase" href="{% url 'cooperatives:dashboard' %}">{{ cooperative.sigle }} / {{ cooperative.get_projet_values }}</a>
         </div>
     {% endif %}
 
@@ -55,7 +55,8 @@
                         {% include '_partials/messages_display.html' %}
                         <div class="panel panel-primary">
                             <div class="panel-heading">
-                                <a href="{% url 'cooperatives:export_plant_xls' %}" class="btn btn-success">Exporter En Excel</a>
+                                <a href="#" class="btn btn-success"><i class="fa fa-file-excel-o fa-fw"></i> Exporter En Excel</a>
+                                <a href="#" class="btn btn-danger"><i class="fa fa-file-pdf-o fa-fw"></i>  Exporter En PDF</a>
                                 <button type="button" class="btn btn-success pull-right" style="font-size:1.8vmin; margin-top: -5px" data-toggle="modal" data-target="#ParcelleModal" data-whatever="@mdo">
                                     <i class="fa fa-plus"> </i> Ajouter
                                 </button>
@@ -68,9 +69,11 @@
                                             <tr>
                                                 <th>PRODUCTEUR</th>
                                                 <th>PARCELLE</th>
+                                                <th>NBRE PLANTS EXISTANTS</th>
                                                 <th>NBRE PLANTS RECUS</th>
+                                                <th>NBRE PLANTS TOTAL</th>
                                                 <th>DATE</th>
-                                                <th>SUIVI</th>
+                                                <th>MONITORING</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -81,11 +84,13 @@
                                                         {{ planting.parcelle.producteur.nom }} {{ planting.parcelle.producteur.prenoms }}
                                                     </td>
                                                     <td class="center">{{ planting.parcelle.code }}</td>
-                                                    <td class="center">{{ planting.nb_plant }}</td>
+                                                    <td class="center">{{ planting.nb_plant_exitant }}</td>
+                                                    <td class="center">{{ planting.plant_recus }}</td>
+                                                    <td class="center">{{ planting.plant_total }}</td>
                                                     <td class="center">{{ planting.date | date:'d/m/Y' }}</td>
                                                     <td class="center">
-                                                        <a href="{% url 'cooperatives:suivi_planting' planting.id %}" class="btn btn-success">
-                                                             Suivi <i class="fa fa-chevron-right"></i>
+                                                        <a href="#" class="btn btn-success">
+                                                             suivi <i class="fa fa-chevron-right"></i>
                                                         </a>
                                                     </td>
                                                 </tr>
@@ -106,60 +111,127 @@
 
             <div class="modal fade"  data-keyboard="false" data-backdrop="static" id="ParcelleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
-                        <form method="post" enctype="multipart/form-data">
+                        <form id="myform" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
-                        <div class="panel panel-primary">
+                        <div class="panel panel-green">
                             <div class="panel-heading">
-                                <h4 class="modal-title" id="exampleModalLabel" style="font-weight:bold">AJOUTER UN SUIVI</h4>
+                                <h4 class="modal-title" id="exampleModalLabel" style="font-weight:bold">AJOUTER PLANTING</h4>
                                 <button ID="btnAnnuler" type="button" data-dismiss="modal" class="btn btn-danger pull-right" style="font-size:1.8vmin;margin-top: -30px">
                                     <i class="fa fa-close"></i>
                                 </button>
                             </div>
                             <div class="panel-body">
-                            <div class="row">
-                                <div class="col-sm-10 col-sm-offset-1">
-                                    <div class="form-group">
-                                        <label>Parcelle :</label>
-                                        <input type="text" list="parcelle" placeholder="Rechercher parcelle..." class="form-control" style="width: 100%">
-                                            <datalist id="parcelle">
-                                                {% for parcelle in parcelles.all %}
-                                                    <option value="{{ parcelle.code }} - {{ parcelle.producteur.nom }} {{ parcelle.producteur.prenoms }}"></option>
-                                                {% if forloop.last %}} {% else %}}, {% endif %}{% endfor %}
-                                            </datalist>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                        <label>Date</label>
-                                        {% render_field plantingForm.date type="date" class="form-control", placeholder="Date" %}
-                                    </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="row">
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <label>Date</label>
+                                                            <input class="form-control" type="date" name="date" placeholder="date">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <label>Campagne</label>
+                                                            <select class="form-control" name="campagne">
+                                                                {% for campagne in campagnes %}
+                                                                    <option value="{{ campagne.id }}">{{ campagne.titre }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label>Projet</label>
+                                                    <select class="form-control" name="projet">
+                                                        {% for projet in projets %}
+                                                            <option value="{{ projet.id }}">{{ projet.titre }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                        <label>Nombre de Plant</label>
-                                        {% render_field plantingForm.nb_plant class="form-control" placeholder="Nombre de Plant" %}
-                                    </div>
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="mesParcelles">Parcelle :</label>
+                                                        <select class="form-control title_espece" name="parcelle">
+                                                            {% for p in parcelles %}
+                                                                <option value="{{ p.id }}">{{ p.code }} - {{ p.producteur.nom }} {{ p.producteur.prenoms }}</option>
+                                                            {% endfor %}
+                                                        </select>
+{#                                                    <input type="text" list="parcelles" placeholder="Rechercher parcelle..." id="mesParcelles" name="parcelle" class="form-control" style="width: 100%">#}
+{#                                                    <datalist id="parcelles" name="parcelle">#}
+{#                                                        {% for parcelle in parcelles %}#}
+{#                                                            <option value="{{ parcelle.code }} - {{ parcelle.producteur.nom }} {{ parcelle.producteur.prenoms }}"></option>#}
+{#                                                        {% endfor %}#}
+{#                                                    </datalist>#}
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="row">
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <label>Nombre Plants Existants</label>
+                                                            <input class="form-control" type="number" name="nb_plant_exitant" placeholder="Qte Total Plants Récus">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label>Plants Total Récus</label>
+                                                            <input class="form-control" type="number" name="plant_recus" placeholder="Qte Total Plants Récus">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                        <label>Details</label>
-                                        {% render_field plantingForm.details class="form-control" %}
-                                    </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label>Details</label>
+                                                    <textarea class="form-control" name="details" id="details" cols="30" rows="3"></textarea>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                        <label>Observations</label>
-                                        {% render_field plantingForm.observation class="form-control" %}
-                                    </div>
+                                        <hr />
+                                        <h5 class="text-uppercase text-center" style="font-weight: bold">DETAILS ESPECES PLANTES</h5>
+                                        <hr />
+                                        <div class="details_div">
+                                            <div class="row details_div_row first_details">
+                                                <div class="col-lg-6">
+                                                    <label>Espece</label>
+                                                        <select class="form-control espece" name="espece">
+                                                            {% for espece in especes %}
+                                                                <option value="{{ espece.id }}">{{ espece.libelle }} - {{ espece.accronyme }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label>Nombre Planté</label>
+                                                        <input class="form-control title_qte" type="number" name="nb_plante[]" placeholder="Nbre Planté/Espece">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <button class="btn btn-success btn-block add_details" type="button">AJOUTE ESPECE</button>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <button class="btn btn-danger btn-block remove_details" type="button">SUPPRIMER ESPECE</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                             <div class="panel-footer">
-                                <input type="submit" name="btnValider" value="Valider" id="btnValider" class="btn btn-success btn-block" style="font-size:1.7vmin;" />
+                                <input type="submit" name="btnValider" value="Valider" id="btnValider" class="btn btn-success btn-block btn_valider" style="font-size:1.7vmin;" />
                             </div>
                         </div>
                         </form>
@@ -168,4 +240,46 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block custom_js %}
+{#<script src="https://cdn.tiny.cloud/1/n3en9angiorgm9po3nmm2cbhxbiow2x0opsqcyml39m1p3hc/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>#}
+{#<script>#}
+{#    tinymce.init({#}
+{#      selector: '#details',#}
+{#      toolbar: 'emoticons media a11ycheck addcomment showcomments casechange checklist code formatpainter pageembed permanentpen table',#}
+{#      plugins: 'a11ychecker emoticons advcode casechange formatpainter linkchecker autolink lists checklist media mediaembed pageembed permanentpen powerpaste table advtable tinymcespellchecker',#}
+{#    });#}
+{#</script>;#}
+<script>
+    $(".add_details").click(function(){
+        var details_row=$(".first_details").clone();
+        details_row.removeClass("first_details");
+        details_row.find(".espece").val("");
+        details_row.find(".nb_plante").val("");
+        $(".details_div").append(details_row);
+    });
+    $(".remove_details").click(function(){
+        if($(".details_div").find(".details_div_row").length>1){
+            $(".details_div").children().last().remove();
+        }
+    });
+    $(".btn_valider").click(function (){
+        var form = new FormData($("#myform")[0]);
+        form.append("details");
+
+        //AJAX CODE TO SEND DATA
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.status == 200){
+                console.log(xhr.responseText);
+            }
+        }
+        xhr.open("POST", "{% url "cooperatives:add_planting" %}", true);
+        {#$("")#}
+
+
+        //sending Form
+        xhr.send(form);
+    })
+</script>
 {% endblock %}

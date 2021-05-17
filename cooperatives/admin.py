@@ -12,7 +12,7 @@ from .models import (
     Producteur,
     Parcelle,
     Planting,
-    Reception,
+    # Reception,
     DetailsReception,
     Monitoring,
     Formation,
@@ -74,9 +74,9 @@ class ParcelleAdmin(ImportExportModelAdmin):
     list_filter = ["sous_section__libelle", "producteur__cooperative", ]
     search_fields = ["code", "sction__libelle", "sous_sction__libelle", "producteur__nom", "producteur__prenoms", "latitude", "longitude", "superficie"]
 
-class DetailsReceptionAdmin(admin.TabularInline):
-   model = DetailsReception
-   extra = 0
+# class DetailsReceptionAdmin(admin.TabularInline):
+#    model = DetailsReception
+#    extra = 0
 
 class DetailPlantingAdmin(admin.TabularInline):
    model = DetailPlanting
@@ -87,16 +87,17 @@ class MinitoringAdmin(admin.TabularInline):
    extra = 0
 
 class PLantingAdmin(admin.ModelAdmin):
-   fields = ('parcelle','projet', "campagne", "nb_plant_exitant", "plant_recus", "plant_total", "plant_recu", "date")
+   fields = ('parcelle','projet', "campagne", "nb_plant_exitant", "plant_recus", "plant_total", "date")
    list_display = ('parcelle','projet', "campagne", "nb_plant_exitant", "plant_recus", "plant_total", "date")
    list_display_links = ('parcelle',)
+   readonly_fields = ["plant_total"]
    inlines = [DetailPlantingAdmin]
 
-class ReceptionAdmin(admin.ModelAdmin):
-   fields = ("parcelle", "total_plant_recus", "date")
-   list_display = ("parcelle", "total_plant_recus", "date")
-   list_display_links = ('parcelle',)
-   inlines = [DetailsReceptionAdmin]
+# class ReceptionAdmin(admin.ModelAdmin):
+#    fields = ("parcelle", "total_plant_recus", "date")
+#    list_display = ("parcelle", "total_plant_recus", "date")
+#    list_display_links = ('parcelle',)
+#    inlines = [DetailsReceptionAdmin]
 
 # class StatAdmin(admin.ModelAdmin):
 #     cooperative = Cooperative.objects.get(user_id=request.user.id)
@@ -117,7 +118,7 @@ admin.site.register(Parcelle, ParcelleAdmin)
 admin.site.register(Planting, PLantingAdmin)
 admin.site.register(Pepiniere, PepiniereAdmin)
 admin.site.register(Retrait_plant, RetraitPlantAdmin)
-# admin.site.register(Monitoring)
-admin.site.register(Reception, ReceptionAdmin)
+admin.site.register(Monitoring)
+# admin.site.register(Reception, ReceptionAdmin)
 # admin.site.register(DetailsReception)
 # Register your models here.

@@ -106,8 +106,6 @@ class Cooperative(models.Model):
     def get_absolute_url(self):
         return reverse('cooperatives:dashboard', kwargs={"id": self.id})
 
-
-
     def get_projet_values(self):
         ret = ''
         # print(self.projet.all())
@@ -336,24 +334,24 @@ class Parcelle(models.Model):
         verbose_name = "parcelle"
         # ordering = ["code"]
 
-class Reception(models.Model):
-    parcelle = models.ForeignKey(Parcelle, on_delete=models.CASCADE)
-    total_plant_recus = models.PositiveIntegerField(default=0, verbose_name="NOMBRE TOTAL DE PLANTS RECUS")
-    date = models.DateField(verbose_name="Date Reception")
-    add_le = models.DateTimeField(auto_now_add=True)
-    update_le = models.DateTimeField(auto_now=True)
-    objects = models.Manager()
-
-    def __str__(self):
-        return '%s (%s)' %(self.parcelle, self.total_plant_recus)
-
-    class Meta:
-        verbose_name_plural = "RECEPTIONS"
-        verbose_name = "reception"
-        # ordering = ["code"]
+# class Reception(models.Model):
+#     parcelle = models.ForeignKey(Parcelle, on_delete=models.CASCADE)
+#     total_plant_recus = models.PositiveIntegerField(default=0, verbose_name="NOMBRE TOTAL DE PLANTS RECUS")
+#     date = models.DateField(verbose_name="Date Reception")
+#     add_le = models.DateTimeField(auto_now_add=True)
+#     update_le = models.DateTimeField(auto_now=True)
+#     objects = models.Manager()
+#
+#     def __str__(self):
+#         return '%s (%s)' %(self.parcelle, self.total_plant_recus)
+#
+#     class Meta:
+#         verbose_name_plural = "RECEPTIONS"
+#         verbose_name = "reception"
+#         # ordering = ["code"]
 
 class DetailsReception(models.Model):
-    reception = models.ForeignKey(Reception, on_delete=models.CASCADE)
+    # reception = models.ForeignKey(Reception, on_delete=models.CASCADE)
     espece = models.ForeignKey(Espece, on_delete=models.CASCADE, default=1)
     nb_plant_recu = models.PositiveIntegerField(default=0, verbose_name="NOMBRE PLANT RECUS")
     add_le = models.DateTimeField(auto_now_add=True)
@@ -369,7 +367,7 @@ class Planting(models.Model):
     nb_plant_exitant = models.PositiveIntegerField(default=0, verbose_name="NBRE PLANTS EXISTANTS")
     plant_recus = models.PositiveIntegerField(default=0, verbose_name="NOMBRE DE PLANTS RECUS")
     plant_total = models.PositiveIntegerField(default=0, verbose_name="NOMBRE TOTAL DE PLANTS")
-    plant_recu = models.CharField(max_length=4, blank=True, null=True)
+    # plant_recu = models.CharField(max_length=4, blank=True, null=True)
     campagne = models.ForeignKey(Campagne, on_delete=models.CASCADE, default=1)
     projet = models.ForeignKey(Projet, on_delete=models.CASCADE, default=1)
     date = models.DateField()
@@ -380,6 +378,10 @@ class Planting(models.Model):
 
     def __str__(self):
         return '%s - (%s) plants reçus' % (self.parcelle.producteur, self.parcelle)
+
+    # def clean(self):
+    #     if self.nb_plant_exitant != 0 and self.plant_recus == 0:
+    #         self.plant_total = (self.nb_plant_exitant) + (self.plant_recus)
 
     def save(self, force_insert=False, force_update=False):
         self.plant_total = (self.nb_plant_exitant) + (self.plant_recus)
@@ -397,6 +399,14 @@ class DetailPlanting(models.Model):
     add_le = models.DateTimeField(auto_now_add=True)
     update_le = models.DateTimeField(auto_now=True)
     objects = models.Manager()
+
+    # def save(self, force_insert=False, force_update=False):
+    #     # cooperative = Cooperative.objects.get(user_id=request.user.id)
+    #     # planting = Planting.objects.filter(parcelle__producteur__cooperative_id=cooperative)
+    #     total_espece = DetailPlanting.objects.filter(planting_id=planting).aggregate(total=Sum('nb_plante'))['total']
+    #     if self.planting.plant_total != total_espece:
+    #         raise ValidationError('Erreur sur le Total de Plants Récus, Vérifié SVP...')
+    #     super(DetailPlanting, self).save(force_insert, force_update)
 
     class Meta:
         verbose_name_plural = "DETAILS PLANTINGS"

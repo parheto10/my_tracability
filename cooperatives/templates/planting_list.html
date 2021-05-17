@@ -1,0 +1,22 @@
+{% extends "base_test" %}
+{% block title %}{% endblock %}
+{% block content %}
+
+    <h2>Here are all user profiles: </h2>
+    <div>
+        <ul>
+            {% for p in object_list %}
+                <li>{{ p.producteur }} {{ profile.last_name }} | <a
+{#                        href="{% url 'profile-update' profile.pk %}">edit</a>#}
+                    <a href="{% url 'cooperatives:planting-delete' profile.pk %}">delete</a>
+                </li>
+            {% empty %}
+                <li>No profile yet.</li>
+            {% endfor %}
+
+        </ul>
+        <p>
+            <a href="{% url 'profile-add' %}">add a profile</a>
+        </p>
+    </div>
+{% endblock %}

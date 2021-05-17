@@ -15,9 +15,12 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 import folium
+from django_pandas.io import read_frame
+from folium import raster_layers, plugins
 import json
 from django.template.loader import get_template
 from django.views.generic import TemplateView
+from folium.plugins import MarkerCluster
 from xhtml2pdf import pisa
 from django.views import View
 from xlrd.formatting import Format
@@ -28,12 +31,12 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 
 from parametres.forms import UserForm
-from parametres.models import Projet, Espece
+from parametres.models import Projet, Espece, Campagne
 from .forms import CoopForm, ProdForm, EditProdForm, ParcelleForm, SectionForm, Sous_SectionForm, \
     PepiniereForm, SemenceForm, RetraitForm, DetailRetraitForm, EditSemenceForm, FormationForm, \
     DetailFormation, EditPepiniereForm, EditFormationForm, EditParcelleForm, Edit_Sous_SectionForm
 from .models import Cooperative, Section, Sous_Section, Producteur, Parcelle, Planting, Formation, Detail_Formation, \
-    Pepiniere, Semence_Pepiniere, Retrait_plant, Detail_Retrait_plant
+    Pepiniere, Semence_Pepiniere, Retrait_plant, Detail_Retrait_plant, DetailPlanting
 
 
 def is_cooperative(user):
@@ -727,6 +730,7 @@ def localisation(request):
     cooperative = Cooperative.objects.get(user_id=request.user.id)
     parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative)
     context = {
+        'cooperative': cooperative,
         'parcelles' : parcelles
     }
     return render(request, 'cooperatives/carte.html', context)
@@ -735,6 +739,7 @@ def site_pepiniere(request):
     cooperative = Cooperative.objects.get(user_id=request.user.id)
     pepinieres = Pepiniere.objects.all().filter(cooperative_id=cooperative)
     context = {
+        'cooperative': cooperative,
         'pepinieres' : pepinieres
     }
     return render(request, 'cooperatives/carte_pepinieres.html', context)
@@ -895,7 +900,7 @@ def detail_pepiniere(request, id=None, destination=None):
         else:
             pass
     context = {
-        # 'cooperative':cooperative,
+        'cooperative':cooperative,
         'instance':instance,
         'semences':semences,
         'retraits':retraits,
@@ -922,6 +927,7 @@ def edit_semence(request, id=None):
         return HttpResponseRedirect(reverse('cooperatives:pepinieres'))
 
     context = {
+        'cooperative': cooperative,
         # "pepiniere":pepiniere,
         "instance": instance,
         "form": form,
@@ -1047,5 +1053,227 @@ class ReceptionView(View):
             "parcelles": parcelles,
             "especes_plants" : especes_plants,
         }
-        return render(self.request, "cooperatives/reception_create.html", context)
+        return render(self.request, "cooperatives/planting_create.html", context)
+
+
+class AddPlantingView(View):
+    def get(self, request, *args, **kwargs):
+        cooperative = Cooperative.objects.get(user_id=request.user.id)
+        parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative)
+        parcelle_list = []
+        for parcelle in parcelles:
+            parcelle_list.append({"parcelle": parcelle})
+
+        # merchant_users = MerchantUser.objects.filter(auth_user_id__is_active=True)
+        especes = Espece.objects.all()
+        campagnes = Campagne.objects.all()
+        projets = Projet.objects.all()
+        plantings = Planting.objects.filter(parcelle__producteur__cooperative_id=cooperative)
+        context = {
+            'cooperative': cooperative,
+            "parcelles": parcelles,
+            "campagnes" : campagnes,
+            "projets" : projets,
+            "especes" : especes,
+            "plantings" : plantings,
+        }
+        return render(self.request, "cooperatives/plantings.html", context)
+
+    def post(self, request, *args, **kwargs):
+        date = request.POST.get("date")
+        nb_plant_exitant = request.POST.get("nb_plant_exitant")
+        plant_recus = request.POST.get("plant_recus")
+        details = request.POST.get("details")
+        campagne = request.POST.get("campagne")
+        parcelle = request.POST.get("parcelle")
+        projet = request.POST.get("projet")
+        espece_list = request.POST.get("espece")
+        nb_plante_liste = request.POST.getlist("nb_plante[]")
+
+        parcelle_obj = Parcelle.objects.get(id=parcelle)
+        campagne_obj = Campagne.objects.get(id=campagne)
+        projet_obj = Projet.objects.get(id=projet)
+        plant_total_obj = nb_plant_exitant + plant_recus
+
+        planting = Planting(
+            parcelle=parcelle_obj,
+            campagne=campagne_obj,
+            projet=projet_obj,
+            nb_plant_exitant=nb_plant_exitant,
+            plant_recus=plant_recus,
+            date=date,
+            details=details,
+            # plant_recus = (nb_plant_exitant + plant_recus)
+        )
+        planting.save()
+
+
+        # espece_obj = Espece.objects.get(id=espece_list)
+        # detail_planting = DetailPlanting(
+        #     planting_id=planting,
+        #     espece = espece_obj,
+        #     nb_plante=nb_plante_liste[i]
+        # )
+        # detail_planting.save()
+        # i = i + 1
+        i = 0
+        # espece_obj = Espece.objects.get(id=espece_list)
+        for e in espece_list:
+            detail_planting = DetailPlanting(
+                planting_id=planting,
+                espece=e,
+                nb_plante=nb_plante_liste[i]
+            )
+            detail_planting.save()
+            i = i+1
+        return HttpResponse("OK")
+
+
+from django.db import transaction
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+
+from .forms import DetailPlantingFormSet
+from .models import Planting
+
+
+class PlantingList(ListView):
+    model = Planting
+    template_name = "cooperatives/plantings.html"
+
+
+# class PlantingCreate(CreateView):
+#     model = Planting
+#     fields = [
+#         "parcelle",
+#         "nb_plant_exitant",
+#         "plant_recus",
+#         "campagne",
+#         "projet",
+#         "date",
+#         "date",
+#         "details",
+#     ]
+#
+#
+# class PlantingDetailsCreate(CreateView):
+#     model = Planting
+#     fields = [
+#         "parcelle",
+#         "nb_plant_exitant",
+#         "plant_recus",
+#         "campagne",
+#         "projet",
+#         "date",
+#         "date",
+#         "details",
+#     ]
+#     success_url = reverse_lazy('add_planting')
+#
+#     def get_context_data(self, **kwargs):
+#         data = super(PlantingDetailsCreate, self).get_context_data(**kwargs)
+#         if self.request.POST:
+#             data['detailsplanting'] = DetailPlantingFormSet(self.request.POST)
+#         else:
+#             data['detailsplanting'] = DetailPlantingFormSet()
+#         return data
+#
+#     def form_valid(self, form):
+#         context = self.get_context_data()
+#         detailsplanting = context['detailsplanting']
+#         with transaction.atomic():
+#             self.object = form.save()
+#
+#             if detailsplanting.is_valid():
+#                 detailsplanting.instance = self.object
+#                 detailsplanting.save()
+#         return super(PlantingDetailsCreate, self).form_valid(form)
+
+
+# class ProfileUpdate(UpdateView):
+#     model = Profile
+#     success_url = '/'
+#     fields = ['first_name', 'last_name']
+#
+#
+# class ProfileFamilyMemberUpdate(UpdateView):
+#     model = Profile
+#     fields = ['first_name', 'last_name']
+#     success_url = reverse_lazy('profile-list')
+#
+#     def get_context_data(self, **kwargs):
+#         data = super(ProfileFamilyMemberUpdate, self).get_context_data(**kwargs)
+#         if self.request.POST:
+#             data['familymembers'] = FamilyMemberFormSet(self.request.POST, instance=self.object)
+#         else:
+#             data['familymembers'] = FamilyMemberFormSet(instance=self.object)
+#         return data
+#
+#     def form_valid(self, form):
+#         context = self.get_context_data()
+#         familymembers = context['familymembers']
+#         with transaction.atomic():
+#             self.object = form.save()
+#
+#             if familymembers.is_valid():
+#                 familymembers.instance = self.object
+#                 familymembers.save()
+#         return super(ProfileFamilyMemberUpdate, self).form_valid(form)
+
+
+# class PlantingDelete(DeleteView):
+#     model = Planting
+#     success_url = reverse_lazy('add_planting')
+
+
+def folium_map(request):
+    cooperative = Cooperative.objects.get(user_id=request.user.id)
+
+    m = folium.Map(
+        location=[5.34939, -4.01705],
+        zoom_start=6
+    )
+    marker_cluster = MarkerCluster().add_to(m)
+
+    map1 = raster_layers.TileLayer(tiles="CartoDB Dark_Matter").add_to(m)
+    map2 = raster_layers.TileLayer(tiles="CartoDB Positron").add_to(m)
+    map3 = raster_layers.TileLayer(tiles="Stamen Terrain").add_to(m)
+    map4 = raster_layers.TileLayer(tiles="Stamen Toner").add_to(m)
+    map5 = raster_layers.TileLayer(tiles="Stamen Watercolor").add_to(m)
+    folium.LayerControl().add_to(m)
+    parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative)
+    df = read_frame(parcelles,
+                        fieldnames=
+                        [
+                            'code',
+                            'producteur',
+                            'sous_section',
+                            'acquisition',
+                            'latitude',
+                            'longitude',
+                            'superficie',
+                            'culture',
+                            'certification',
+                        ]
+                    )
+    # print(df)
+    for (index, row) in df.iterrows():
+        folium.Marker(
+            location=[
+                row.loc['latitude'],
+                row.loc['longitude']
+            ],
+            popup=row.loc['producteur'],
+            icon=folium.Icon(color="green", icon="ok-sign"),
+        ).add_to(marker_cluster)
+    plugins.Fullscreen().add_to(m)
+    plugins.DualMap().add_to(m)
+    # plugins.MarkerCluster.add_to()
+    m = m._repr_html_()
+
+    context = {
+        "m":m
+    }
+    return render(request, "cooperatives/folium_map.html", context)
+
 
