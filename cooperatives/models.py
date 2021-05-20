@@ -202,6 +202,7 @@ class Producteur(models.Model):
     type_document = models.CharField(max_length=50, verbose_name="TYPE DOCUMENT", choices=NATURE_DOC, default="AUCUN")
     num_document = models.CharField(max_length=150, verbose_name="N° PIECE", null=True, blank=True)
     document = models.FileField(verbose_name="Documents", upload_to=producteurs_documents, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
     add_le = models.DateTimeField(auto_now_add=True)
     update_le = models.DateTimeField(auto_now=True)
     objects = models.Manager()

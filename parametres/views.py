@@ -3,6 +3,7 @@ import datetime
 from itertools import product
 
 import folium
+import pandas as pd
 import xlwt
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as dj_login, get_user_model, logout
@@ -92,6 +93,10 @@ def index(request, id=None):
     Superficie = Parcelle.objects.aggregate(total=Sum('superficie'))['total']
     Total_plant = Planting.objects.aggregate(total=Sum('plant_total'))['total']
     # cooperative = get_object_or_404(Cooperative, id=id)
+    # coop_nb_producteurs = Producteur.objects.all().filter(cooperative_id_in=cooperatives).count()
+    # section = Section.objects.all().filter(cooperative_id=cooperative)
+    # section_prod = Producteur.objects.all().filter(section_id__in=section).count()
+    # cooperative = get_object_or_404(Cooperative, id=id)
     # coop_nb_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative).count()
     # coop_parcelles = Parcelle.objects.all().filter(producteur__section__cooperative_id=cooperative)
     # coop_nb_parcelles = Parcelle.objects.all().filter(producteur__section__cooperative_id=cooperative).count()
@@ -155,12 +160,17 @@ def Production_plan(request):
 
 def detail_coop(request, id=None):
     cooperative = get_object_or_404(Cooperative, id=id)
-    coop_producteurs = Producteur.objects.all().filter(section__cooperative_id=cooperative)
-    coop_nb_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative).count()
+    # coop_nb_producteurs =
+    section = Section.objects.all().filter(cooperative_id=cooperative)
+    # section_prod = Producteur.objects.all().filter(section_id__in=section).count()
+    prod_section = Producteur.objects.all().filter(section_id__in=section).count()
+    coop_nb_producteurs = Producteur.objects.filter(cooperative_id=cooperative).count()
     nb_formations = Formation.objects.all().filter(cooperative_id=cooperative).count()
-    coop_parcelles = Parcelle.objects.all().filter(producteur__section__cooperative_id=cooperative)
-    coop_nb_parcelles = Parcelle.objects.all().filter(producteur__section__cooperative_id=cooperative).count()
+    parcelles_section = Parcelle.objects.filter(producteur__section_id__in=section).count()
+    coop_nb_parcelles = Parcelle.objects.filter(producteur__section__cooperative_id=cooperative).count()
     coop_superficie = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative).aggregate(total=Sum('superficie'))['total']
+    section_superf = Parcelle.objects.filter(producteur__section_id__in=section).aggregate(total=Sum('superficie'))['total']
+    section_plating = Planting.objects.filter(parcelle__producteur__section_id__in=section).aggregate(total=Sum('plant_recus'))['total']
     # plants = Details_planting.objects.values("espece__libelle").filter(planting__parcelle__producteur__cooperative_id=cooperative).annotate(plante=Sum('plante'))
     coop_plants_total = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative).aggregate(total=Sum('plant_total'))['total']
 
@@ -170,8 +180,13 @@ def detail_coop(request, id=None):
         'coop_nb_parcelles': coop_nb_parcelles,
         'coop_superficie': coop_superficie,
         'nb_formations': nb_formations,
+        'section': section,
+        'prod_section': prod_section,
+        'parcelles_section': parcelles_section,
         # 'plants': plants,
         'coop_plants_total': coop_plants_total,
+        'section_superf': section_superf,
+        'section_plating': section_plating,
         # 'labels': labels,
         # 'data': data,
     }
@@ -691,10 +706,19 @@ class FormationApiView(ListCreateAPIView):
 
 def folium_map(request):
     # cooperative = Cooperative.objects.get(user_id=request.user.id)
+    # m = folium.Map(
+    #     location=[5.34939, -4.01705], zoom_start=1,
+    #     tiles=None, crs='EPSG3857',
+    #     control_scale=True, attributionControl=False,
+    #     # max_zoom=22,min_zoom=2,
+    #     min_lot=-179,
+    #     max_lot=179, min_lat=-65,
+    #     max_lat=179, max_bounds=True
+    # )
     m = folium.Map(
-        location=[5.34939, -4.01705],
+        location=[5.34939, -4.01705],zoom_start=6,
         # tiles="CartoDB Dark_Matter",
-        zoom_start=6
+
     )
     marker_cluster = MarkerCluster().add_to(m)
 
@@ -705,33 +729,77 @@ def folium_map(request):
     map5 = raster_layers.TileLayer(tiles="Stamen Watercolor").add_to(m)
     folium.LayerControl().add_to(m)
     parcelles = Parcelle.objects.all()
+    # df = pd.DataFrame(
+    #     data=parcelles,
+    #     columns=[
+    #             'code',
+    #             'producteur',
+    #             'sous_section',
+    #             'acquisition',
+    #             'latitude',
+    #             'longitude',
+    #             'superficie',
+    #             'culture',
+    #             'certification',
+    #         ]
+    # )
+
+    # html = df.to_html(
+    #     classes="table table-striped table-hover table-condensed table-responsive"
+    # )
+    #
+    # for (index, row) in df.iterrows():
+    #     popup = folium.Popup(html)
+    #
+    #     folium.Marker([
+    #         row.loc['latitude'],
+    #         row.loc['longitude']],
+    #         popup=popup,
+    #         icon = folium.Icon(color="green", icon="ok-sign"),
+    #     ).add_to(marker_cluster)
+    #     plugins.Fullscreen().add_to(m)
+    #     # plugins.MarkerCluster.add_to()
+    #     m = m._repr_html_()
+
     df = read_frame(parcelles,
-                        fieldnames=
-                        [
-                            'code',
-                            'producteur',
-                            'sous_section',
-                            'acquisition',
-                            'latitude',
-                            'longitude',
-                            'superficie',
-                            'culture',
-                            'certification',
-                        ]
-                    )
-    print(df)
+        fieldnames=
+        [
+            'code',
+            'producteur',
+            # 'sous_section',
+            # 'acquisition',
+            'latitude',
+            'longitude',
+            # 'superficie',
+            # 'culture',
+            # 'certification',
+        ]
+    )
+    html = df.to_html(
+        classes="table table-striped table-hover table-condensed table-responsive"
+    )
+
+    # print(df)
     for (index, row) in df.iterrows():
         folium.Marker(
             location=[
                 row.loc['latitude'],
                 row.loc['longitude']
             ],
-            popup=[
-                # row.loc['producteur.cooperative'],
-                row.loc['culture'],
-                row.loc['producteur'],
-                # row.loc['producteur.prenoms'],
-            ],
+            popup=folium.Popup(html),
+            # popup=[
+            #     # row.loc['producteur.cooperative'],
+            #     # '<strong>' + row_values['code'] + '</strong>',
+            #     #     '<strong>' + row_values['code'] + '</strong>',
+            #     # row.loc['code'],
+            #     row.loc['code'],
+            #     '<strong>'+row.loc['producteur']+'</strong><br><br>',
+            #     '<strong>'+row.loc['sous_section']+'</strong><br><br>',
+            #     row.loc['acquisition'],
+            #     row.loc['culture'],
+            #     row.loc['certification'],
+            #     row.loc['superficie'],
+            # ],
             icon=folium.Icon(color="green", icon="ok-sign"),
         ).add_to(marker_cluster)
     plugins.Fullscreen().add_to(m)

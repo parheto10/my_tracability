@@ -8,7 +8,7 @@ from .views import (
     add_section,
     add_sous_section, export_parcelles_to_pdf,
     producteurs,
-    cooperative,
+    # cooperative,
     prod_update,
     prod_delete,
     parcelles,
@@ -41,7 +41,7 @@ app_name='cooperatives'
 
 urlpatterns = [
     # Patient
-    path('cooperative/<int:id>', cooperative, name='cooperative'),
+    # path('cooperative/<int:id>', cooperative, name='cooperative'),
     path('producteur/<str:code>/modifier', prod_update, name='modifier'),
     path('producteur/<str:code>/supprimer', prod_delete, name='del_producteur'),
     # path('parcelle/<int:id>', parcelle_delete, name='del_parcelle'),

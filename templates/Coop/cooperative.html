@@ -229,6 +229,232 @@
                         <div class="col-sm-6">
                                <div class="panel panel-primary">
                                    <div class="panel-heading">
+                                        <i class="fa fa-bar-chart fa-fw"></i> Graphe Producteur/Section
+                                   </div>
+                                   <div class="panel-body">
+                                         <script src="{% static 'js/chart.js' %}"></script>
+                                         <canvas id="myChart"></canvas>
+                                         <script>
+                                         var ctx = document.getElementById('myChart').getContext('2d');
+                                         var myChart = new Chart(ctx, {
+                                            type: 'bar',
+                                            data: {
+                                                labels: [
+                                                    {% for s in section %}
+                                                        '{{ s.libelle }}',
+                                                    {% endfor %}
+
+                                                ],
+                                                datasets: [{
+                                                    label: ' Nbre Producteurs',
+                                                    data: [
+                                                            {{ prod_section }},
+                                                    ],
+                                                    backgroundColor: [
+                                                        '#f0ad4e',
+                                                        'rgba(54, 162, 235, 0.2)',
+                                                        'rgba(255, 206, 86, 0.2)',
+                                                        'rgba(75, 192, 192, 0.2)',
+                                                        'rgba(153, 102, 255, 0.2)',
+                                                        'rgba(255, 159, 64, 0.2)'
+                                                    ],
+                                                    borderColor: [
+                                                        'rgba(255, 99, 132, 1)',
+                                                        'rgba(54, 162, 235, 1)',
+                                                        'rgba(255, 206, 86, 1)',
+                                                        'rgba(75, 192, 192, 1)',
+                                                        'rgba(153, 102, 255, 1)',
+                                                        'rgba(255, 159, 64, 1)'
+                                                    ],
+                                                    borderWidth: 1
+                                                }]
+                                            },
+                                            options: {
+                                                scales: {
+                                                    y: {
+                                                        beginAtZero: true
+                                                    }
+                                                }
+                                            }
+                                        });
+                                        </script>
+                                   </div>
+                               </div>
+                           </div>
+                        <div class="col-sm-6">
+                               <div class="panel panel-primary">
+                                   <div class="panel-heading">
+                                        <i class="fa fa-bar-chart fa-fw"></i> Graphe Parcelles/Section
+                                   </div>
+                                   <div class="panel-body">
+                                         <script src="{% static 'js/chart.js' %}"></script>
+                                         <canvas id="parcelles"></canvas>
+                                         <script>
+                                         var ctx = document.getElementById('parcelles').getContext('2d');
+                                         var parcelles = new Chart(ctx, {
+                                            type: 'bar',
+                                            data: {
+                                                labels: [
+                                                    {% for s in section %}
+                                                        '{{ s.libelle }}',
+                                                    {% endfor %}
+
+                                                ],
+                                                datasets: [{
+                                                    label: ' Nbre Parcelles',
+                                                    data: [
+                                                            {{ parcelles_section }},
+                                                    ],
+                                                    backgroundColor: [
+                                                        '#5cb85c',
+                                                        'rgba(54, 162, 235, 0.2)',
+                                                        'rgba(255, 206, 86, 0.2)',
+                                                        'rgba(75, 192, 192, 0.2)',
+                                                        'rgba(153, 102, 255, 0.2)',
+                                                        'rgba(255, 159, 64, 0.2)'
+                                                    ],
+                                                    borderColor: [
+                                                        'rgba(255, 99, 132, 1)',
+                                                        'rgba(54, 162, 235, 1)',
+                                                        'rgba(255, 206, 86, 1)',
+                                                        'rgba(75, 192, 192, 1)',
+                                                        'rgba(153, 102, 255, 1)',
+                                                        'rgba(255, 159, 64, 1)'
+                                                    ],
+                                                    borderWidth: 1
+                                                }]
+                                            },
+                                            options: {
+                                                scales: {
+                                                    y: {
+                                                        beginAtZero: true
+                                                    }
+                                                }
+                                            }
+                                        });
+                                        </script>
+                                   </div>
+                               </div>
+                           </div>
+                        <!-- /.col-lg-8 -->
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                               <div class="panel panel-primary">
+                                   <div class="panel-heading">
+                                        <i class="fa fa-bar-chart fa-fw"></i> Graphe Superficie/Section
+                                   </div>
+                                   <div class="panel-body">
+                                         <script src="{% static 'js/chart.js' %}"></script>
+                                         <canvas id="superficie"></canvas>
+                                         <script>
+                                         var ctx = document.getElementById('superficie').getContext('2d');
+                                         var superficie = new Chart(ctx, {
+                                            type: 'bar',
+                                            data: {
+                                                labels: [
+                                                    {% for s in section %}
+                                                        '{{ s.libelle }}',
+                                                    {% endfor %}
+
+                                                ],
+                                                datasets: [{
+                                                    label: 'Superficie (Ha)',
+                                                    data: [
+                                                            {{ section_superf|floatformat:2 }},
+                                                    ],
+                                                    backgroundColor: [
+                                                        '#337ab7',
+                                                        'rgba(54, 162, 235, 0.2)',
+                                                        'rgba(255, 206, 86, 0.2)',
+                                                        'rgba(75, 192, 192, 0.2)',
+                                                        'rgba(153, 102, 255, 0.2)',
+                                                        'rgba(255, 159, 64, 0.2)'
+                                                    ],
+                                                    borderColor: [
+                                                        'rgba(255, 99, 132, 1)',
+                                                        'rgba(54, 162, 235, 1)',
+                                                        'rgba(255, 206, 86, 1)',
+                                                        'rgba(75, 192, 192, 1)',
+                                                        'rgba(153, 102, 255, 1)',
+                                                        'rgba(255, 159, 64, 1)'
+                                                    ],
+                                                    borderWidth: 1
+                                                }]
+                                            },
+                                            options: {
+                                                scales: {
+                                                    y: {
+                                                        beginAtZero: true
+                                                    }
+                                                }
+                                            }
+                                        });
+                                        </script>
+                                   </div>
+                               </div>
+                           </div>
+                        <div class="col-sm-6">
+                               <div class="panel panel-primary">
+                                   <div class="panel-heading">
+                                        <i class="fa fa-bar-chart fa-fw"></i> Graphe Producteur/Section
+                                   </div>
+                                   <div class="panel-body">
+                                         <script src="{% static 'js/chart.js' %}"></script>
+                                         <canvas id="planting"></canvas>
+                                         <script>
+                                         var ctx = document.getElementById('planting').getContext('2d');
+                                         var planting = new Chart(ctx, {
+                                            type: 'bar',
+                                            data: {
+                                                labels: [
+                                                    {% for s in section %}
+                                                        '{{ s.libelle }}',
+                                                    {% endfor %}
+
+                                                ],
+                                                datasets: [{
+                                                    label: 'Plants',
+                                                    data: [
+                                                            {{ section_plating }},
+                                                    ],
+                                                    backgroundColor: [
+                                                        'rgba(255, 206, 86, 0.2)',
+                                                        'rgba(255, 99, 132, 0.2)',
+                                                        'rgba(54, 162, 235, 0.2)',
+                                                        'rgba(75, 192, 192, 0.2)',
+                                                        'rgba(153, 102, 255, 0.2)',
+                                                        'rgba(255, 159, 64, 0.2)'
+                                                    ],
+                                                    borderColor: [
+                                                        'rgba(255, 99, 132, 1)',
+                                                        'rgba(54, 162, 235, 1)',
+                                                        'rgba(255, 206, 86, 1)',
+                                                        'rgba(75, 192, 192, 1)',
+                                                        'rgba(153, 102, 255, 1)',
+                                                        'rgba(255, 159, 64, 1)'
+                                                    ],
+                                                    borderWidth: 1
+                                                }]
+                                            },
+                                            options: {
+                                                scales: {
+                                                    y: {
+                                                        beginAtZero: true
+                                                    }
+                                                }
+                                            }
+                                        });
+                                        </script>
+                                   </div>
+                               </div>
+                           </div>
+                        <!-- /.col-lg-8 -->
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                               <div class="panel panel-primary">
+                                   <div class="panel-heading">
                                         <i class="fa fa-bar-chart-o fa-fw"></i> Semences Réçus
                                     </div>
                                     <!-- /.panel-heading -->

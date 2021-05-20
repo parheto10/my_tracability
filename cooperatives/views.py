@@ -16,7 +16,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 import folium
 from django_pandas.io import read_frame
-from folium import raster_layers, plugins
+from folium import raster_layers, plugins, Popup
 import json
 from django.template.loader import get_template
 from django.views.generic import TemplateView
@@ -44,32 +44,39 @@ def is_cooperative(user):
 
 #@login_required(login_url='connexion')
 #@user_passes_test(is_cooperative)
-def cooperative(request, id=None):
-    coop = get_object_or_404(Cooperative, pk=id)
-    producteurs = Producteur.objects.all().filter(section__cooperative_id= coop)
-    nb_producteurs = Producteur.objects.all().filter(section__cooperative_id= coop).count()
-    parcelles = Parcelle.objects.all().filter(propietaire__section__cooperative_id=coop)
-    nb_parcelles = Parcelle.objects.all().filter(propietaire__section__cooperative_id=coop).count()
-    context = {
-        "coop": coop,
-        'cooperative': cooperative,
-        'producteurs': producteurs,
-        'nb_producteurs': nb_producteurs,
-        'parcelles': parcelles,
-        'nb_parcelles': nb_parcelles,
-    }
-    return render(request, "cooperatives/dashboard.html", context)
+# def cooperative(request, id=None):
+#     coop = get_object_or_404(Cooperative, pk=id)
+#     producteurs = Producteur.objects.all().filter(section__cooperative_id= coop)
+#     nb_producteurs = Producteur.objects.all().filter(section__cooperative_id= coop).count()
+#     parcelles = Parcelle.objects.all().filter(propietaire__section__cooperative_id=coop)
+#     nb_parcelles = Parcelle.objects.all().filter(propietaire__section__cooperative_id=coop).count()
+#     context = {
+#         "coop": coop,
+#         'cooperative': cooperative,
+#         'producteurs': producteurs,
+#         'nb_producteurs': nb_producteurs,
+#         'parcelles': parcelles,
+#         'nb_parcelles': nb_parcelles,
+#     }
+#     return render(request, "cooperatives/dashboard.html", context)
 
 
 def coop_dashboard(request):
     cooperative= Cooperative.objects.get(user_id=request.user.id)
     producteurs = Producteur.objects.all().filter(cooperative_id=cooperative)
-    nb_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative).count()
+    # nb_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative).count()
     nb_formations = Formation.objects.all().filter(cooperative_id=cooperative).count()
     parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative)
     nb_parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative).count()
     Superficie = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative).aggregate(total=Sum('superficie'))['total']
     Plants = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative).aggregate(total=Sum('plant_total'))['total']
+    section = Section.objects.all().filter(cooperative_id=cooperative)
+    section_prod = Producteur.objects.filter(section_id__in=section).count()
+    section_parcelles = Parcelle.objects.filter(producteur__section_id__in=section).count()
+    section_superf = Parcelle.objects.filter(producteur__section_id__in=section).aggregate(total=Sum('superficie'))['total']
+    section_plating = Planting.objects.filter(parcelle__producteur__section_id__in=section).aggregate(total=Sum('plant_recus'))['total']
+    # print(section_prod)
+    # nb_producteurs = sections.producteur.set_all()
     # querysets = Detail_Retrait_plant.objects.values("espece__libelle").filter(retait__pepiniere__cooperative_id=cooperative).annotate(plant_retire=Sum('plant_retire'))
     semences = Semence_Pepiniere.objects.values("espece_recu__libelle").filter(pepiniere__cooperative_id=cooperative).annotate(qte_recu=Sum('qte_recu'))
 
@@ -77,11 +84,15 @@ def coop_dashboard(request):
     'cooperative':cooperative,
     'producteurs': producteurs,
     'nb_formations': nb_formations,
-    'nb_producteurs': nb_producteurs,
+    'section_prod': section_prod,
+    'section_parcelles': section_parcelles,
+    'section_superf': section_superf,
     'parcelles': parcelles,
     'nb_parcelles': nb_parcelles,
     'Superficie' : Superficie,
     'Plants': Plants,
+    'section': section,
+    'section_plating': section_plating,
     # 'labels': labels,
     # 'data': data,
     # 'mylabels': mylabels,
@@ -1263,7 +1274,17 @@ def folium_map(request):
                 row.loc['latitude'],
                 row.loc['longitude']
             ],
-            popup=row.loc['producteur'],
+           # my_string='CODE: {}, PRODUCTEUR: {}, SECTION: {}, CERTIFICATION: {}, CULTURE: {}, SUPERFICIE: {}'.format(code,),
+            # Popup(my_string),
+            popup=row.loc[
+                'producteur'
+                # 'CODE' : 'code',
+                # 'PRODUCTUER' : 'producteur',
+                # 'SOUS SECTION' : 'sous_section',
+                # 'CERTIFICATION' : 'certification',
+                # 'CULTURE' : 'culture',
+                # 'SUPERFICIE' : 'superficie',
+            ],
             icon=folium.Icon(color="green", icon="ok-sign"),
         ).add_to(marker_cluster)
     plugins.Fullscreen().add_to(m)

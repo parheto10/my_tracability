@@ -219,6 +219,248 @@
                 <div class="row">
                     <div class="col-lg-12">
                        <div class="row">
+                           <div class="col-lg-6">
+                               <div class="panel panel-primary">
+                                   <div class="panel-heading">
+                                        <i class="fa fa-bar-chart fa-fw"></i> Graphe Producteur/Section
+                                    </div>
+                                    <!-- /.panel-heading -->
+                                   <div class="panel-body">
+        {#                                       <canvas id="stats-semences" data-url="{% url 'cooperatives:Stats_semence' %}" style="width: 50%"></canvas>#}
+                                         <script src="{% static 'js/chart.js' %}"></script>
+                                         <canvas id="producteurs"></canvas>
+                                         <script>
+                                             var ctx = document.getElementById('producteurs').getContext('2d');
+                                             var producteurs = new Chart(ctx, {
+                                                type: 'bar',
+                                                data: {
+                                                    labels: [
+                                                        {% for sect in section %}
+                                                            '{{ sect.libelle }}',
+                                                        {% endfor %}
+                                                    ],
+                                                    datasets: [{
+                                                        label: [
+                                                            'Producteurs',
+                                                            {#'Superficie (Ha)',#}
+                                                        ],
+                                                        data: [
+                                                                {{ section_prod }},
+{#                                                                {{ section_superf|floatformat:2 }},#}
+                                                        ],
+                                                        backgroundColor: [
+                                                            'rgba(54, 162, 235, 0.2)',
+                                                            'rgba(255, 99, 132, 0.2)',
+                                                            'rgba(255, 206, 86, 0.2)',
+                                                            'rgba(75, 192, 192, 0.2)',
+                                                            'rgba(153, 102, 255, 0.2)',
+                                                            'rgba(255, 159, 64, 0.2)'
+                                                        ],
+                                                        borderColor: [
+                                                            'rgba(153, 102, 255, 0.2)',
+                                                            'rgba(255, 99, 132, 1)',
+                                                            'rgba(54, 162, 235, 1)',
+                                                            'rgba(255, 206, 86, 1)',
+                                                            'rgba(75, 192, 192, 1)',
+                                                            'rgba(255, 159, 64, 1)'
+                                                        ],
+                                                        borderWidth: 1
+                                                    }]
+                                                },
+                                                options: {
+                                                    scales: {
+                                                        y: {
+                                                            beginAtZero: true
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                         </script>
+                                   </div>
+                                    <!-- /.panel-body -->
+                               </div>
+                           </div>
+                           <div class="col-lg-6">
+                               <div class="panel panel-primary">
+                                   <div class="panel-heading">
+                                        <i class="fa fa-bar-chart fa-fw"></i> Graphe Parcelles/Section
+                                    </div>
+                                    <!-- /.panel-heading -->
+                                   <div class="panel-body">
+        {#                                       <canvas id="stats-semences" data-url="{% url 'cooperatives:Stats_semence' %}" style="width: 50%"></canvas>#}
+                                         <script src="{% static 'js/chart.js' %}"></script>
+                                         <canvas id="parcelles"></canvas>
+                                         <script>
+                                             var ctx = document.getElementById('parcelles').getContext('2d');
+                                             var parcelles = new Chart(ctx, {
+                                                type: 'bar',
+                                                data: {
+                                                    labels: [
+                                                        {% for sect in section %}
+                                                            '{{ sect.libelle }}',
+                                                        {% endfor %}
+                                                    ],
+                                                    datasets: [{
+                                                        label: 'Parcelles',
+                                                        data: [
+                                                                {{ section_parcelles }},
+                                                        ],
+                                                        backgroundColor: [
+                                                            'rgba(255, 206, 86, 1)',
+                                                            'rgba(255, 99, 132, 0.2)',
+                                                            'rgba(54, 162, 235, 0.2)',
+                                                            'rgba(255, 206, 86, 0.2)',
+                                                            'rgba(153, 102, 255, 0.2)',
+                                                            'rgba(255, 159, 64, 0.2)'
+                                                        ],
+                                                        borderColor: [
+                                                            'rgba(255, 99, 132, 1)',
+                                                            'rgba(54, 162, 235, 1)',
+                                                            'rgba(255, 206, 86, 1)',
+                                                            'rgba(75, 192, 192, 1)',
+                                                            'rgba(153, 102, 255, 1)',
+                                                            'rgba(255, 159, 64, 1)'
+                                                        ],
+                                                        borderWidth: 1
+                                                    }]
+                                                },
+                                                options: {
+                                                    scales: {
+                                                        y: {
+                                                            beginAtZero: true
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                         </script>
+                                   </div>
+                                    <!-- /.panel-body -->
+                               </div>
+                           </div>
+                       </div>
+                    </div>
+                    <div class="col-lg-12">
+                       <div class="row">
+                           <div class="col-lg-6">
+                               <div class="panel panel-primary">
+                                   <div class="panel-heading">
+                                        <i class="fa fa-bar-chart fa-fw"></i> Graphe Superficie/Section
+                                    </div>
+                                    <!-- /.panel-heading -->
+                                   <div class="panel-body">
+        {#                                       <canvas id="stats-semences" data-url="{% url 'cooperatives:Stats_semence' %}" style="width: 50%"></canvas>#}
+                                         <script src="{% static 'js/chart.js' %}"></script>
+                                         <canvas id="superficie"></canvas>
+                                         <script>
+                                             var ctx = document.getElementById('superficie').getContext('2d');
+                                             var superficie = new Chart(ctx, {
+                                                type: 'bar',
+                                                data: {
+                                                    labels: [
+                                                        {% for sect in section %}
+                                                            '{{ sect.libelle }}',
+                                                        {% endfor %}
+                                                    ],
+                                                    datasets: [{
+                                                        label: 'Superficie (Ha)',
+                                                        data: [
+                                                                {{ section_superf|floatformat:2 }},
+                                                        ],
+                                                        backgroundColor: [
+                                                            'rgba(255, 99, 132, 0.2)',
+                                                            'rgba(54, 162, 235, 0.2)',
+                                                            'rgba(255, 206, 86, 0.2)',
+                                                            'rgba(75, 192, 192, 0.2)',
+                                                            'rgba(153, 102, 255, 0.2)',
+                                                            'rgba(255, 159, 64, 0.2)'
+                                                        ],
+                                                        borderColor: [
+                                                            'rgba(255, 99, 132, 1)',
+                                                            'rgba(54, 162, 235, 1)',
+                                                            'rgba(255, 206, 86, 1)',
+                                                            'rgba(75, 192, 192, 1)',
+                                                            'rgba(153, 102, 255, 1)',
+                                                            'rgba(255, 159, 64, 1)'
+                                                        ],
+                                                        borderWidth: 1
+                                                    }]
+                                                },
+                                                options: {
+                                                    scales: {
+                                                        y: {
+                                                            beginAtZero: true
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                         </script>
+                                   </div>
+                                    <!-- /.panel-body -->
+                               </div>
+                           </div>
+                           <div class="col-lg-6">
+                               <div class="panel panel-primary">
+                                   <div class="panel-heading">
+                                        <i class="fa fa-bar-chart fa-fw"></i> Graphe Planting/Section
+                                    </div>
+                                    <!-- /.panel-heading -->
+                                   <div class="panel-body">
+{#                                               <canvas id="stats-semences" data-url="{% url 'cooperatives:Stats_semence' %}" style="width: 50%"></canvas>#}
+                                         <script src="{% static 'js/chart.js' %}"></script>
+                                         <canvas id="planting"></canvas>
+                                         <script>
+                                             var ctx = document.getElementById('planting').getContext('2d');
+                                             var planting = new Chart(ctx, {
+                                                type: 'bar',
+                                                data: {
+                                                    labels: [
+                                                        {% for sect in section %}
+                                                            '{{ sect.libelle }}',
+                                                        {% endfor %}
+                                                    ],
+                                                    datasets: [{
+                                                        label: [
+                                                            'Plants',
+                                                        ],
+                                                        data: [
+                                                                {{ section_plating }},
+                                                        ],
+                                                        backgroundColor: [
+                                                            'rgba(255, 99, 132, 0.2)',
+                                                            'rgba(54, 162, 235, 0.2)',
+                                                            'rgba(255, 206, 86, 0.2)',
+                                                            'rgba(75, 192, 192, 0.2)',
+                                                            'rgba(153, 102, 255, 0.2)',
+                                                            'rgba(255, 159, 64, 0.2)'
+                                                        ],
+                                                        borderColor: [
+                                                            'rgba(255, 99, 132, 1)',
+                                                            'rgba(54, 162, 235, 1)',
+                                                            'rgba(255, 206, 86, 1)',
+                                                            'rgba(75, 192, 192, 1)',
+                                                            'rgba(153, 102, 255, 1)',
+                                                            'rgba(255, 159, 64, 1)'
+                                                        ],
+                                                        borderWidth: 1
+                                                    }]
+                                                },
+                                                options: {
+                                                    scales: {
+                                                        y: {
+                                                            beginAtZero: true
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                         </script>
+                                   </div>
+                                    <!-- /.panel-body -->
+                               </div>
+                           </div>
+                       </div>
+                    </div>
+                    <div class="col-lg-12">
+                       <div class="row">
                            <div class="col-sm-6">
                                <div class="panel panel-primary">
                                    <div class="panel-heading">
@@ -252,8 +494,10 @@
             <!-- /.container-fluid -->
         </div>
     </div>
+{#    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js"></script>#}
     <script src="{% static 'js/jquery.min.js' %}"></script>
-    <script src="{% static 'js/Chart.min.js' %}"></script>
+{#    <script src="{% static 'js/Chart.min.js' %}"></script>#}
+
 {#    <script>#}
 {#        var myconfig = {#}
 {#            type : "pie",#}
