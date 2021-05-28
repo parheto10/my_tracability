@@ -20,7 +20,7 @@ class SectionWidget(s2forms.ModelSelect2Widget):
     ]
 
 from cooperatives.models import Cooperative, Producteur, Section, Sous_Section, Parcelle, Planting, Formation, \
-    Detail_Formation, Pepiniere, Semence_Pepiniere, Retrait_plant, Detail_Retrait_plant
+    Detail_Formation, Pepiniere, Semence_Pepiniere, Retrait_plant, Detail_Retrait_plant, Monitoring
 # from cooperatives.views import cooperative
 from parametres.models import Region, Projet, Activite, Origine, Sous_Prefecture, Espece
 from ajax_select.fields import AutoCompleteSelectMultipleField, AutoCompleteField
@@ -416,7 +416,7 @@ class PLantingForm(ModelForm):
             "projet",
             "date",
             "date",
-            "details",
+            # "details",
         ]
 
 class DetailPlantingForm(ModelForm):
@@ -433,3 +433,16 @@ DetailPlantingFormSet = inlineformset_factory(
     Planting, DetailPlanting, form=DetailPlantingForm, extra=1)
 
 
+class MonitoringForm(ModelForm):
+    class Meta:
+        model = Monitoring
+        fields = [
+            # "planting",
+            "espece",
+            "espece",
+            "mort",
+            "remplace",
+            "date",
+            "mature",
+            "observation"
+        ]

@@ -34,9 +34,9 @@ from parametres.forms import UserForm
 from parametres.models import Projet, Espece, Campagne
 from .forms import CoopForm, ProdForm, EditProdForm, ParcelleForm, SectionForm, Sous_SectionForm, \
     PepiniereForm, SemenceForm, RetraitForm, DetailRetraitForm, EditSemenceForm, FormationForm, \
-    DetailFormation, EditPepiniereForm, EditFormationForm, EditParcelleForm, Edit_Sous_SectionForm
+    DetailFormation, EditPepiniereForm, EditFormationForm, EditParcelleForm, Edit_Sous_SectionForm, MonitoringForm
 from .models import Cooperative, Section, Sous_Section, Producteur, Parcelle, Planting, Formation, Detail_Formation, \
-    Pepiniere, Semence_Pepiniere, Retrait_plant, Detail_Retrait_plant, DetailPlanting
+    Pepiniere, Semence_Pepiniere, Retrait_plant, Detail_Retrait_plant, DetailPlanting, Monitoring
 
 
 def is_cooperative(user):
@@ -62,9 +62,9 @@ def is_cooperative(user):
 
 
 def coop_dashboard(request):
-    cooperative= Cooperative.objects.get(user_id=request.user.id)
-    producteurs = Producteur.objects.all().filter(cooperative_id=cooperative)
-    # nb_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative).count()
+    cooperative = Cooperative.objects.get(user_id=request.user.id)
+    producteurs = Producteur.objects.filter(cooperative_id=cooperative)
+    nb_producteurs = Producteur.objects.filter(cooperative_id=cooperative, is_active=True).count()
     nb_formations = Formation.objects.all().filter(cooperative_id=cooperative).count()
     parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative)
     nb_parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative).count()
@@ -83,6 +83,7 @@ def coop_dashboard(request):
     context={
     'cooperative':cooperative,
     'producteurs': producteurs,
+    'nb_producteurs': nb_producteurs,
     'nb_formations': nb_formations,
     'section_prod': section_prod,
     'section_parcelles': section_parcelles,
@@ -252,7 +253,7 @@ def my_section(request):
 
 def producteurs(request):
     cooperative = request.user.cooperative #Cooperative.objects.get(user_id=request.user.id)
-    producteurs = Producteur.objects.all().filter(cooperative_id=cooperative).order_by("-add_le")
+    producteurs = Producteur.objects.filter(cooperative_id=cooperative).order_by("-add_le")
     sections = Section.objects.filter(cooperative_id=cooperative)
     sous_sections = Sous_Section.objects.all().filter(section__cooperative_id=cooperative)
 
@@ -311,7 +312,7 @@ def parcelles(request):
     cooperative = Cooperative.objects.get(user_id=request.user.id)
     prods = Producteur.objects.filter(cooperative_id=cooperative)
     s_sections = Sous_Section.objects.all().filter(section__cooperative_id=cooperative)
-    parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative).order_by("-add_le")
+    parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative)
     parcelleForm = ParcelleForm(request.POST or None)
     if request.method == 'POST':
         parcelleForm = ParcelleForm(request.POST, request.FILES)
@@ -320,8 +321,9 @@ def parcelles(request):
             # parcelle.producteur_id = prods
             for prod in prods:
                 parcelle.producteur_id = prod.id
-                tot = Parcelle.objects.all().filter(producteur=prod).count()
-                parcelle.code = "%s-%s" % (parcelle.producteur.code, tot)
+                if not parcelle.code:
+                    tot = Parcelle.objects.filter(producteur_id=prod).count()
+                    parcelle.code = "%s-%s" % (parcelle.producteur.code, tot)
 
             for sect in s_sections:
                 parcelle.sous_section_id = sect.id
@@ -865,7 +867,7 @@ def Editpepiniere(request, id=None):
     return render(request, "cooperatives/edit_pepiniere.html", context)
 
 def detail_pepiniere(request, id=None, destination=None):
-    # cooperative = Cooperative.objects.get(user_id=request.user.id)
+    cooperative = Cooperative.objects.get(user_id=request.user.id)
     instance = get_object_or_404(Pepiniere, id=id)
     semences = Semence_Pepiniere.objects.all().filter(pepiniere_id=instance)
     retraits = Retrait_plant.objects.all().filter(pepiniere_id=instance)
@@ -925,6 +927,7 @@ def detail_pepiniere(request, id=None, destination=None):
     return render(request, 'cooperatives/detail_pepiniere.html', context)
 
 def edit_semence(request, id=None):
+    cooperative = Cooperative.objects.get(user_id=request.user.id)
     # pepiniere = get_object_or_404(Pepiniere, id=id)
     instance = get_object_or_404(Semence_Pepiniere, id=id)
     # instance = Semence_Pepiniere.objects.all().filter(pepiniere_id=pepiniere)
@@ -1138,6 +1141,34 @@ class AddPlantingView(View):
             detail_planting.save()
             i = i+1
         return HttpResponse("OK")
+
+def detail_planting(request, id=None):
+    cooperative = Cooperative.objects.get(user_id=request.user.id)
+    instance = get_object_or_404(Planting, id=id)
+    Details_Planting = DetailPlanting.objects.filter(planting_id=instance)
+    Monitorings = Monitoring.objects.filter(planting_id=instance)
+    monitoringForm = MonitoringForm()
+    # semenceForm = SemenceForm()
+    # detailRetraitForm = DetailRetraitForm()
+    if request.method == 'POST':
+        monitoringForm = MonitoringForm(request.POST, request.FILES)
+        if monitoringForm.is_valid():
+            monitoring = monitoringForm.save(commit=False)
+            monitoring.planting_id = instance.id
+            monitoring = monitoring.save()
+            print(monitoring)
+            print(RetraitForm)
+            messages.success(request, "Enregistrement effectué avec succès")
+            return HttpResponse("Enregistrement effectué avec succès")
+
+    context = {
+        'cooperative':cooperative,
+        'instance':instance,
+        'monitoringForm':monitoringForm,
+        'Details_Planting':Details_Planting,
+        'Monitorings':Monitorings,
+    }
+    return render(request, 'cooperatives/detail_planting.html', context)
 
 
 from django.db import transaction

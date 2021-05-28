@@ -45,7 +45,7 @@ from cooperatives.models import (
     Planting,
     # Details_planting,
     Section,
-    Sous_Section, Detail_Retrait_plant, Semence_Pepiniere, Formation, Detail_Formation, Pepiniere,
+    Sous_Section, Detail_Retrait_plant, Semence_Pepiniere, Formation, Detail_Formation, Pepiniere, DetailPlanting,
 )
 
 from .forms import UserForm, LoginForm
@@ -66,6 +66,9 @@ def connexion(request):
             if group.name == "COOPERATIVES":
                 messages.success(request, "Bienvenue : {}".format(username))
                 return HttpResponseRedirect(reverse('cooperatives:dashboard'))
+            if group.name == "COMMUNAUTES":
+                messages.success(request, "Bienvenue : {}".format(username))
+                return HttpResponseRedirect(reverse('communautes:dashboard'))
             elif group.name == "ADMIN":
                 messages.success(request, "Bienvenue : {}".format(username))
                 return HttpResponseRedirect(reverse('accueil'))
@@ -85,13 +88,14 @@ def loggout(request):
     logout(request)
     return HttpResponseRedirect(reverse('connexion'))
 
-def index(request, id=None):
+def index(request):
     cooperatives = Cooperative.objects.all()
     nb_cooperatives = Cooperative.objects.all().count()
     nb_producteurs = Producteur.objects.all().count()
     nb_parcelles = Parcelle.objects.all().count()
     Superficie = Parcelle.objects.aggregate(total=Sum('superficie'))['total']
     Total_plant = Planting.objects.aggregate(total=Sum('plant_total'))['total']
+    # prod_coop = Producteur.objects.all().filter(section_id__in=section).count()
     # cooperative = get_object_or_404(Cooperative, id=id)
     # coop_nb_producteurs = Producteur.objects.all().filter(cooperative_id_in=cooperatives).count()
     # section = Section.objects.all().filter(cooperative_id=cooperative)
@@ -810,3 +814,42 @@ def folium_map(request):
         "m":m
     }
     return render(request, "cooperatives/folium_map.html", context)
+
+from django.core import serializers
+from django.http import HttpResponse
+from django.shortcuts import render
+
+def planting_list(request):
+    plantings = Planting.objects.all()
+    planting_data = serializers.serialize("json", plantings)
+    response = HttpResponse(content=planting_data)
+    return response
+    print(response)
+
+def produteur_list(request):
+    producteurs = Producteur.objects.all()
+    producteur_data = serializers.serialize("json", producteurs)
+    response = HttpResponse(content=producteur_data)
+    return response
+    print(response)
+
+def parcelles_list(request):
+    parcelles = Parcelle.objects.all()
+    parcelle_data = serializers.serialize("json", parcelles)
+    response = HttpResponse(content=parcelle_data)
+    return response
+    print(response)
+
+def planting_list(request):
+    plantings = Planting.objects.all()
+    plantings_data = serializers.serialize("json", plantings)
+    response = HttpResponse(content=plantings_data)
+    return response
+    print(response)
+
+def details_planting_list(request):
+    details_plantings = DetailPlanting.objects.all()
+    data = serializers.serialize("json", details_plantings)
+    response = HttpResponse(content=data)
+    return response
+    print(response)

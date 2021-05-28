@@ -29,6 +29,7 @@ urlpatterns = [
     path('clients/', include('chocolotiers.urls')),
     #path("select2/", include("django_select2.urls")),
     path('cooperatives/', include('cooperatives.urls')),    
+    path('communautes/', include('planting_communautaire.urls')),
     # path('ajax_select/', include(ajax_select_urls)),
     path('', include('parametres.urls')),
     path('admin/', admin.site.urls),

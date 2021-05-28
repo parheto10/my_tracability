@@ -1,0 +1,432 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanizelib %}
+{% block title %}
+    {{ communaute.sigle }} |
+{% endblock %}
+{% block content %}
+    <div id="wrapper">
+        {% include 'communautes/comm_navbar.html' %}
+        <div id="page-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">Tableau de Bord</h1>
+                    </div>
+                    <!-- /.col-lg-12 -->
+                </div>
+                <div class="row">
+                   <div class="col-lg-4 col-md-offset-4">
+                        {% include '_partials/messages_display.html' %}
+                    </div>
+                    <!-- /.col-lg-8 -->
+                </div>
+                <!-- /.row -->
+                <div class="row">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="glyphicon glyphicon-grain fa-4x"></i>
+                                    </div>
+                                    <div class="col-xs-9 text-right">
+                                        <div class="huge">{{ nb_parcelles|intcomma }}</div>
+                                        <div>Parcelles</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="{% url  'communautes:parcelles' %}">
+                                <div class="panel-footer">
+                                    <span class="pull-left"> Détails</span>
+                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="panel panel-yellow">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="glyphicon glyphicon-map-marker fa-4x"></i>
+                                    </div>
+                                    <div class="col-xs-9 text-right">
+                                        <div class="huge">{{ Superficie | floatformat:2 }}</div>
+                                        <div>Superf. Totale (Ha)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="#">
+                                <div class="panel-footer">
+                                    <span class="pull-left"> Détails</span>
+                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+
+                                    <div class="clearfix"></div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="panel panel-green">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-2">
+                                        <i class="glyphicon glyphicon-tree-deciduous fa-4x"></i>
+                                    </div>
+                                    <div class="col-xs-10 text-right">
+                                        {% if Plants %}
+                                            <div class="huge">{{ Plants }}</div>
+                                        {% else %}
+                                            <div class="huge">0</div>
+                                        {% endif %}
+                                        <div>Nombre de plants</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="#">
+                                <div class="panel-footer">
+                                    <span class="pull-left"> Détails</span>
+                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+
+                                    <div class="clearfix"></div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="panel panel-red">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="fa fa-list-alt fa-4x"></i>
+                                    </div>
+                                    <div class="col-xs-9 text-right">
+{#                                        {% if nb_formations %}#}
+{#                                           <div class="huge">{{ nb_formations }}</div>#}
+{#                                        {% else %}#}
+{#                                            <div class="huge">0</div>#}
+{#                                        {% endif %}#}
+                                        <div>Formations</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="#">
+                                <div class="panel-footer">
+                                    <span class="pull-left"> Détails</span>
+                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.row -->
+                <div class="row">
+                    <div class="col-lg-12">
+                       <div class="row">
+                           <div class="col-lg-6">
+                               <div class="panel panel-primary">
+                                   <div class="panel-heading">
+                                        <i class="fa fa-bar-chart fa-fw"></i> Graphe Producteur/Section
+                                    </div>
+                                    <!-- /.panel-heading -->
+                                   <div class="panel-body">
+        {#                                       <canvas id="stats-semences" data-url="{% url 'cooperatives:Stats_semence' %}" style="width: 50%"></canvas>#}
+                                         <script src="{% static 'js/chart.js' %}"></script>
+                                         <canvas id="producteurs"></canvas>
+{#                                         <script>#}
+{#                                             var ctx = document.getElementById('producteurs').getContext('2d');#}
+{#                                             var producteurs = new Chart(ctx, {#}
+{#                                                type: 'bar',#}
+{#                                                data: {#}
+{#                                                    labels: [#}
+{#                                                        {% for sect in section %}#}
+{#                                                            '{{ sect.libelle }}',#}
+{#                                                        {% endfor %}#}
+{#                                                    ],#}
+{#                                                    datasets: [{#}
+{#                                                        label: [#}
+{#                                                            'Producteurs',#}
+{#                                                        ],#}
+{#                                                        data: [#}
+{#                                                                {{ section_prod }},#}
+{#                                                        ],#}
+{#                                                        backgroundColor: [#}
+{#                                                            'rgba(54, 162, 235, 1)',#}
+{#                                                            'rgba(54, 162, 235, 0.2)',#}
+{#                                                            'rgba(255, 99, 132, 0.2)',#}
+{#                                                            'rgba(255, 206, 86, 0.2)',#}
+{#                                                            'rgba(75, 192, 192, 0.2)',#}
+{#                                                            'rgba(255, 159, 64, 0.2)'#}
+{#                                                        ],#}
+{#                                                        borderColor: [#}
+{#                                                            'rgba(75, 192, 192, 1)',#}
+{#                                                            'rgba(255, 206, 86, 1)',#}
+{#                                                            'rgba(153, 102, 255, 0.2)',#}
+{#                                                            'rgba(255, 99, 132, 1)',#}
+{#                                                            'rgba(153, 102, 255, 0.2)',#}
+{#                                                            'rgba(255, 159, 64, 1)'#}
+{#                                                        ],#}
+{#                                                        borderWidth: 1#}
+{#                                                    }]#}
+{#                                                },#}
+{#                                                options: {#}
+{#                                                    scales: {#}
+{#                                                        y: {#}
+{#                                                            beginAtZero: true#}
+{#                                                        }#}
+{#                                                    }#}
+{#                                                }#}
+{#                                            });#}
+{#                                         </script>#}
+                                   </div>
+                                    <!-- /.panel-body -->
+                               </div>
+                           </div>
+                           <div class="col-lg-6">
+                               <div class="panel panel-primary">
+                                   <div class="panel-heading">
+                                        <i class="fa fa-bar-chart fa-fw"></i> Graphe Parcelles/Section
+                                    </div>
+                                    <!-- /.panel-heading -->
+                                   <div class="panel-body">
+        {#                                       <canvas id="stats-semences" data-url="{% url 'cooperatives:Stats_semence' %}" style="width: 50%"></canvas>#}
+                                         <script src="{% static 'js/chart.js' %}"></script>
+                                         <canvas id="parcelles"></canvas>
+{#                                         <script>#}
+{#                                             var ctx = document.getElementById('parcelles').getContext('2d');#}
+{#                                             var parcelles = new Chart(ctx, {#}
+{#                                                type: 'bar',#}
+{#                                                data: {#}
+{#                                                    labels: [#}
+{#                                                        {% for sect in section %}#}
+{#                                                            '{{ sect.libelle }}',#}
+{#                                                        {% endfor %}#}
+{#                                                    ],#}
+{#                                                    datasets: [{#}
+{#                                                        label: 'Parcelles',#}
+{#                                                        data: [#}
+{#                                                                {{ section_parcelles }},#}
+{#                                                        ],#}
+{#                                                        backgroundColor: [#}
+{#                                                            'rgba(255, 206, 86, 1)',#}
+{#                                                            'rgba(255, 99, 132, 0.2)',#}
+{#                                                            'rgba(54, 162, 235, 0.2)',#}
+{#                                                            'rgba(255, 206, 86, 0.2)',#}
+{#                                                            'rgba(153, 102, 255, 0.2)',#}
+{#                                                            'rgba(255, 159, 64, 0.2)'#}
+{#                                                        ],#}
+{#                                                        borderColor: [#}
+{#                                                            'rgba(255, 99, 132, 1)',#}
+{#                                                            'rgba(54, 162, 235, 1)',#}
+{#                                                            'rgba(255, 206, 86, 1)',#}
+{#                                                            'rgba(75, 192, 192, 1)',#}
+{#                                                            'rgba(153, 102, 255, 1)',#}
+{#                                                            'rgba(255, 159, 64, 1)'#}
+{#                                                        ],#}
+{#                                                        borderWidth: 1#}
+{#                                                    }]#}
+{#                                                },#}
+{#                                                options: {#}
+{#                                                    scales: {#}
+{#                                                        y: {#}
+{#                                                            beginAtZero: true#}
+{#                                                        }#}
+{#                                                    }#}
+{#                                                }#}
+{#                                            });#}
+{#                                         </script>#}
+                                   </div>
+                                    <!-- /.panel-body -->
+                               </div>
+                           </div>
+                       </div>
+                    </div>
+                    <div class="col-lg-12">
+                       <div class="row">
+                           <div class="col-lg-6">
+                               <div class="panel panel-primary">
+                                   <div class="panel-heading">
+                                        <i class="fa fa-bar-chart fa-fw"></i> Graphe Superficie/Section
+                                    </div>
+                                    <!-- /.panel-heading -->
+                                   <div class="panel-body">
+        {#                                       <canvas id="stats-semences" data-url="{% url 'cooperatives:Stats_semence' %}" style="width: 50%"></canvas>#}
+                                         <script src="{% static 'js/chart.js' %}"></script>
+                                         <canvas id="superficie"></canvas>
+{#                                         <script>#}
+{#                                             var ctx = document.getElementById('superficie').getContext('2d');#}
+{#                                             var superficie = new Chart(ctx, {#}
+{#                                                type: 'bar',#}
+{#                                                data: {#}
+{#                                                    labels: [#}
+{#                                                        {% for sect in section %}#}
+{#                                                            '{{ sect.libelle }}',#}
+{#                                                        {% endfor %}#}
+{#                                                    ],#}
+{#                                                    datasets: [{#}
+{#                                                        label: 'Superficie (Ha)',#}
+{#                                                        data: [#}
+{#                                                                {{ section_superf|floatformat:2 }},#}
+{#                                                        ],#}
+{#                                                        backgroundColor: [#}
+{#                                                            'rgba(255, 99, 132, 0.2)',#}
+{#                                                            'rgba(54, 162, 235, 0.2)',#}
+{#                                                            'rgba(255, 206, 86, 0.2)',#}
+{#                                                            'rgba(75, 192, 192, 0.2)',#}
+{#                                                            'rgba(153, 102, 255, 0.2)',#}
+{#                                                            'rgba(255, 159, 64, 0.2)'#}
+{#                                                        ],#}
+{#                                                        borderColor: [#}
+{#                                                            'rgba(255, 99, 132, 1)',#}
+{#                                                            'rgba(54, 162, 235, 1)',#}
+{#                                                            'rgba(255, 206, 86, 1)',#}
+{#                                                            'rgba(75, 192, 192, 1)',#}
+{#                                                            'rgba(153, 102, 255, 1)',#}
+{#                                                            'rgba(255, 159, 64, 1)'#}
+{#                                                        ],#}
+{#                                                        borderWidth: 1#}
+{#                                                    }]#}
+{#                                                },#}
+{#                                                options: {#}
+{#                                                    scales: {#}
+{#                                                        y: {#}
+{#                                                            beginAtZero: true#}
+{#                                                        }#}
+{#                                                    }#}
+{#                                                }#}
+{#                                            });#}
+{#                                         </script>#}
+                                   </div>
+                                    <!-- /.panel-body -->
+                               </div>
+                           </div>
+                           <div class="col-lg-6">
+                               <div class="panel panel-primary">
+                                   <div class="panel-heading">
+                                        <i class="fa fa-bar-chart fa-fw"></i> Graphe Planting/Section
+                                    </div>
+                                    <!-- /.panel-heading -->
+                                   <div class="panel-body">
+{#                                               <canvas id="stats-semences" data-url="{% url 'cooperatives:Stats_semence' %}" style="width: 50%"></canvas>#}
+                                         <script src="{% static 'js/chart.js' %}"></script>
+                                         <canvas id="planting"></canvas>
+{#                                         <script>#}
+{#                                             var ctx = document.getElementById('planting').getContext('2d');#}
+{#                                             var planting = new Chart(ctx, {#}
+{#                                                type: 'bar',#}
+{#                                                data: {#}
+{#                                                    labels: [#}
+{#                                                        {% for sect in section %}#}
+{#                                                            '{{ sect.libelle }}',#}
+{#                                                        {% endfor %}#}
+{#                                                    ],#}
+{#                                                    datasets: [{#}
+{#                                                        label: [#}
+{#                                                            'Plants',#}
+{#                                                        ],#}
+{#                                                        data: [#}
+{#                                                                {{ section_plating }},#}
+{#                                                        ],#}
+{#                                                        backgroundColor: [#}
+{#                                                            'rgba(255, 99, 132, 0.2)',#}
+{#                                                            'rgba(54, 162, 235, 0.2)',#}
+{#                                                            'rgba(255, 206, 86, 0.2)',#}
+{#                                                            'rgba(75, 192, 192, 0.2)',#}
+{#                                                            'rgba(153, 102, 255, 0.2)',#}
+{#                                                            'rgba(255, 159, 64, 0.2)'#}
+{#                                                        ],#}
+{#                                                        borderColor: [#}
+{#                                                            'rgba(255, 99, 132, 1)',#}
+{#                                                            'rgba(54, 162, 235, 1)',#}
+{#                                                            'rgba(255, 206, 86, 1)',#}
+{#                                                            'rgba(75, 192, 192, 1)',#}
+{#                                                            'rgba(153, 102, 255, 1)',#}
+{#                                                            'rgba(255, 159, 64, 1)'#}
+{#                                                        ],#}
+{#                                                        borderWidth: 1#}
+{#                                                    }]#}
+{#                                                },#}
+{#                                                options: {#}
+{#                                                    scales: {#}
+{#                                                        y: {#}
+{#                                                            beginAtZero: true#}
+{#                                                        }#}
+{#                                                    }#}
+{#                                                }#}
+{#                                            });#}
+{#                                         </script>#}
+                                   </div>
+                                    <!-- /.panel-body -->
+                               </div>
+                           </div>
+                       </div>
+                    </div>
+                    <!-- /.col-lg-8 -->
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+        </div>
+    </div>
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+{#    <script>#}
+{#        $(function () {#}
+{#            var $statistiquePlant = $("#stats-plant");#}
+{#            $.ajax({#}
+{#                url: $statistiquePlant.data("url"),#}
+{#                success:function (data) {#}
+{#                    var ctx = $statistiquePlant[0].getContext("2d");#}
+{#                    new Chart(ctx, {#}
+{#                        type:'bar',#}
+{#                        data : {#}
+{#                            labels : data.labels,#}
+{#                            datasets : [{#}
+{#                                label : 'Plants',#}
+{#                                backgroundColor: 'Green',#}
+{#                                data : data.data#}
+{#                            }]#}
+{#                        },#}
+{#                        options: {#}
+{#                            responsive: true,#}
+{#                            legend : {#}
+{#                                position : 'top',#}
+{#                            }#}
+{#                        }#}
+{#                    });#}
+{#                }#}
+{#            });#}
+{#        });#}
+{#    </script>#}
+{#    <script>#}
+{#        $(function () {#}
+{#            var $statistiqueSemences = $("#stats-semences");#}
+{#            $.ajax({#}
+{#                url: $statistiqueSemences.data("url"),#}
+{#                success:function (data) {#}
+{#                    var ctx = $statistiqueSemences[0].getContext("2d");#}
+{#                    new Chart(ctx, {#}
+{#                        type:'bar',#}
+{#                        data : {#}
+{#                            labels : data.labels,#}
+{#                            datasets : [{#}
+{#                                label : 'Semences(Kg)',#}
+{#                                backgroundColor: 'Blue',#}
+{#                                borderWidth: 2,#}
+{#                                data : data.data#}
+{#                            }]#}
+{#                        },#}
+{#                        options: {#}
+{#                            responsive: true,#}
+{#                            legend : {#}
+{#                                position : 'top',#}
+{#                            }#}
+{#                        }#}
+{#                    });#}
+{#                }#}
+{#            });#}
+{#        });#}
+{#    </script>#}
+{% endblock %}

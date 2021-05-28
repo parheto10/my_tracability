@@ -89,7 +89,7 @@
                                                     <td class="center">{{ planting.plant_total }}</td>
                                                     <td class="center">{{ planting.date | date:'d/m/Y' }}</td>
                                                     <td class="center">
-                                                        <a href="#" class="btn btn-success">
+                                                        <a href="{% url 'cooperatives:suivi_planting' planting.id %}" class="btn btn-success">
                                                              suivi <i class="fa fa-chevron-right"></i>
                                                         </a>
                                                     </td>

@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     "communaute.apps.CommunauteConfig",
     'cooperatives.apps.CooperativesConfig',
     'parametres.apps.ParametresConfig',
+    'planting_communautaire.apps.PlantingCommunautaireConfig',
 ]
 
 MIDDLEWARE = [

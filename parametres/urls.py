@@ -23,7 +23,7 @@ from .views import (
     coop_pepiniere, pepiniere, pepiniere_coop, export_prods_to_pdf, export_parcelles_to_pdf, export_prod_xls,
     export_parcelle_xls, export_plant_xls, export_formation_xls, ParcellesMapView, ProducteurApiView, ParcelleApiView,
     ParcelleJson, PepiniereJson, PepiniereApiView, FormationApiView, folium_map,
-    planting_coop  # , ParcelleCooperativeApi
+    planting_coop, planting_list, produteur_list, parcelles_list, details_planting_list  # , ParcelleCooperativeApi
     # detail_formation,
 )
 
@@ -86,6 +86,13 @@ urlpatterns = [
 
     #Folium Map
     path('folium_map/', folium_map, name="folium_map"),
+
+    # Api
+    # path('plantings/api/v1/', planting_list, name="plantings"),
+    path('producteurs/api/v1/', produteur_list, name="producteurs"),
+    path('parcelles/api/v1/', parcelles_list, name="parcelles"),
+    path('plantings/api/v1/', planting_list, name="plantings"),
+    path('details_plantings/api/v1/', details_planting_list, name="details_plantings"),
 
 
 

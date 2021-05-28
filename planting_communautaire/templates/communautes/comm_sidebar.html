@@ -1,0 +1,43 @@
+{% load static %}
+<div class="navbar-default sidebar" role="navigation">
+    <div class="sidebar-nav navbar-collapse">
+        <ul class="nav" id="side-menu">
+            <li>
+                <a href="{% url 'communautes:dashboard' %}" class="active"><i class="fa fa-dashboard fa-fw"></i> DASHBOARD</a>
+            </li>
+            <li>
+                <a href="{% url 'communautes:parcelles' %}"><i class="glyphicon glyphicon-map-marker"></i> PARCELLES</a>
+            </li>
+            <li>
+                <a href="#"><i class="glyphicon glyphicon-grain"></i> PEPINIERES</a>
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-bookmark fa-fw"></i> FORMATIONS</a>
+            </li>
+            <li>
+                <a href="#"><i class="glyphicon glyphicon-tree-deciduous"></i> PLANTINGS</a>
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-map fa-fw"></i> CARTOGRAPHIE</a>
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-map fa-fw"></i> FOLIUM MAP</a>
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-map-o fa-fw"></i> SITE PEPINIERES</a>
+            </li>
+            <li style="margin-top: 100px">
+                <a href="#"><i class="fa fa-gear fa-fw"></i> PARAMETRES<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li>
+                        <a href="#"><i class="fa fa-list fa-fw"></i> CHANGER MOT DE PASSE</a>
+                    </li>
+                </ul>
+                <!-- /.nav-second-level -->
+            </li>
+            <li>
+                <a class="btn btn-outline-danger" style="margin-top: 20px; color: red" href="{% url 'logout' %}"><i class="fa fa-sign-out fa-fw"></i> Déconnexion</a>
+            </li>
+        </ul>
+    </div>
+</div>

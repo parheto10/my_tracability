@@ -1,8 +1,41 @@
 from rest_framework import serializers
 
-from cooperatives.models import Producteur, Parcelle, Section, Sous_Section, Cooperative, Pepiniere, Formation
-from parametres.models import Projet, Projet_Cat
+from cooperatives.models import Producteur, Parcelle, Section, Sous_Section, Cooperative, Pepiniere, Formation, Planting, DetailPlanting
+from parametres.models import Projet, Projet_Cat, Campagne, Espece, Cat_Plant
 from chocolotiers.models import Client
+
+class CampagneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model: Campagne
+        fields = [
+            'titre',
+            'mois_debut',
+            'annee_debut',
+            'mois_fin',
+            'annee_fin'
+        ]
+
+class CategorieEspeceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model: Cat_Plant
+        fields = [
+            'libelle',
+        ]
+
+class EspeceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model: Espece
+        fields = [
+            'categorie',
+            'accronyme',
+            'libelle',
+        ]
+        depth = 1
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['categorie'] = CategorieEspeceSerializer(instance.categorie).data
+        return response
+
 
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
@@ -203,6 +236,43 @@ class FormationSerializer(serializers.ModelSerializer):
         response['projet'] = ProjetSerializer(instance.projet).data
         return response
 
+
+class PlantingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Planting
+        fields = [
+            "parcelle",
+            "nb_plant_exitant",
+            "plant_recus",
+            "campagne",
+            "projet",
+            "date",
+            "date",
+        ]
+        depth = 1
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['parcelle'] = ParcelleSerializer(instance.parcelle).data
+        response['projet'] = ProjetSerializer(instance.projet).data
+        response['campagne'] = CampagneSerializer(instance.campagne).data
+        return response
+
+class DetailPlantingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DetailPlanting
+        fields = [
+            "planting",
+            "espece",
+            "nb_plante",
+        ]
+        depth = 1
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['planting'] = PlantingSerializer(instance.planting).data
+        response['espece'] = EspeceSerializer(instance.espece).data
+        # response['campagne'] = CampagneSerializer(instance.campagne).data
+        return response
 
 
 

@@ -372,7 +372,7 @@ class Planting(models.Model):
     campagne = models.ForeignKey(Campagne, on_delete=models.CASCADE, default=1)
     projet = models.ForeignKey(Projet, on_delete=models.CASCADE, default=1)
     date = models.DateField()
-    details = models.TextField(blank=True, null=True)
+    # details = models.TextField(blank=True, null=True)
     add_le = models.DateTimeField(auto_now_add=True)
     update_le = models.DateTimeField(auto_now=True)
     objects = models.Manager()
@@ -414,21 +414,46 @@ class DetailPlanting(models.Model):
         verbose_name = "details planting"
 
 
+# class Monitoring(models.Model):
+#     planting = models.ForeignKey(Planting, on_delete=models.CASCADE)
+#     mort = models.PositiveIntegerField(default=0, verbose_name="NBRE PLANTS MORTS")
+#     remplace = models.PositiveIntegerField(default=0, verbose_name="NBRE PLANTS REMPLACES")
+#     mature = models.PositiveIntegerField(default=0, verbose_name="NBRE PLANTS VIVANTS")
+#     observation = models.TextField(blank=True, null=True)
+#     date = models.DateField()
+#     add_le = models.DateTimeField(auto_now_add=True)
+#     update_le = models.DateTimeField(auto_now=True)
+#     objects = models.Manager()
+#
+#     class Meta:
+#         verbose_name_plural = "MONITORINGS"
+#         verbose_name = "monitoring"
+
 class Monitoring(models.Model):
     planting = models.ForeignKey(Planting, on_delete=models.CASCADE)
     mort = models.PositiveIntegerField(default=0, verbose_name="NBRE PLANTS MORTS")
     remplace = models.PositiveIntegerField(default=0, verbose_name="NBRE PLANTS REMPLACES")
     mature = models.PositiveIntegerField(default=0, verbose_name="NBRE PLANTS VIVANTS")
+    espece = models.ForeignKey(Espece, on_delete=models.CASCADE, default=1)
+    # nb_plante = models.PositiveIntegerField(default=0, verbose_name="NBRE PLANTS REMPLACES")
     observation = models.TextField(blank=True, null=True)
     date = models.DateField()
     add_le = models.DateTimeField(auto_now_add=True)
     update_le = models.DateTimeField(auto_now=True)
     objects = models.Manager()
 
+    # def save(self, force_insert=False, force_update=False):
+    #     # cooperative = Cooperative.objects.get(user_id=request.user.id)
+    #     # planting = Planting.objects.filter(parcelle__producteur__cooperative_id=cooperative)
+    #     total_espece = DetailPlanting.objects.filter(planting_id=planting).aggregate(total=Sum('nb_plante'))['total']
+    #     if self.planting.plant_total != total_espece:
+    #         raise ValidationError('Erreur sur le Total de Plants Récus, Vérifié SVP...')
+    #     super(DetailPlanting, self).save(force_insert, force_update)
+
     class Meta:
-        verbose_name_plural = "MONITORINGS"
-        verbose_name = "monitoring"
-    # Create your models here.
+        verbose_name_plural = "DETAILS PLANTINGS"
+        verbose_name = "details planting"
+# Create your models here.
 
 class Formation(models.Model):
     cooperative = models.ForeignKey(Cooperative, on_delete=models.CASCADE)

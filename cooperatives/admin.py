@@ -84,6 +84,8 @@ class DetailPlantingAdmin(admin.TabularInline):
 
 class MinitoringAdmin(admin.TabularInline):
    model = Monitoring
+   fields = ['espece', 'mort', 'remplace', 'date', 'mature', 'observation']
+   list_display = ['espece', 'mort', 'remplace', 'date', 'mature', 'observation']
    extra = 0
 
 class PLantingAdmin(admin.ModelAdmin):
@@ -91,7 +93,7 @@ class PLantingAdmin(admin.ModelAdmin):
    list_display = ('parcelle','projet', "campagne", "nb_plant_exitant", "plant_recus", "plant_total", "date")
    list_display_links = ('parcelle',)
    readonly_fields = ["plant_total"]
-   inlines = [DetailPlantingAdmin]
+   inlines = [DetailPlantingAdmin, MinitoringAdmin]
 
 # class ReceptionAdmin(admin.ModelAdmin):
 #    fields = ("parcelle", "total_plant_recus", "date")
@@ -118,7 +120,7 @@ admin.site.register(Parcelle, ParcelleAdmin)
 admin.site.register(Planting, PLantingAdmin)
 admin.site.register(Pepiniere, PepiniereAdmin)
 admin.site.register(Retrait_plant, RetraitPlantAdmin)
-admin.site.register(Monitoring)
+# admin.site.register(Monitoring)
 # admin.site.register(Reception, ReceptionAdmin)
 # admin.site.register(DetailsReception)
 # Register your models here.
