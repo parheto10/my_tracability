@@ -34,7 +34,8 @@ from parametres.forms import UserForm
 from parametres.models import Projet, Espece, Campagne
 from .forms import CoopForm, ProdForm, EditProdForm, ParcelleForm, SectionForm, Sous_SectionForm, \
     PepiniereForm, SemenceForm, RetraitForm, DetailRetraitForm, EditSemenceForm, FormationForm, \
-    DetailFormation, EditPepiniereForm, EditFormationForm, EditParcelleForm, Edit_Sous_SectionForm, MonitoringForm
+    DetailFormation, EditPepiniereForm, EditFormationForm, EditParcelleForm, Edit_Sous_SectionForm, MonitoringForm, \
+    PlantingForm, DetailPlantingForm
 from .models import Cooperative, Section, Sous_Section, Producteur, Parcelle, Planting, Formation, Detail_Formation, \
     Pepiniere, Semence_Pepiniere, Retrait_plant, Detail_Retrait_plant, DetailPlanting, Monitoring
 
@@ -74,7 +75,15 @@ def coop_dashboard(request):
     section_prod = Producteur.objects.filter(section_id__in=section).count()
     section_parcelles = Parcelle.objects.filter(producteur__section_id__in=section).count()
     section_superf = Parcelle.objects.filter(producteur__section_id__in=section).aggregate(total=Sum('superficie'))['total']
-    section_plating = Planting.objects.filter(parcelle__producteur__section_id__in=section).aggregate(total=Sum('plant_recus'))['total']
+    section_planting = DetailPlanting.objects.filter(planting__parcelle__producteur__section_id__in=section).aggregate(total=Sum('nb_plante'))['total']
+    # detail_planting = DetailPlanting.objects.filter(planting__parcelle__producteur__cooperative_id=cooperative)#.annotate(nb_plante=Sum('nb_plante'))
+    espece_planting = Espece.objects.all()
+    plantings = DetailPlanting.objects.filter(planting__parcelle__producteur__cooperative_id=cooperative).aggregate(total=Sum('nb_plante'))['total']
+    coop_plants = DetailPlanting.objects.filter(espece_id__in=espece_planting).aggregate(total=Sum('nb_plante'))['total']
+    # plantings = DetailPlanting.objects.values("espece__libelle").filter(planting__parcelle__producteur__cooperative_id=cooperative).aggregate(total=Sum('nb_plante'))['total']
+    print(plantings)
+    # espece_planting = DetailPlanting.objects.filter(espece__libelle__in=details_planting).aggregate(total=Sum('nb_plante'))['total']
+    # espece_planting = DetailPlanting.objects.filter(planting__parcelle__producteur__cooperative_id=cooperative).annotate(nb_plante=Sum('nb_plante'))
     # print(section_prod)
     # nb_producteurs = sections.producteur.set_all()
     # querysets = Detail_Retrait_plant.objects.values("espece__libelle").filter(retait__pepiniere__cooperative_id=cooperative).annotate(plant_retire=Sum('plant_retire'))
@@ -93,7 +102,10 @@ def coop_dashboard(request):
     'Superficie' : Superficie,
     'Plants': Plants,
     'section': section,
-    'section_plating': section_plating,
+    'section_planting': section_planting,
+    'espece_planting': espece_planting,
+    'plantings': plantings,
+    'coop_plants': coop_plants,
     # 'labels': labels,
     # 'data': data,
     # 'mylabels': mylabels,
@@ -123,6 +135,38 @@ def Stats_semence(request):
     for stat in semences:
         labels.append(stat['espece_recu__libelle'])
         data.append(stat['qte_recu'])
+
+    return JsonResponse(data= {
+        'labels':labels,
+        'data':data,
+    })
+
+# def coopPlantings(request):
+#     cooperative = Cooperative.objects.get(user_id=request.user.id)
+#     planting = Planting.objects.filter(parcelle__producteur__section_id__in=cooperative)
+#     print(planting)
+#     querysets = Planting.objects.filter(planting=planting).annotate(plant_recus=Sum('plant_recus'))#values("parcelle__producteur__section__libelle")['total']#.annotate(plant_recus=Sum('plant_recus'))
+#     print(querysets)
+#     labels = []
+#     data = []
+#     for stat in querysets:
+#         print('stat :', stat)
+#         labels.append(stat['parcelle__producteur__section'])
+#         data.append(stat['plant_recus'])
+#
+#     return JsonResponse(data= {
+#         'labels':labels,
+#         'data':data,
+#     })
+
+def coopdetailPlantings(request):
+    cooperative = Cooperative.objects.get(user_id=request.user.id)
+    querysets = DetailPlanting.objects.filter(planting__parcelle__producteur__cooperative_id=cooperative).values("espece__libelle").annotate(nb_plante=Sum('nb_plante'))
+    labels = []
+    data = []
+    for stat in querysets:
+        labels.append(stat['espece__libelle'])
+        data.append(stat['nb_plante'])
 
     return JsonResponse(data= {
         'labels':labels,
@@ -253,7 +297,7 @@ def my_section(request):
 
 def producteurs(request):
     cooperative = request.user.cooperative #Cooperative.objects.get(user_id=request.user.id)
-    producteurs = Producteur.objects.filter(cooperative_id=cooperative).order_by("-add_le")
+    producteurs = Producteur.objects.filter(cooperative_id=cooperative)#.order_by("-add_le")
     sections = Section.objects.filter(cooperative_id=cooperative)
     sous_sections = Sous_Section.objects.all().filter(section__cooperative_id=cooperative)
 
@@ -746,7 +790,7 @@ def localisation(request):
         'cooperative': cooperative,
         'parcelles' : parcelles
     }
-    return render(request, 'cooperatives/carte.html', context)
+    return render(request, 'cooperatives/carte_update.html', context)
 
 def site_pepiniere(request):
     cooperative = Cooperative.objects.get(user_id=request.user.id)
@@ -879,6 +923,7 @@ def detail_pepiniere(request, id=None, destination=None):
     retraitForm = RetraitForm()
     semenceForm = SemenceForm()
     detailRetraitForm = DetailRetraitForm()
+
     if request.method == 'POST':
         retraitForm = RetraitForm(request.POST, request.FILES)
         semenceForm = SemenceForm(request.POST, request.FILES)
@@ -1094,10 +1139,11 @@ class AddPlantingView(View):
         return render(self.request, "cooperatives/plantings.html", context)
 
     def post(self, request, *args, **kwargs):
+        cooperative = request.POST.get('cooperative')
         date = request.POST.get("date")
         nb_plant_exitant = request.POST.get("nb_plant_exitant")
         plant_recus = request.POST.get("plant_recus")
-        details = request.POST.get("details")
+        # details = request.POST.get("details")
         campagne = request.POST.get("campagne")
         parcelle = request.POST.get("parcelle")
         projet = request.POST.get("projet")
@@ -1116,7 +1162,6 @@ class AddPlantingView(View):
             nb_plant_exitant=nb_plant_exitant,
             plant_recus=plant_recus,
             date=date,
-            details=details,
             # plant_recus = (nb_plant_exitant + plant_recus)
         )
         planting.save()
@@ -1130,41 +1175,91 @@ class AddPlantingView(View):
         # )
         # detail_planting.save()
         # i = i + 1
-        i = 0
-        # espece_obj = Espece.objects.get(id=espece_list)
-        for e in espece_list:
-            detail_planting = DetailPlanting(
-                planting_id=planting,
-                espece=e,
-                nb_plante=nb_plante_liste[i]
-            )
-            detail_planting.save()
-            i = i+1
-        return HttpResponse("OK")
+        # i = 0
+        # # espece_obj = Espece.objects.get(id=espece_list)
+        # for e in espece_list:
+        #     detail_planting = DetailPlanting(
+        #         planting_id=planting,
+        #         espece=e,
+        #         nb_plante=nb_plante_liste[i]
+        #     )
+        #     detail_planting.save()
+        #     i = i+1
+        # return HttpResponse("OK")
+
+def CoopPlantings(request):
+    cooperative = Cooperative.objects.get(user_id=request.user.id)
+    parcelles = Parcelle.objects.filter(producteur__cooperative_id=cooperative)
+    especes = Espece.objects.all()
+    campagnes = Campagne.objects.all()
+    projets = Projet.objects.all()
+    plantings = Planting.objects.filter(parcelle__producteur__cooperative_id=cooperative)
+    plantingForm = PlantingForm()
+    if request.method == 'POST':
+        plantingForm = PlantingForm(request.POST, request.FILES)
+        if plantingForm.is_valid():
+            planting = plantingForm.save(commit=False)
+            for parcelle in parcelles:
+                planting.parcelle_id = parcelle.id
+            for campagne in campagnes:
+                planting.campagne_id = campagne.id
+            for projet in projets:
+                planting.projet_id = projet.id
+            planting = planting.save()
+            print(planting)
+            # print(RetraitForm)
+            messages.success(request, "Enregistrement effectué avec succès")
+            return redirect('cooperatives:CoopPlantings')
+
+    context = {
+        'cooperative':cooperative,
+        'parcelles':parcelles,
+        'plantings':plantings,
+        'campagnes':campagnes,
+        'projets':projets,
+        'plantingForm':plantingForm,
+    }
+    return render(request, 'cooperatives/plantings.html', context)
 
 def detail_planting(request, id=None):
     cooperative = Cooperative.objects.get(user_id=request.user.id)
     instance = get_object_or_404(Planting, id=id)
     Details_Planting = DetailPlanting.objects.filter(planting_id=instance)
     Monitorings = Monitoring.objects.filter(planting_id=instance)
+
     monitoringForm = MonitoringForm()
-    # semenceForm = SemenceForm()
-    # detailRetraitForm = DetailRetraitForm()
+    detailPlantingForm = DetailPlantingForm()
+
     if request.method == 'POST':
+
         monitoringForm = MonitoringForm(request.POST, request.FILES)
+        detailPlantingForm = DetailPlantingForm(request.POST, request.FILES)
+
         if monitoringForm.is_valid():
             monitoring = monitoringForm.save(commit=False)
             monitoring.planting_id = instance.id
             monitoring = monitoring.save()
             print(monitoring)
-            print(RetraitForm)
             messages.success(request, "Enregistrement effectué avec succès")
             return HttpResponse("Enregistrement effectué avec succès")
+
+        elif detailPlantingForm.is_valid():
+            detail = detailPlantingForm.save(commit=False)
+            detail.planting_id = instance.id
+            detail = detail.save()
+            print(detail)
+            messages.success(request, "Enregistrement effectué avec succès")
+            return redirect('cooperatives:detail_planting')
+            # return HttpResponse("Enregistrement effectué avec succès")
+        else:
+            pass
+
 
     context = {
         'cooperative':cooperative,
         'instance':instance,
         'monitoringForm':monitoringForm,
+        'detailPlantingForm':detailPlantingForm,
         'Details_Planting':Details_Planting,
         'Monitorings':Monitorings,
     }
@@ -1307,8 +1402,17 @@ def folium_map(request):
             ],
            # my_string='CODE: {}, PRODUCTEUR: {}, SECTION: {}, CERTIFICATION: {}, CULTURE: {}, SUPERFICIE: {}'.format(code,),
             # Popup(my_string),
-            popup=row.loc[
-                'producteur'
+            popup=[
+                row.loc['code'],
+                row.loc['producteur'],
+                row.loc['certification'],
+                row.loc['superficie'],
+                row.loc['culture'],
+                # 'producteur',
+                # 'code',
+                # 'certification',
+                # 'culture',
+                # 'superficie',
                 # 'CODE' : 'code',
                 # 'PRODUCTUER' : 'producteur',
                 # 'SOUS SECTION' : 'sous_section',
@@ -1327,5 +1431,63 @@ def folium_map(request):
         "m":m
     }
     return render(request, "cooperatives/folium_map.html", context)
+
+def folium_palntings_map(request):
+    cooperative = Cooperative.objects.get(user_id=request.user.id)
+    m = folium.Map(
+        location=[5.34939, -4.01705],zoom_start=6,
+    )
+    marker_cluster = MarkerCluster().add_to(m)
+
+    map1 = raster_layers.TileLayer(tiles="CartoDB Dark_Matter").add_to(m)
+    map2 = raster_layers.TileLayer(tiles="CartoDB Positron").add_to(m)
+    map3 = raster_layers.TileLayer(tiles="Stamen Terrain").add_to(m)
+    map4 = raster_layers.TileLayer(tiles="Stamen Toner").add_to(m)
+    map5 = raster_layers.TileLayer(tiles="Stamen Watercolor").add_to(m)
+    folium.LayerControl().add_to(m)
+    plantings = DetailPlanting.objects.filter(planting__parcelle__producteur__cooperative_id=cooperative)
+    parcelles = Parcelle.objects.filter(roducteur__cooperative_id=cooperative)
+
+    df1 = read_frame(parcelles,
+        fieldnames=
+        [
+            'code',
+            'producteur',
+            'latitude',
+            'longitude',
+
+        ]
+    )
+    df = read_frame(plantings,
+        fieldnames=
+        [
+            'planting',
+            'espece',
+            'nb_plante',
+            'add_le'
+        ]
+    )
+    print(df)
+    html = df.to_html(
+        classes="table table-striped table-hover table-condensed table-responsive"
+    )
+
+    # print(df)
+    for (index, row) in df1.iterrows():
+        folium.Marker(
+            location=[
+                row.loc['latitude'],
+                row.loc['longitude']
+            ],
+            popup=folium.Popup(html),
+            icon=folium.Icon(color="green", icon="ok-sign"),
+        ).add_to(marker_cluster)
+    plugins.Fullscreen().add_to(m)
+    m = m._repr_html_()
+
+    context = {
+        "m":m
+    }
+    return render(request, "cooperatives/folium_planting_map.html", context)
 
 

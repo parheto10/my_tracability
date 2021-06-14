@@ -8,13 +8,13 @@ const icon = L.icon({
 
 Promise.all([
   fetch("http://127.0.0.1:8000/api/parcelles"),
-  fetch("http://127.0.0.1:8000/api/parcelles?format=json")
-]).then(async ([response1, response2]) => {
+//  fetch("http://127.0.0.1:8000/api/parcelles?format=json")
+]).then(async ([response1]) => {
   const responseData1 = await response1.json();
-  const responseData2 = await response2.json();
+//  const responseData2 = await response2.json();
 
   const data1 = responseData1;
-  const data2 = responseData2;
+//  const data2 = responseData2;
 
   const parcelles = L.featureGroup().addTo(map);
 
@@ -48,15 +48,11 @@ data1.forEach(({code, producteur, sous_section, acquisition, latitude, longitude
                 </tr>
                 <tr>
                     <th scope="col"><b>COORDONNEES :</b></th>
-                    <td class="text-uppercase">${latitude}, ${longitude}</td>                    
+                    <td class="text-uppercase">(${longitude},${latitude})</td>
                 </tr>
                 <tr>
                     <th scope="col"><b>SECTION / SOUS SECTION:</b></th>
                     <td>${producteur.section.libelle} / ${sous_section.libelle}</td>                    
-                </tr>
-                <tr>
-                    <th scope="col"><b>MODE D'ACQUISITION :</b></th>
-                    <td class="text-uppercase">${acquisition}</td>                    
                 </tr>
                 <tr>
                     <th scope="col"><b>CERTIFICATION : </b></th>
@@ -69,6 +65,13 @@ data1.forEach(({code, producteur, sous_section, acquisition, latitude, longitude
                 <tr>
                     <th scope="col"><b>SUPERFICIE</b></th>
                     <td class="text-uppercase">${superficie} (Ha)</td>
+                </tr>
+                <tr>
+                    <th scope="col"><b>ESPECES</b></th>
+                    <td class="text-uppercase text-center">
+                        <a class="btn btn-info" href="#" role="button">Afficher</a>
+                        <a class="btn btn-success" href="#" role="button"><i class="glyphicon glyphicon-tree-deciduous"></i></a>
+                    </td>
                 </tr>
             </tbody>
           </table>    

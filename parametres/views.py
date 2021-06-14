@@ -26,6 +26,7 @@ from rest_framework.generics import ListCreateAPIView, ListAPIView
 from rest_framework.views import APIView
 from xhtml2pdf import pisa
 
+from communaute.models import Communaute
 from .models import (
     Sous_Prefecture,
     Origine,
@@ -46,10 +47,12 @@ from cooperatives.models import (
     # Details_planting,
     Section,
     Sous_Section, Detail_Retrait_plant, Semence_Pepiniere, Formation, Detail_Formation, Pepiniere, DetailPlanting,
+    Monitoring,
 )
 
 from .forms import UserForm, LoginForm
-from .serializers import ProducteurSerializer, ParcelleSerializer, PepiniereSerializer, FormationSerializer
+from .serializers import ProducteurSerializer, ParcelleSerializer, PepiniereSerializer, FormationSerializer, \
+    DetailPlantingSerializer
 
 
 def connexion(request):
@@ -90,26 +93,18 @@ def loggout(request):
 
 def index(request):
     cooperatives = Cooperative.objects.all()
+    communautes = Communaute.objects.all()
+    nb_communautes = Communaute.objects.all().count()
     nb_cooperatives = Cooperative.objects.all().count()
     nb_producteurs = Producteur.objects.all().count()
     nb_parcelles = Parcelle.objects.all().count()
     Superficie = Parcelle.objects.aggregate(total=Sum('superficie'))['total']
     Total_plant = Planting.objects.aggregate(total=Sum('plant_total'))['total']
-    # prod_coop = Producteur.objects.all().filter(section_id__in=section).count()
-    # cooperative = get_object_or_404(Cooperative, id=id)
-    # coop_nb_producteurs = Producteur.objects.all().filter(cooperative_id_in=cooperatives).count()
-    # section = Section.objects.all().filter(cooperative_id=cooperative)
-    # section_prod = Producteur.objects.all().filter(section_id__in=section).count()
-    # cooperative = get_object_or_404(Cooperative, id=id)
-    # coop_nb_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative).count()
-    # coop_parcelles = Parcelle.objects.all().filter(producteur__section__cooperative_id=cooperative)
-    # coop_nb_parcelles = Parcelle.objects.all().filter(producteur__section__cooperative_id=cooperative).count()
-    # coop_superficie = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative).aggregate(total=Sum('superficie'))['total']
-    # plants = Details_planting.objects.all().filter(planting__parcelle__producteur__cooperative_id=cooperative).order_by('-espece')
-    # coop_plants_total = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative).aggregate(total=Sum('nb_plant'))['total']
+    # plantings = Planting.objects.values("espece__libelle").filter(parcelle__producteur__cooperative_id=cooperative).annotate(plante=Sum('plant_recus'))
 
     context = {
         'cooperatives':cooperatives,
+        'communautes':communautes,
         'nb_cooperatives': nb_cooperatives,
         'nb_producteurs': nb_producteurs,
         'nb_parcelles': nb_parcelles,
@@ -124,12 +119,12 @@ def index(request):
     return render(request, 'index.html', context)
 
 def Stats_coop(request):
-    querysets = Detail_Retrait_plant.objects.values("retait__pepiniere__cooperative__sigle").annotate(plant_retire=Sum('plant_retire'))
+    querysets = Detail_Retrait_plant.objects.values("retait__pepiniere__cooperative__sigle").annotate(plant_recus=Sum('plant_recus'))
     labels = []
     data = []
     for stat in querysets:
         labels.append(stat['retait__pepiniere__cooperative__sigle'])
-        data.append(stat['plant_retire'])
+        data.append(stat['plant_recus'])
 
     return JsonResponse(data= {
         'labels':labels,
@@ -148,6 +143,49 @@ def Stats_semences(request):
         'labels':labels,
         'data':data,
     })
+
+def Plantings(request):
+    querysets = Planting.objects.values("parcelle__producteur__cooperative__sigle").annotate(plant_recus=Sum('plant_recus'))
+    labels = []
+    data = []
+    for stat in querysets:
+        labels.append(stat['parcelle__producteur__cooperative__sigle'])
+        data.append(stat['plant_recus'])
+
+    return JsonResponse(data= {
+        'labels':labels,
+        'data':data,
+    })
+
+def detailPlantings(request):
+    querysets = DetailPlanting.objects.values("espece__libelle").annotate(nb_plante=Sum('nb_plante'))
+    labels = []
+    data = []
+    for stat in querysets:
+        labels.append(stat['espece__libelle'])
+        data.append(stat['nb_plante'])
+
+    return JsonResponse(data= {
+        'labels':labels,
+        'data':data,
+    })
+
+
+# def coopProducteur(request):
+#     nb_prod_coop =
+#     querysets = Producteur.objects.values("cooperative_id").annotate(nb_plante=Sum('nb_plante'))
+#     labels = []
+#     data = []
+#     for stat in querysets:
+#         labels.append(stat['espece__libelle'])
+#         data.append(stat['nb_plante'])
+#
+#     return JsonResponse(data= {
+#         'labels':labels,
+#         'data':data,
+#     })
+
+
 
 def Production_plan(request):
     querysets = Semence_Pepiniere.objects.values("pepiniere__cooperative__sigle").annotate(production=Sum('production'))
@@ -175,8 +213,8 @@ def detail_coop(request, id=None):
     coop_superficie = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative).aggregate(total=Sum('superficie'))['total']
     section_superf = Parcelle.objects.filter(producteur__section_id__in=section).aggregate(total=Sum('superficie'))['total']
     section_plating = Planting.objects.filter(parcelle__producteur__section_id__in=section).aggregate(total=Sum('plant_recus'))['total']
-    # plants = Details_planting.objects.values("espece__libelle").filter(planting__parcelle__producteur__cooperative_id=cooperative).annotate(plante=Sum('plante'))
-    coop_plants_total = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative).aggregate(total=Sum('plant_total'))['total']
+    # plantings = Planting.objects.values("espece__libelle").filter(parcelle__producteur__cooperative_id=cooperative).annotate(plante=Sum('plant_recus'))
+    coop_plants_total = DetailPlanting.objects.filter(planting__parcelle__producteur__cooperative_id=cooperative).aggregate(total=Sum('nb_plante'))['total']
 
     context = {
         'cooperative': cooperative,
@@ -187,7 +225,7 @@ def detail_coop(request, id=None):
         'section': section,
         'prod_section': prod_section,
         'parcelles_section': parcelles_section,
-        # 'plants': plants,
+        # 'plantings': plantings,
         'coop_plants_total': coop_plants_total,
         'section_superf': section_superf,
         'section_plating': section_plating,
@@ -216,7 +254,7 @@ def sous_section_coop(request):
 
 def prod_coop(request, id=None):
     cooperative = get_object_or_404(Cooperative, id=id)
-    coop_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative).order_by("-update_le")
+    coop_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative) #.order_by("-update_le")
     # coop_parcelles = Parcelle.objects.all().filter(producteur__section__cooperative_id=cooperative)
     context = {
         'cooperative': cooperative,
@@ -253,6 +291,20 @@ def plants_coop(request, id=None):
         'data':data,
     })
 
+def plantings_coop(request, id=None):
+    cooperative = get_object_or_404(Cooperative, id=id)
+    querysets = DetailPlanting.objects.filter(planting__parcelle__producteur__cooperative_id=cooperative).values("espece__libelle").annotate(nb_plante=Sum('nb_plante'))
+    labels = []
+    data = []
+    for stat in querysets:
+        labels.append(stat['espece__libelle'])
+        data.append(stat['nb_plante'])
+
+    return JsonResponse(data= {
+        'labels':labels,
+        'data':data,
+    })
+
 def semences_coop(request, id=None):
     cooperative = get_object_or_404(Cooperative, id=id)
     semences = Semence_Pepiniere.objects.values("espece_recu__libelle").filter(pepiniere__cooperative_id=cooperative).annotate(qte_recu=Sum('qte_recu'))
@@ -279,13 +331,28 @@ def parcelle_coop(request, id=None):
 
 def planting_coop(request, id=None):
     cooperative = get_object_or_404(Cooperative, id=id)
-    # coop_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative)
-    coop_plants = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative)
+    coop_plants = Planting.objects.filter(parcelle__producteur__cooperative_id=cooperative)
     context = {
         'cooperative': cooperative,
         'coop_plants' : coop_plants,
     }
     return render(request, 'Coop/coop_plantings.html', context)
+
+
+def detail_planting(request, id=None, _id=None):
+    cooperative = get_object_or_404(Cooperative, id=id)
+    instance = get_object_or_404(Planting, id=_id)
+    # instance = Planting.objects.get(id=_id)
+    Details_Planting = DetailPlanting.objects.filter(planting_id=instance)
+    monitorings = Monitoring.objects.filter(planting_id=instance)
+
+    context = {
+        'cooperative':cooperative,
+        'instance':instance,
+        'Details_Planting':Details_Planting,
+        'monitorings':monitorings,
+    }
+    return render(request, 'Coop/detail_planting.html', context)
 
 def projet(request):
     projets = Projet.objects.all()
@@ -327,7 +394,7 @@ def detail_formation(request, id=None, _id=None):
     cooperative = get_object_or_404(Cooperative, id=id)
     instance = get_object_or_404(Formation, id=_id)
     # instance = Formation.objects.all().filter(cooperative_id=cooperative)
-    participants = Detail_Formation.objects.all().filter(formation_id=instance)
+    participants = Detail_Formation.objects.filter(formation_id=instance)
     # participants = Producteur.objects.all().filter(cooperative_id=cooperative)
     context = {
         'cooperative':cooperative,
@@ -363,7 +430,7 @@ def localisation(request):
         'parcelle_count':parcelle_count,
         # 'parcelle_count':parcelle_count
     }
-    return render(request, 'cooperatives/carte.html', context)
+    return render(request, 'carte_update.html', context)
 
 def localisation_coop(request, id=None):
     cooperative = get_object_or_404(Cooperative, id=id)
@@ -372,7 +439,7 @@ def localisation_coop(request, id=None):
     context = {
         'points_coop' : points_coop
     }
-    return render(request, 'carte1.html', context)
+    return render(request, 'cooperatives/carte_update.html', context)
 
 def site_pepinieres(request):
     pepinieres = Pepiniere.objects.all()
@@ -657,12 +724,23 @@ class PepiniereApiView(ListAPIView):
     queryset = Pepiniere.objects.all()
     serializer_class = PepiniereSerializer
 
+class DetailPlantingJson(TemplateView):
+    template_name = 'map_plantings.html'
+    # template_name = 'parametres/parcelles.html'
+
+class DetailPlantingApiView(ListAPIView):
+    queryset = DetailPlanting.objects.all()
+    serializer_class = DetailPlantingSerializer
+
+
 class PepiniereJson(TemplateView):
     template_name = 'pepinieres_json.html'
     # template_name = 'parametres/parcelles.html'
 
 class ParcelleApiView(ListAPIView):
     queryset = Parcelle.objects.all()
+    p_count = queryset.count()
+    print(p_count)
     serializer_class = ParcelleSerializer
 
 class FormationApiView(ListCreateAPIView):
@@ -770,13 +848,8 @@ def folium_map(request):
         [
             'code',
             'producteur',
-            # 'sous_section',
-            # 'acquisition',
             'latitude',
             'longitude',
-            # 'superficie',
-            # 'culture',
-            # 'certification',
         ]
     )
     html = df.to_html(
@@ -815,6 +888,64 @@ def folium_map(request):
     }
     return render(request, "cooperatives/folium_map.html", context)
 
+
+def folium_palntings_map(request):
+    m = folium.Map(
+        location=[5.34939, -4.01705],zoom_start=6,
+    )
+    marker_cluster = MarkerCluster().add_to(m)
+
+    map1 = raster_layers.TileLayer(tiles="CartoDB Dark_Matter").add_to(m)
+    map2 = raster_layers.TileLayer(tiles="CartoDB Positron").add_to(m)
+    map3 = raster_layers.TileLayer(tiles="Stamen Terrain").add_to(m)
+    map4 = raster_layers.TileLayer(tiles="Stamen Toner").add_to(m)
+    map5 = raster_layers.TileLayer(tiles="Stamen Watercolor").add_to(m)
+    folium.LayerControl().add_to(m)
+    plantings = DetailPlanting.objects.all()
+    parcelles = Parcelle.objects.all()
+
+    df1 = read_frame(parcelles,
+        fieldnames=
+        [
+            'code',
+            'producteur',
+            'latitude',
+            'longitude',
+
+        ]
+    )
+    df = read_frame(plantings,
+        fieldnames=
+        [
+            'planting',
+            'espece',
+            'nb_plante',
+            'add_le'
+        ]
+    )
+    print(df)
+    html = df.to_html(
+        classes="table table-striped table-hover table-condensed table-responsive"
+    )
+
+    # print(df)
+    for (index, row) in df1.iterrows():
+        folium.Marker(
+            location=[
+                row.loc['latitude'],
+                row.loc['longitude']
+            ],
+            popup=folium.Popup(html),
+            icon=folium.Icon(color="green", icon="ok-sign"),
+        ).add_to(marker_cluster)
+    plugins.Fullscreen().add_to(m)
+    m = m._repr_html_()
+
+    context = {
+        "m":m
+    }
+    return render(request, "folium_planting_map.html", context)
+
 from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -835,6 +966,8 @@ def produteur_list(request):
 
 def parcelles_list(request):
     parcelles = Parcelle.objects.all()
+    p_count = parcelles.count()
+    print(p_count)
     parcelle_data = serializers.serialize("json", parcelles)
     response = HttpResponse(content=parcelle_data)
     return response

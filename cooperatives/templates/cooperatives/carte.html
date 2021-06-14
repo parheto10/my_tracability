@@ -90,7 +90,8 @@
                     .setLngLat([{{ point.coordonnees }}])
                     .setPopup(
                         new mapboxgl.Popup({ offset: 25 }).setText(
-                            'Coopérative : {{ point.producteur.cooperative }}, ' + '\n' + 'Producteur : {{ point.producteur }}, ' + '\n' + 'Projet : {{ point.projet.titre }}({{ point.projet.accronyme }}), ' + '\n' + 'Superficie : {{ point.superficie|floatformat:2 }}(Ha), ' + '\n' + 'Certification : {{ point.certification }}, ' + '\n' + 'Culture : {{ point.culture }}',
+                                '<strong>Make it Mount Pleasant</strong><p><a href="http://www.mtpleasantdc.com/makeitmtpleasant" target="_blank" title="Opens in a new window">Make it Mount Pleasant</a> is a handmade and vintage market and afternoon of live entertainment and kids activities. 12:00-6:00 p.m.</p>'
+<!--                            'Coopérative : {{ point.producteur.cooperative }}, ' + '\n' + 'Producteur : {{ point.producteur }}, ' + '\n' + '' + '\n' + 'Superficie : {{ point.superficie|floatformat:2 }}(Ha), ' + '\n' + 'Certification : {{ point.certification }}, ' + '\n' + 'Culture : {{ point.culture }}',-->
                         )
                     ) // sets a popup on this marker
                 .addTo(map),

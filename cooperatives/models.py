@@ -203,8 +203,8 @@ class Producteur(models.Model):
     num_document = models.CharField(max_length=150, verbose_name="N° PIECE", null=True, blank=True)
     document = models.FileField(verbose_name="Documents", upload_to=producteurs_documents, blank=True, null=True)
     is_active = models.BooleanField(default=True)
-    add_le = models.DateTimeField(auto_now_add=True)
-    update_le = models.DateTimeField(auto_now=True)
+    # add_le = models.DateTimeField(auto_now_add=True)
+    # update_le = models.DateTimeField(auto_now=True)
     objects = models.Manager()
 
     def __str__(self):
@@ -293,8 +293,8 @@ class Parcelle(models.Model):
     superficie = models.DecimalField(max_digits=5, decimal_places=3, null=True, blank=True)
     culture = models.CharField(max_length=50, verbose_name="CULTURE", choices=CULTURE, default="cacao")
     certification = models.CharField(max_length=50, verbose_name="CERTIFICATION", choices=CERTIFICATION, default="utz")
-    add_le = models.DateTimeField(auto_now_add=True)
-    update_le = models.DateTimeField(auto_now=True)
+    # add_le = models.DateTimeField(auto_now_add=True)
+    # update_le = models.DateTimeField(auto_now=True)
     objects = models.Manager()
 
     def __str__(self):
@@ -369,7 +369,8 @@ class Planting(models.Model):
     plant_recus = models.PositiveIntegerField(default=0, verbose_name="NOMBRE DE PLANTS RECUS")
     plant_total = models.PositiveIntegerField(default=0, verbose_name="NOMBRE TOTAL DE PLANTS")
     # plant_recu = models.CharField(max_length=4, blank=True, null=True)
-    campagne = models.ForeignKey(Campagne, on_delete=models.CASCADE, default=1)
+    # campagne = models.ForeignKey(Campagne, on_delete=models.CASCADE, default=1)
+    campagne = models.CharField(max_length=10, blank=True, null=True, default="2020-2021")
     projet = models.ForeignKey(Projet, on_delete=models.CASCADE, default=1)
     date = models.DateField()
     # details = models.TextField(blank=True, null=True)

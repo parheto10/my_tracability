@@ -235,21 +235,7 @@
                            </div>
                        </div>
                         <div class="col-sm-6">
-                           <div class="panel panel-green">
-                               <div class="panel-heading">
-                                    <i class="fa fa-bar-chart-o fa-fw"></i> Plants Rétirés
-                                </div>
-                                <!-- /.panel-heading -->
-                               <div class="panel-body">
-                                   <canvas id="stats-plant" data-url="{% url 'stats_coop' %}"></canvas>
-                               </div>
-                                <!-- /.panel-body -->
-                           </div>
-                       </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-6">
-                               <div class="panel panel-primary">
+                               <div class="panel panel-green">
                                    <div class="panel-heading">
                                         <i class="fa fa-bar-chart-o fa-fw"></i> Production Plants
                                     </div>
@@ -260,14 +246,28 @@
                                     <!-- /.panel-body -->
                                </div>
                            </div>
+                    </div>
+                    <div class="row">
                         <div class="col-sm-6">
-                               <div class="panel panel-green">
+                           <div class="panel panel-green">
+                               <div class="panel-heading">
+                                    <i class="fa fa-bar-chart-o fa-fw"></i> Statistiques Plantings / Coopérative
+                                </div>
+                                <!-- /.panel-heading -->
+                               <div class="panel-body">
+                                   <canvas id="stats-plantings" data-url="{% url 'Plantings' %}"></canvas>
+                               </div>
+                                <!-- /.panel-body -->
+                           </div>
+                       </div>
+                        <div class="col-sm-6">
+                               <div class="panel panel-primary">
                                    <div class="panel-heading">
-                                        <i class="fa fa-bar-chart-o fa-fw"></i> Nbre Producteur / Coopérative
+                                        <i class="fa fa-bar-chart-o fa-fw"></i> Détails Espèces Plantées
                                     </div>
                                     <!-- /.panel-heading -->
                                    <div class="panel-body">
-{#                                       <canvas id="stats-prod" data-url="{% url 'stat_prod_coop' %}"></canvas>#}
+                                       <canvas id="stats-espece_planting" data-url="{% url 'detailPlantings' %}"></canvas>
                                    </div>
                                     <!-- /.panel-body -->
                                </div>
@@ -283,19 +283,26 @@
         <script src="{% static 'js/Chart.min.js' %}"></script>
         <script>
         $(function () {
-            var $statistiquePlant = $("#stats-plant");
+            var $statistiquePlantings = $("#stats-plantings");
             $.ajax({
-                url: $statistiquePlant.data("url"),
+                url: $statistiquePlantings.data("url"),
                 success:function (data) {
-                    var ctx = $statistiquePlant[0].getContext("2d");
+                    var ctx = $statistiquePlantings[0].getContext("2d");
                     new Chart(ctx, {
                         type:'bar',
                         data : {
                             labels : data.labels,
                             datasets : [{
-                                label : 'Plants Rétirés',
-                                backgroundColor: 'Green',
-                                borderWidth: 2,
+                                label : 'Plantings',
+                                backgroundColor: [
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 3,
                                 data : data.data
                             }]
                         },
@@ -306,7 +313,7 @@
                             },
                             title : {
                                 display : true,
-                                text: 'Liste des Espèces de Plants'
+                                text: 'Plantings / Coopérative'
                             }
                         }
                     });
@@ -327,8 +334,15 @@
                             labels : data.labels,
                             datasets : [{
                                 label : 'Semences Réçues(Kg)',
-                                backgroundColor: 'Blue',
-                                borderWidth: 2,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 3,
                                 data : data.data
                             }]
                         },
@@ -360,8 +374,15 @@
                             labels : data.labels,
                             datasets : [{
                                 label : 'Production Plant',
-                                backgroundColor: 'Blue',
-                                borderWidth: 2,
+                                backgroundColor: [
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 3,
                                 data : data.data
                             }]
                         },
@@ -380,21 +401,28 @@
             });
         });
     </script>
-        <script>
+    <script>
         $(function () {
-            var $coopProd = $("#stats-prod");
+            var $detail_plantings = $("#stats-espece_planting");
             $.ajax({
-                url: $coopProd.data("url"),
+                url: $detail_plantings.data("url"),
                 success:function (data) {
-                    var ctx = $coopProd[0].getContext("2d");
+                    var ctx = $detail_plantings[0].getContext("2d");
                     new Chart(ctx, {
                         type:'bar',
                         data : {
                             labels : data.labels,
                             datasets : [{
-                                label : 'Producteur',
-                                backgroundColor: 'Blue',
-                                borderWidth: 2,
+                                label : 'Espèces Plantées',
+                                backgroundColor: [
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 3,
                                 data : data.data
                             }]
                         },
@@ -405,7 +433,7 @@
                             },
                             title : {
                                 display : true,
-                                text: 'Producteurs / Coopérative'
+                                text: 'Espèces Plantées'
                             }
                         }
                     });

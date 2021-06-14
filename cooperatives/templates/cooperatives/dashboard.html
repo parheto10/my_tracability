@@ -204,7 +204,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <a href="#">
+                            <a href="{% url 'cooperatives:CoopPlantings' %}">
                                 <div class="panel-footer">
                                     <span class="pull-left"> Détails</span>
                                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -279,7 +279,7 @@
                                </div>
                            </div>
                            <div class="col-lg-6">
-                               <div class="panel panel-primary">
+                               <div class="panel panel-info">
                                    <div class="panel-heading">
                                         <i class="fa fa-bar-chart fa-fw"></i> Graphe Parcelles/Section
                                     </div>
@@ -304,12 +304,12 @@
                                                                 {{ section_parcelles }},
                                                         ],
                                                         backgroundColor: [
+                                                            'rgba(54, 162, 235, 1)',
+                                                            'rgba(255, 99, 132, 1)',
                                                             'rgba(255, 206, 86, 1)',
-                                                            'rgba(255, 99, 132, 0.2)',
-                                                            'rgba(54, 162, 235, 0.2)',
-                                                            'rgba(255, 206, 86, 0.2)',
-                                                            'rgba(153, 102, 255, 0.2)',
-                                                            'rgba(255, 159, 64, 0.2)'
+                                                            'rgba(75, 192, 192, 1)',
+                                                            'rgba(153, 102, 255, 1)',
+                                                            'rgba(255, 159, 64, 1)'
                                                         ],
                                                         borderColor: [
                                                             'rgba(255, 99, 132, 1)',
@@ -340,7 +340,7 @@
                     <div class="col-lg-12">
                        <div class="row">
                            <div class="col-lg-6">
-                               <div class="panel panel-primary">
+                               <div class="panel panel-yellow">
                                    <div class="panel-heading">
                                         <i class="fa fa-bar-chart fa-fw"></i> Graphe Superficie/Section
                                     </div>
@@ -365,12 +365,12 @@
                                                                 {{ section_superf|floatformat:2 }},
                                                         ],
                                                         backgroundColor: [
-                                                            'rgba(255, 99, 132, 0.2)',
-                                                            'rgba(54, 162, 235, 0.2)',
-                                                            'rgba(255, 206, 86, 0.2)',
-                                                            'rgba(75, 192, 192, 0.2)',
-                                                            'rgba(153, 102, 255, 0.2)',
-                                                            'rgba(255, 159, 64, 0.2)'
+                                                            'rgba(54, 162, 235, 1)',
+                                                            'rgba(255, 99, 132, 1)',
+                                                            'rgba(255, 206, 86, 1)',
+                                                            'rgba(75, 192, 192, 1)',
+                                                            'rgba(153, 102, 255, 1)',
+                                                            'rgba(255, 159, 64, 1)'
                                                         ],
                                                         borderColor: [
                                                             'rgba(255, 99, 132, 1)',
@@ -396,93 +396,77 @@
                                     <!-- /.panel-body -->
                                </div>
                            </div>
-                           <div class="col-lg-6">
-                               <div class="panel panel-primary">
-                                   <div class="panel-heading">
-                                        <i class="fa fa-bar-chart fa-fw"></i> Graphe Planting/Section
-                                    </div>
-                                    <!-- /.panel-heading -->
-                                   <div class="panel-body">
-{#                                               <canvas id="stats-semences" data-url="{% url 'cooperatives:Stats_semence' %}" style="width: 50%"></canvas>#}
-                                         <script src="{% static 'js/chart.js' %}"></script>
-                                         <canvas id="planting"></canvas>
-                                         <script>
-                                             var ctx = document.getElementById('planting').getContext('2d');
-                                             var planting = new Chart(ctx, {
-                                                type: 'bar',
-                                                data: {
-                                                    labels: [
-                                                        {% for sect in section %}
-                                                            '{{ sect.libelle }}',
-                                                        {% endfor %}
-                                                    ],
-                                                    datasets: [{
-                                                        label: [
-                                                            'Plants',
-                                                        ],
-                                                        data: [
-                                                                {{ section_plating }},
-                                                        ],
-                                                        backgroundColor: [
-                                                            'rgba(255, 99, 132, 0.2)',
-                                                            'rgba(54, 162, 235, 0.2)',
-                                                            'rgba(255, 206, 86, 0.2)',
-                                                            'rgba(75, 192, 192, 0.2)',
-                                                            'rgba(153, 102, 255, 0.2)',
-                                                            'rgba(255, 159, 64, 0.2)'
-                                                        ],
-                                                        borderColor: [
-                                                            'rgba(255, 99, 132, 1)',
-                                                            'rgba(54, 162, 235, 1)',
-                                                            'rgba(255, 206, 86, 1)',
-                                                            'rgba(75, 192, 192, 1)',
-                                                            'rgba(153, 102, 255, 1)',
-                                                            'rgba(255, 159, 64, 1)'
-                                                        ],
-                                                        borderWidth: 1
-                                                    }]
-                                                },
-                                                options: {
-                                                    scales: {
-                                                        y: {
-                                                            beginAtZero: true
-                                                        }
-                                                    }
-                                                }
-                                            });
-                                         </script>
-                                   </div>
-                                    <!-- /.panel-body -->
+                           <div class="col-sm-6">
+                           <div class="panel panel-green">
+                               <div class="panel-heading">
+                                    <i class="fa fa-bar-chart-o fa-fw"></i> Statistiques Planting / Epèce
+                                </div>
+                                <!-- /.panel-heading -->
+                               <div class="panel-body">
+                                   <canvas id="stats-plantings" data-url="{% url 'cooperatives:coopdetailPlantings' %}"></canvas>
                                </div>
+                                <!-- /.panel-body -->
                            </div>
                        </div>
-                    </div>
-                    <div class="col-lg-12">
-                       <div class="row">
-                           <div class="col-sm-6">
-                               <div class="panel panel-primary">
-                                   <div class="panel-heading">
-                                        <i class="fa fa-bar-chart fa-fw"></i> Graphe des Semences Réçues
-                                    </div>
-                                    <!-- /.panel-heading -->
-                                   <div class="panel-body">
-                                       <canvas id="stats-semences" data-url="{% url 'cooperatives:Stats_semence' %}" style="width: 50%"></canvas>
-                                   </div>
-                                    <!-- /.panel-body -->
-                               </div>
-                           </div>
-                           <div class="col-sm-6">
-                               <div class="panel panel-green">
-                                   <div class="panel-heading">
-                                        <i class="fa fa-bar-chart fa-fw"></i> Graphe des Plants Enlevés
-                                    </div>
-                                    <!-- /.panel-heading -->
-                                   <div class="panel-body">
-                                       <canvas id="stats-plant" data-url="{% url 'cooperatives:stats_coop' %}" style="width: 50%"></canvas>
-                                   </div>
-                                    <!-- /.panel-body -->
-                               </div>
-                           </div>
+{#                           <div class="col-lg-6">#}
+{#                               <div class="panel panel-primary">#}
+{#                                   <div class="panel-heading">#}
+{#                                        <i class="fa fa-bar-chart fa-fw"></i> Graphe Plants/Espèce#}
+{#                                    </div>#}
+{#                                    <!-- /.panel-heading -->#}
+{#                                   <div class="panel-body">#}
+{#                                               <canvas id="stats-semences" data-url="{% url 'cooperatives:Stats_semence' %}" style="width: 50%"></canvas>#}
+{#                                         <script src="{% static 'js/chart.js' %}"></script>#}
+{#                                         <canvas id="planting"></canvas>#}
+{#                                         <script>#}
+{#                                             var ctx = document.getElementById('planting').getContext('2d');#}
+{#                                             var planting = new Chart(ctx, {#}
+{#                                                type: 'bar',#}
+{#                                                data: {#}
+{#                                                    labels: [#}
+{#                                                        {% for espece in espece_planting %}#}
+{#                                                            '{{ espece.libelle }}',#}
+{#                                                        {% endfor %}#}
+{#                                                    ],#}
+{#                                                    datasets: [{#}
+{#                                                        label: [#}
+{#                                                            'Plantings',#}
+{#                                                        ],#}
+{#                                                        data: [#}
+{#                                                                {{ plantings }},#}
+{#                                                        ],#}
+{#                                                        backgroundColor: [#}
+{#                                                            'rgba(255, 99, 132, 0.2)',#}
+{#                                                            'rgba(54, 162, 235, 0.2)',#}
+{#                                                            'rgba(255, 206, 86, 0.2)',#}
+{#                                                            'rgba(75, 192, 192, 0.2)',#}
+{#                                                            'rgba(153, 102, 255, 0.2)',#}
+{#                                                            'rgba(255, 159, 64, 0.2)'#}
+{#                                                        ],#}
+{#                                                        borderColor: [#}
+{#                                                            'rgba(255, 99, 132, 1)',#}
+{#                                                            'rgba(54, 162, 235, 1)',#}
+{#                                                            'rgba(255, 206, 86, 1)',#}
+{#                                                            'rgba(75, 192, 192, 1)',#}
+{#                                                            'rgba(153, 102, 255, 1)',#}
+{#                                                            'rgba(255, 159, 64, 1)'#}
+{#                                                        ],#}
+{#                                                        borderWidth: 1#}
+{#                                                    }]#}
+{#                                                },#}
+{#                                                options: {#}
+{#                                                    scales: {#}
+{#                                                        y: {#}
+{#                                                            beginAtZero: true#}
+{#                                                        }#}
+{#                                                    }#}
+{#                                                }#}
+{#                                            });#}
+{#                                         </script>#}
+{#                                   </div>#}
+{#                                    <!-- /.panel-body -->#}
+{#                               </div>#}
+{#                           </div>#}
                        </div>
                     </div>
                     <!-- /.col-lg-8 -->
@@ -524,61 +508,104 @@
 {#            window.myPie = new Chart(ctx, myconfig);#}
 {#        }#}
 {#    </script>#}
+{#    <script>#}
+{#        $(function () {#}
+{#            var $statistiquePlant = $("#stats-plant");#}
+{#            $.ajax({#}
+{#                url: $statistiquePlant.data("url"),#}
+{#                success:function (data) {#}
+{#                    var ctx = $statistiquePlant[0].getContext("2d");#}
+{#                    new Chart(ctx, {#}
+{#                        type:'bar',#}
+{#                        data : {#}
+{#                            labels : data.labels,#}
+{#                            datasets : [{#}
+{#                                label : 'Plants',#}
+{#                                backgroundColor: 'Green',#}
+{#                                data : data.data#}
+{#                            }]#}
+{#                        },#}
+{#                        options: {#}
+{#                            responsive: true,#}
+{#                            legend : {#}
+{#                                position : 'top',#}
+{#                            }#}
+{#                        }#}
+{#                    });#}
+{#                }#}
+{#            });#}
+{#        });#}
+{#    </script>#}
+{#    <script>#}
+{#        $(function () {#}
+{#            var $statistiqueSemences = $("#stats-semences");#}
+{#            $.ajax({#}
+{#                url: $statistiqueSemences.data("url"),#}
+{#                success:function (data) {#}
+{#                    var ctx = $statistiqueSemences[0].getContext("2d");#}
+{#                    new Chart(ctx, {#}
+{#                        type:'bar',#}
+{#                        data : {#}
+{#                            labels : data.labels,#}
+{#                            datasets : [{#}
+{#                                label : 'Semences(Kg)',#}
+{#                                backgroundColor: 'Blue',#}
+{#                                borderWidth: 2,#}
+{#                                data : data.data#}
+{#                            }]#}
+{#                        },#}
+{#                        options: {#}
+{#                            responsive: true,#}
+{#                            legend : {#}
+{#                                position : 'top',#}
+{#                            }#}
+{#                        }#}
+{#                    });#}
+{#                }#}
+{#            });#}
+{#        });#}
+{#    </script>#}
+
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/Chart.min.js' %}"></script>
     <script>
-        $(function () {
-            var $statistiquePlant = $("#stats-plant");
-            $.ajax({
-                url: $statistiquePlant.data("url"),
-                success:function (data) {
-                    var ctx = $statistiquePlant[0].getContext("2d");
-                    new Chart(ctx, {
-                        type:'bar',
-                        data : {
-                            labels : data.labels,
-                            datasets : [{
-                                label : 'Plants',
-                                backgroundColor: 'Green',
-                                data : data.data
-                            }]
+    $(function () {
+        var $statistiquePlantings = $("#stats-plantings");
+        $.ajax({
+            url: $statistiquePlantings.data("url"),
+            success:function (data) {
+                var ctx = $statistiquePlantings[0].getContext("2d");
+                new Chart(ctx, {
+                    type:'bar',
+                    data : {
+                        labels : data.labels,
+                        datasets : [{
+                            label : 'Plantings',
+                            backgroundColor: [
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 2,
+                            data : data.data
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        legend : {
+                            position : 'top',
                         },
-                        options: {
-                            responsive: true,
-                            legend : {
-                                position : 'top',
-                            }
+                        title : {
+                            display : true,
+                            text: 'Plantings / Espèce'
                         }
-                    });
-                }
-            });
+                    }
+                });
+            }
         });
-    </script>
-    <script>
-        $(function () {
-            var $statistiqueSemences = $("#stats-semences");
-            $.ajax({
-                url: $statistiqueSemences.data("url"),
-                success:function (data) {
-                    var ctx = $statistiqueSemences[0].getContext("2d");
-                    new Chart(ctx, {
-                        type:'bar',
-                        data : {
-                            labels : data.labels,
-                            datasets : [{
-                                label : 'Semences(Kg)',
-                                backgroundColor: 'Blue',
-                                borderWidth: 2,
-                                data : data.data
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            legend : {
-                                position : 'top',
-                            }
-                        }
-                    });
-                }
-            });
-        });
-    </script>
+    });
+</script>
 {% endblock %}

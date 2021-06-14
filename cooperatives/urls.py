@@ -32,7 +32,7 @@ from .views import (
     export_plant_xls, edit_semence, Stats_semence, Editpepiniere, site_pepiniere, Editformation,
     delete_semence, parcelle_update, update_section, delete_section, export_section_xls, update_sous_section,
     export_sous_section_xls, export_formation_xls, delete_sous_section, ParcellesMapView, parcelle_list, ReceptionView,
-    folium_map, PlantingList, detail_planting,
+    folium_map, PlantingList, detail_planting, coopdetailPlantings, CoopPlantings,
     # delete_sous_section, export_sous_section_xls, export_formation_xls, my_parcelles, ParcellesView,
     # load_section
 )
@@ -68,6 +68,8 @@ urlpatterns = [
     # path('plantings/', planting, name='planting'),
     path('Stats_coop/', Stats_coop, name='stats_coop'),
     path('Stats_semence/', Stats_semence, name='Stats_semence'),
+    path('planting_coop/', CoopPlantings, name='CoopPlantings'),
+    path('coopdetailPlantings/', coopdetailPlantings, name='coopdetailPlantings'),
     path('plantings/<int:id>/', detail_planting, name='suivi_planting'),
     path('localisation/', localisation, name='localisation'),
     path('site_pepiniere/', site_pepiniere, name='site_pepiniere'),

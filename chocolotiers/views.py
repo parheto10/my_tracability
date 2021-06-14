@@ -43,7 +43,7 @@ def client_index(request, id=None):
     nb_producteurs = Producteur.objects.all().count()
     nb_parcelles = Parcelle.objects.all().count()
     Superficie = Parcelle.objects.aggregate(total=Sum('superficie'))['total']
-    Total_plant = Planting.objects.aggregate(total=Sum('nb_plant'))['total']
+    Total_plant = Planting.objects.aggregate(total=Sum('plant_recus'))['total']
 
     context = {
         'cooperatives':cooperatives,
@@ -64,7 +64,7 @@ def detail_coop(request, id=None):
     coop_nb_parcelles = Parcelle.objects.all().filter(producteur__section__cooperative_id=cooperative).count()
     coop_superficie = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative).aggregate(total=Sum('superficie'))['total']
     # plants = Details_planting.objects.values("espece__libelle").filter(planting__parcelle__producteur__cooperative_id=cooperative).annotate(plante=Sum('plante'))
-    coop_plants_total = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative).aggregate(total=Sum('nb_plant'))['total']
+    coop_plants_total = Planting.objects.all().filter(parcelle__producteur__cooperative_id=cooperative).aggregate(total=Sum('plant_recus'))['total']
 
     context = {
         'cooperative': cooperative,

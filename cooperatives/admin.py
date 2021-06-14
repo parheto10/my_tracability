@@ -72,7 +72,7 @@ class ParcelleResource(resources.ModelResource):
 class ParcelleAdmin(ImportExportModelAdmin):
     list_display = ["id", "code", "producteur", "acquisition", "culture", "certification", "coordonnees"]
     list_filter = ["sous_section__section__libelle", "producteur__cooperative",]
-    search_fields = ["code", "sction__libelle", "sous_sction__libelle", "producteur__nom", "producteur__prenoms", "latitude", "longitude", "superficie"]
+    search_fields = ["code", "sous_section__libelle", "producteur__nom", "producteur__prenoms", "latitude", "longitude", "superficie"]
 
 # class DetailsReceptionAdmin(admin.TabularInline):
 #    model = DetailsReception

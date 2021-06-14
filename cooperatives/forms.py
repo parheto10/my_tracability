@@ -405,25 +405,23 @@ from .models import Planting, DetailPlanting
 # from .models import FamilyMember, Profile
 
 
-class PLantingForm(ModelForm):
+class PlantingForm(ModelForm):
     class Meta:
         model = Planting
         fields = [
-            "parcelle",
+            # "parcelle",
             "nb_plant_exitant",
             "plant_recus",
-            "campagne",
-            "projet",
+            # "campagne",
+            # "projet",
             "date",
-            "date",
-            # "details",
         ]
 
 class DetailPlantingForm(ModelForm):
     class Meta:
         model = DetailPlanting
         fields = [
-            "planting",
+            # "planting",
             "espece",
             "nb_plante",
         ]
@@ -438,11 +436,11 @@ class MonitoringForm(ModelForm):
         model = Monitoring
         fields = [
             # "planting",
-            "espece",
+            # "espece",
             "espece",
             "mort",
             "remplace",
             "date",
             "mature",
-            "observation"
+            # "observation"
         ]

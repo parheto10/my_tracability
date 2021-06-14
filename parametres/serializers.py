@@ -244,17 +244,17 @@ class PlantingSerializer(serializers.ModelSerializer):
             "parcelle",
             "nb_plant_exitant",
             "plant_recus",
+            "plant_total",
             "campagne",
             "projet",
-            "date",
             "date",
         ]
         depth = 1
     def to_representation(self, instance):
         response = super().to_representation(instance)
         response['parcelle'] = ParcelleSerializer(instance.parcelle).data
-        response['projet'] = ProjetSerializer(instance.projet).data
-        response['campagne'] = CampagneSerializer(instance.campagne).data
+        # response['projet'] = ProjetSerializer(instance.projet).data
+        # response['campagne'] = CampagneSerializer(instance.campagne).data
         return response
 
 class DetailPlantingSerializer(serializers.ModelSerializer):
@@ -270,7 +270,7 @@ class DetailPlantingSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         response['planting'] = PlantingSerializer(instance.planting).data
-        response['espece'] = EspeceSerializer(instance.espece).data
+        # response['espece'] = EspeceSerializer(instance.espece).data
         # response['campagne'] = CampagneSerializer(instance.campagne).data
         return response
 

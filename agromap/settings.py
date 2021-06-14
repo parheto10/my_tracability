@@ -58,10 +58,10 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'import_export',
     'sorl.thumbnail',
-    # 'livereload',
+    'livereload',
     'django_humanize',
     'rest_framework',
-    # 'leaflet',
+    'leaflet',
     'django_filters',
     # 'geojson',
     # 'djgeojson',
@@ -81,7 +81,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'livereload.middleware.LiveReloadScript',
+    'livereload.middleware.LiveReloadScript',
 ]
 
 ROOT_URLCONF = 'agromap.urls'
