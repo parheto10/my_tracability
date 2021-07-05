@@ -185,7 +185,7 @@ class ParcelleSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         response = super().to_representation(instance)
-        response['producteur'] = ProducteurSerializer(instance.producteur).data
+        # response['producteur'] = ProducteurSerializer(instance.producteur).data
         # response['sous_section'] = SousSectionSerializer(instance.sous_section).data
         return response
 

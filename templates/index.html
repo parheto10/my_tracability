@@ -176,7 +176,7 @@
                     <!-- /.row -->
                     <div class="row">
                         <div class="col-lg-12">
-                            <div class="panel panel-success">
+                            <div class="panel panel-primary">
                                 <div class="panel-heading">
                                     <i class="fa fa-bar-chart-o fa-fw"></i> Cooperatives membres
                                 </div>
@@ -223,32 +223,6 @@
                     <!-- /.row -->
                     <div class="row">
                         <div class="col-sm-6">
-                           <div class="panel panel-primary">
-                               <div class="panel-heading">
-                                    <i class="fa fa-bar-chart-o fa-fw"></i> Semences Réçus
-                                </div>
-                                <!-- /.panel-heading -->
-                               <div class="panel-body">
-                                   <canvas id="stats-semences" data-url="{% url 'stats_semences' %}"></canvas>
-                               </div>
-                                <!-- /.panel-body -->
-                           </div>
-                       </div>
-                        <div class="col-sm-6">
-                               <div class="panel panel-green">
-                                   <div class="panel-heading">
-                                        <i class="fa fa-bar-chart-o fa-fw"></i> Production Plants
-                                    </div>
-                                    <!-- /.panel-heading -->
-                                   <div class="panel-body">
-                                       <canvas id="stats-plants" data-url="{% url 'production_plan' %}"></canvas>
-                                   </div>
-                                    <!-- /.panel-body -->
-                               </div>
-                           </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-6">
                            <div class="panel panel-green">
                                <div class="panel-heading">
                                     <i class="fa fa-bar-chart-o fa-fw"></i> Statistiques Plantings / Coopérative
@@ -268,6 +242,32 @@
                                     <!-- /.panel-heading -->
                                    <div class="panel-body">
                                        <canvas id="stats-espece_planting" data-url="{% url 'detailPlantings' %}"></canvas>
+                                   </div>
+                                    <!-- /.panel-body -->
+                               </div>
+                           </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                           <div class="panel panel-primary">
+                               <div class="panel-heading">
+                                    <i class="fa fa-bar-chart-o fa-fw"></i> Semences Réçus
+                                </div>
+                                <!-- /.panel-heading -->
+                               <div class="panel-body">
+                                   <canvas id="stats-semences" data-url="{% url 'stats_semences' %}"></canvas>
+                               </div>
+                                <!-- /.panel-body -->
+                           </div>
+                       </div>
+                        <div class="col-sm-6">
+                               <div class="panel panel-green">
+                                   <div class="panel-heading">
+                                        <i class="fa fa-bar-chart-o fa-fw"></i> Production Plants
+                                    </div>
+                                    <!-- /.panel-heading -->
+                                   <div class="panel-body">
+                                       <canvas id="stats-plants" data-url="{% url 'production_plan' %}"></canvas>
                                    </div>
                                     <!-- /.panel-body -->
                                </div>
@@ -295,12 +295,13 @@
                             datasets : [{
                                 label : 'Plantings',
                                 backgroundColor: [
-                                    'rgba(54, 162, 235, 1)',
-                                    'rgba(255, 99, 132, 1)',
-                                    'rgba(255, 206, 86, 1)',
-                                    'rgba(75, 192, 192, 1)',
-                                    'rgba(153, 102, 255, 1)',
-                                    'rgba(255, 159, 64, 1)'
+                                    'rgb(13,137,41)',
+                                    {#'rgba(54, 162, 235, 1)',#}
+                                    {#'rgba(255, 99, 132, 1)',#}
+                                    {#'rgba(255, 206, 86, 1)',#}
+                                    {#'rgba(75, 192, 192, 1)',#}
+                                    {#'rgba(153, 102, 255, 1)',#}
+                                    {#'rgba(255, 159, 64, 1)'#}
                                 ],
                                 borderWidth: 3,
                                 data : data.data
@@ -335,12 +336,12 @@
                             datasets : [{
                                 label : 'Semences Réçues(Kg)',
                                 backgroundColor: [
-                                    'rgba(255, 99, 132, 1)',
+                                    {#'rgba(255, 99, 132, 1)',#}
                                     'rgba(54, 162, 235, 1)',
-                                    'rgba(255, 206, 86, 1)',
-                                    'rgba(75, 192, 192, 1)',
-                                    'rgba(153, 102, 255, 1)',
-                                    'rgba(255, 159, 64, 1)'
+                                    {#'rgba(255, 206, 86, 1)',#}
+                                    {#'rgba(75, 192, 192, 1)',#}
+                                    {#'rgba(153, 102, 255, 1)',#}
+                                    {#'rgba(255, 159, 64, 1)'#}
                                 ],
                                 borderWidth: 3,
                                 data : data.data
@@ -375,12 +376,12 @@
                             datasets : [{
                                 label : 'Production Plant',
                                 backgroundColor: [
-                                    'rgba(255, 206, 86, 1)',
-                                    'rgba(54, 162, 235, 1)',
-                                    'rgba(255, 99, 132, 1)',
-                                    'rgba(75, 192, 192, 1)',
-                                    'rgba(153, 102, 255, 1)',
-                                    'rgba(255, 159, 64, 1)'
+                                    {#'rgba(255, 206, 86, 1)',#}
+                                    {#'rgba(54, 162, 235, 1)',#}
+                                    {#'rgba(255, 99, 132, 1)',#}
+                                    'rgb(13,137,41)',
+                                    {#'rgba(153, 102, 255, 1)',#}
+                                    {#'rgba(255, 159, 64, 1)'#}
                                 ],
                                 borderWidth: 3,
                                 data : data.data
@@ -415,12 +416,13 @@
                             datasets : [{
                                 label : 'Espèces Plantées',
                                 backgroundColor: [
-                                    'rgba(75, 192, 192, 1)',
                                     'rgba(54, 162, 235, 1)',
-                                    'rgba(255, 99, 132, 1)',
-                                    'rgba(255, 206, 86, 1)',
-                                    'rgba(153, 102, 255, 1)',
-                                    'rgba(255, 159, 64, 1)'
+                                    {#'rgba(75, 192, 192, 1)',#}
+                                    {#'rgba(54, 162, 235, 1)',#}
+                                    {#'rgba(255, 99, 132, 1)',#}
+                                    {#'rgba(255, 206, 86, 1)',#}
+                                    {#'rgba(153, 102, 255, 1)',#}
+                                    {#'rgba(255, 159, 64, 1)'#}
                                 ],
                                 borderWidth: 3,
                                 data : data.data

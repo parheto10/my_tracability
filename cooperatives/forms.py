@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 #from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.forms import fields
+from django.forms import fields, DateInput
 from django.http import request
 from django_select2 import forms as s2forms
 from django_select2.forms import ModelSelect2Widget
@@ -417,6 +417,10 @@ class PlantingForm(ModelForm):
             "date",
         ]
 
+        widgets = {
+            'date': DateInput(attrs={'type': 'datetime-local'}, format='%d/%m/%Y'),
+        }
+
 class DetailPlantingForm(ModelForm):
     class Meta:
         model = DetailPlanting
@@ -425,7 +429,6 @@ class DetailPlantingForm(ModelForm):
             "espece",
             "nb_plante",
         ]
-
 
 DetailPlantingFormSet = inlineformset_factory(
     Planting, DetailPlanting, form=DetailPlantingForm, extra=1)

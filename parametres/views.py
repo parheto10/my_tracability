@@ -50,7 +50,7 @@ from cooperatives.models import (
     Monitoring,
 )
 
-from .forms import UserForm, LoginForm
+from .forms import UserForm, LoginForm, ProjetForm
 from .serializers import ProducteurSerializer, ParcelleSerializer, PepiniereSerializer, FormationSerializer, \
     DetailPlantingSerializer
 
@@ -184,8 +184,6 @@ def detailPlantings(request):
 #         'labels':labels,
 #         'data':data,
 #     })
-
-
 
 def Production_plan(request):
     querysets = Semence_Pepiniere.objects.values("pepiniere__cooperative__sigle").annotate(production=Sum('production'))
@@ -329,14 +327,15 @@ def parcelle_coop(request, id=None):
     }
     return render(request, 'Coop/coop_parcelle.html', context)
 
-def planting_coop(request, id=None):
+def planting_coop(request, id=None, p_id=None):
     cooperative = get_object_or_404(Cooperative, id=id)
-    coop_plants = Planting.objects.filter(parcelle__producteur__cooperative_id=cooperative)
+    # planting = Planting.objects.filter(parcelle__producteur__cooperative_id=cooperative)
+    plantings = DetailPlanting.objects.filter(planting__parcelle__producteur__cooperative_id=cooperative)
     context = {
         'cooperative': cooperative,
-        'coop_plants' : coop_plants,
+        'plantings' : plantings,
     }
-    return render(request, 'Coop/coop_plantings.html', context)
+    return render(request, 'cooperatives/planting_coop_update.html', context)
 
 
 def detail_planting(request, id=None, _id=None):
@@ -356,28 +355,72 @@ def detail_planting(request, id=None, _id=None):
 
 def projet(request):
     projets = Projet.objects.all()
+    form = ProjetForm()
+    if request.method == 'POST':
+        form = ProjetForm(request.POST)
+        if form.is_valid():
+            projet = form.save(commit=False)
+            projet = projet.save()
+        messages.success(request, "Projet Ajoutée avec succès")
+        return HttpResponseRedirect(reverse('projets'))
     context = {
         'projets': projets,
+        'form': form,
     }
     return render(request, 'projets.html', context)
 
+def update_projet(request, id=None):
+    instance = get_object_or_404(Projet, id=id)
+    form = ProjetForm(request.POST or None, request.FILES or None, instance=instance)
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.save()
+        messages.info(request, "Projet Modifié Avec Succès", extra_tags='html_safe')
+        return HttpResponseRedirect(reverse('projets'))
+    context = {
+        'instance':instance,
+        'form':form,
+    }
+    return render(request, "projet_edit.html", context)
+
+def delete_projet(request, id=None):
+    item = get_object_or_404(Projet, id=id)
+    if request.method == "POST":
+        item.delete()
+        messages.error(request, "Projet Supprimée Avec Succès")
+        return redirect('projets')
+    context = {
+        # 'pepiniere': pepiniere,
+        'item': item,
+    }
+    return render(request, 'projet_delete.html', context)
+    # item.delete()
+    # messages.success(request, "Section Supprimer avec Succès")
+    # return HttpResponseRedirect(reverse('cooperatives:section'))
+
 def detail_proj(request, id=None):
     instance = get_object_or_404(Projet, id=id)
-    # producteurs_proj = Parcelle.objects.all().filter(projet_id=instance).count()
- #   parcelles = Planting.objects.all().filter(projet_id=instance)
+    # cooperatives = Cooperative.objects.filter(cooperative__projet__i).count()
+    producteurs_proj = Producteur.objects.filter(cooperative__projet=instance).count()
+    parcelles = Parcelle.objects.filter(producteur__cooperative__projet=instance)
     # parcelles = Planting.objects.all().filter(projet_id=instance)
-    #nb_parcelles_proj = Planting.objects.all().filter(projet_id=instance).count()
- #   plants = Planting.objects.all().filter(projet_id=instance)
+    nb_parcelles_proj = Parcelle.objects.filter(producteur__cooperative__projet=instance).count()
+    plants = DetailPlanting.objects.filter(planting__projet_id=instance).aggregate(total=Sum('nb_plante'))['total']
     #nb_plants_proj = Planting.objects.all().filter(projet_id = instance).count()
-    # superficie_proj = Planting.objects.all(parcelle).filter().aggregate(total=Sum('superficie'))['total']
+    superficie_proj = Parcelle.objects.filter(producteur__cooperative__projet=instance).aggregate(total=Sum('superficie'))['total']
+
+    # print(superficie_proj)
     context = {
         'instance': instance,
-        # 'parcelles':parcelles,
-        # 'nb_parcelles_proj':nb_parcelles_proj,
+        'parcelles': parcelles,
+        # 'cooperatives': cooperatives,
+        'plants':plants,
+        # 'parcelles':plants,
+        'nb_parcelles_proj':nb_parcelles_proj,
         #'nb_plants_proj':nb_plants_proj,
         #'plants':plants,
-        # 'superficie_proj':superficie_proj,
-        # 'producteurs_proj':producteurs_proj,
+        'superficie_proj':superficie_proj,
+        'producteurs_proj':producteurs_proj,
     }
     return render(request, 'projet.html', context)
 
@@ -435,11 +478,20 @@ def localisation(request):
 def localisation_coop(request, id=None):
     cooperative = get_object_or_404(Cooperative, id=id)
     # coop_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative)
-    points_coop = Parcelle.objects.all().filter(producteur__section__cooperative_id=cooperative)
+    parcelles = Parcelle.objects.filter(producteur__section__cooperative_id=cooperative)
     context = {
-        'points_coop' : points_coop
+        'parcelles' : parcelles
     }
     return render(request, 'cooperatives/carte_update.html', context)
+
+def plantingcoop(request, id=None):
+    cooperative = get_object_or_404(Cooperative, id=id)
+    # coop_producteurs = Producteur.objects.all().filter(cooperative_id=cooperative)
+    plantings = Planting.objects.filter(parcelle__producteur__cooperative_id=cooperative)
+    context = {
+        'plantings' : plantings
+    }
+    return render(request, 'cooperatives/planting_coop_update.html', context)
 
 def site_pepinieres(request):
     pepinieres = Pepiniere.objects.all()
@@ -494,7 +546,7 @@ def export_prod_xls(request, id=None):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    columns = ['COOPERATIVE' ,'CODE', 'TYPE', 'SECTION', 'GENRE', 'NOM', 'PRENOMS', 'CONTACTS', 'LOCALITE']
+    columns = ['COOPERATIVE', 'SECTION','LOCALITE', 'CODE', 'TYPE',  'GENRE', 'NOM', 'PRENOMS', 'CONTACTS']
 
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style)
@@ -504,14 +556,14 @@ def export_prod_xls(request, id=None):
     cooperative = get_object_or_404(Cooperative, id=id)
     rows = Producteur.objects.all().filter(cooperative_id=cooperative.id).values_list(
         'cooperative__sigle',
+        'section__libelle',
+        'localite',
         'code',
         'type_producteur',
-        'section__libelle',
         'genre',
         'nom',
         'prenoms',
         'contacts',
-        'localite',
     )
     for row in rows:
         row_num += 1
@@ -534,7 +586,7 @@ def export_parcelle_xls(request, id=None):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    columns = ['COOPERATIVE', 'CODE', 'P.NOM', 'P.PRENOMS', 'CERTIFI', 'CULTURE', 'SUPER', 'LONG', 'LAT', 'SECTION']
+    columns = ['COOPERATIVE','SECTION', 'CODE', 'NOM', 'PRENOMS', 'CERTIF', 'CULTURE', 'SUPER', 'LONG', 'LAT']
 
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style)
@@ -544,6 +596,7 @@ def export_parcelle_xls(request, id=None):
     cooperative = get_object_or_404(Cooperative, id=id)
     rows = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative.id).values_list(
         'producteur__cooperative__sigle',
+        'producteur__section__libelle',
         'code',
         'producteur__nom',
         'producteur__prenoms',
@@ -552,7 +605,6 @@ def export_parcelle_xls(request, id=None):
         'superficie',
         'longitude',
         'latitude',
-        'sous_section__section__libelle',
     )
     for row in rows:
         row_num += 1
@@ -669,7 +721,6 @@ def export_prods_to_pdf(request, id=None):
        return HttpResponse('Une Erreure est Survenue, Réessayer SVP... <pre>' + html + '</pre>')
     return response
 
-
 def export_parcelles_to_pdf(request, id=None):
     cooperative = get_object_or_404(Cooperative, id=id)
     parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative)
@@ -740,7 +791,7 @@ class PepiniereJson(TemplateView):
 class ParcelleApiView(ListAPIView):
     queryset = Parcelle.objects.all()
     p_count = queryset.count()
-    print(p_count)
+    # print(p_count)
     serializer_class = ParcelleSerializer
 
 class FormationApiView(ListCreateAPIView):
@@ -923,7 +974,7 @@ def folium_palntings_map(request):
             'add_le'
         ]
     )
-    print(df)
+    # print(df)
     html = df.to_html(
         classes="table table-striped table-hover table-condensed table-responsive"
     )
@@ -955,34 +1006,34 @@ def planting_list(request):
     planting_data = serializers.serialize("json", plantings)
     response = HttpResponse(content=planting_data)
     return response
-    print(response)
+    # print(response)
 
 def produteur_list(request):
     producteurs = Producteur.objects.all()
     producteur_data = serializers.serialize("json", producteurs)
     response = HttpResponse(content=producteur_data)
     return response
-    print(response)
+    # print(response)
 
 def parcelles_list(request):
     parcelles = Parcelle.objects.all()
     p_count = parcelles.count()
-    print(p_count)
+    # print(p_count)
     parcelle_data = serializers.serialize("json", parcelles)
     response = HttpResponse(content=parcelle_data)
     return response
-    print(response)
+    # print(response)
 
 def planting_list(request):
     plantings = Planting.objects.all()
     plantings_data = serializers.serialize("json", plantings)
     response = HttpResponse(content=plantings_data)
     return response
-    print(response)
+    # print(response)
 
 def details_planting_list(request):
     details_plantings = DetailPlanting.objects.all()
     data = serializers.serialize("json", details_plantings)
     response = HttpResponse(content=data)
     return response
-    print(response)
+    # print(response)

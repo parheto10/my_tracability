@@ -2,6 +2,9 @@ from django import forms
 from django.contrib.auth import get_user_model
 #from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.forms import ModelForm
+
+from parametres.models import Projet
 
 User = get_user_model()
 non_allowed_username = ["abc", "123", "admin1", "admin12"]
@@ -43,6 +46,22 @@ class UserForm(forms.ModelForm):
     #     if qs.exists:
     #         raise ValidationError("Cette Adresse électronique est déjà Utiliser, Veuillez en choisir une autre SVP !!!")
     #     return email
+
+
+class ProjetForm(ModelForm):
+    class Meta:
+        model = Projet
+        fields = [
+            'client',
+            'categorie',
+            'accronyme',
+            'titre',
+            'chef',
+            'debut',
+            'fin',
+            'etat',
+        ]
+
 
 
 #for contact us page

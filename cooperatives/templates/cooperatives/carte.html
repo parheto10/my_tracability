@@ -73,11 +73,11 @@
                  "type": "Feature",
                  "properties": {
                    "pk": "{{ point.pk }}",
-                   'marker-color': '#3bb2d0',
+                   'marker-color': '#13d17f',
                    'marker-size': 'large',
                    'marker-symbol': 'park',
                    'title': '{{ point.producteur }}',
-                   'icon': 'theatre'
+                   'icon': 'park'
                    {#'description': '{{point.projet.titre}}',#}
                    {#'image': 'https://farm9.staticflickr.com/8571/15844010757_63b093d527_n.jpg',#}
                  },
@@ -90,8 +90,7 @@
                     .setLngLat([{{ point.coordonnees }}])
                     .setPopup(
                         new mapboxgl.Popup({ offset: 25 }).setText(
-                                '<strong>Make it Mount Pleasant</strong><p><a href="http://www.mtpleasantdc.com/makeitmtpleasant" target="_blank" title="Opens in a new window">Make it Mount Pleasant</a> is a handmade and vintage market and afternoon of live entertainment and kids activities. 12:00-6:00 p.m.</p>'
-<!--                            'Coopérative : {{ point.producteur.cooperative }}, ' + '\n' + 'Producteur : {{ point.producteur }}, ' + '\n' + '' + '\n' + 'Superficie : {{ point.superficie|floatformat:2 }}(Ha), ' + '\n' + 'Certification : {{ point.certification }}, ' + '\n' + 'Culture : {{ point.culture }}',-->
+                           '<strong>PRODUCTEUR : {{ point.producteur }}</strong><p><b>COOPERATIVE</b> : {{ point.producteur.cooperative }}</p><p><b>SECTION / SOUS SECTION</b> : {{ point.producteur.section}} / {{ point.sous_section}}</p><p><b>CULTURE</b> : {{ point.culture}}</p><p><b>CERTIFICATION</b> : {{ point.certification }}</p><p><b>SUPERFICIE</b> : {{ point.superficie|floatformat:2 }}(Ha)</p><p><b>LOCALITE</b> : {{ point.producteur.localite}}</p><p><b>COORDONNEES</b> : ({{ point.coordonnees}})</p>'
                         )
                     ) // sets a popup on this marker
                 .addTo(map),

@@ -26,33 +26,37 @@
                         <div id="header_content">
                             <h1 style="text-align: center;font-weight: bold; font-size: 22px; text-decoration: underline;">LISTE DES PRODUCTEURS  - {{ cooperative.sigle }}</h1>
                         </div>
-                        <div id="footer_content">
-                            (c) - page <pdf:pagenumber> of <pdf:pagecount></pdf:pagecount>                            
-                        </div>
+{#                        <div id="footer_content">#}
+{#                            (c) - page <pdf:pagenumber> of <pdf:pagecount></pdf:pagecount>                            #}
+{#                        </div>#}
                         <div class="panel panel-info">                            
                             <!-- /.panel-heading -->
                             <div class="panel-body" style="font-size: 12px">
                                 <div class="table-responsive">
                                     <table class="table table-striped table-bordered table-hover" id="dataTables-example">
                                         <thead>
-                                            <tr>                                                
+                                            <tr>
+                                                <th style="margin-left: -95px;">SECTION</th>
                                                 <th style="margin-left: -100px;">CODE</th>
                                                 <th style="margin-left: -140px;">GENRE</th>
                                                 <th style="margin-left: -250px;">NOM</th>
-                                                <th style="margin-left: -200px;">PRENOMS</th>
-                                                <th style="margin-left: 50px;">SECTION</th>
+                                                <th style="margin-left: -230px;">PRENOMS</th>
                                                 <th style="margin-left: 50px;">CONTACTS</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {% for prod in producteurs %}
-                                                <tr>                                                    
+                                                <tr>
+                                                    <td>{{ prod.section.libelle }}</td>
                                                     <td>{{ prod.code }}</td>
                                                     <td>{{ prod.genre }}</td>
-                                                    <td style="margin-left: -60px;">{{ prod.nom }}</td>
-                                                    <td style="margin-left: -60px;">{{ prod.prenoms }}</td>
-                                                    <td style="margin-left: 80px;">{{ prod.section.libelle }}</td>
-                                                    <td style="margin-left: 70px;">{{ prod.contacts }}</td>                                                    
+                                                    <td style="margin-left: -80px;">{{ prod.nom }}</td>
+                                                    <td class="text-center" style="margin-left: -65px; ">{{ prod.prenoms }}</td>
+                                                    {% if prod.contacts %}
+                                                        <td style="margin-left: 65px;">{{ prod.contacts }}</td>
+                                                    {% else %}
+                                                        <td style="margin-left: 65px; color: red">EN ATTENTE</td>
+                                                    {% endif %}
                                                 </tr>
                                             {% endfor %}
                                         </tbody>

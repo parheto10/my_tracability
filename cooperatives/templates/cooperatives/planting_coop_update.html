@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Géolocalisation</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+{#<script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>#}
+{#<link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />#}
+{#<script src='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.js'></script>#}
+{#<link href='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css' rel='stylesheet' />#}
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js"></script>
+{#<link rel="stylesheet" href="https://map.michelstuyts.be/icons/">#}
+<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+<style>
+	body { margin: 0; padding: 0; }
+	#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+<body>
+
+<!-- Load the `mapbox-gl-geocoder` plugin. -->
+<!--<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>-->
+<!--<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css" type="text/css">-->
+
+<!-- Promise polyfill script is required -->
+<!-- to use Mapbox GL Geocoder in IE 11. -->
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+
+<style>
+    #marker {
+        display: block;
+        {#width: 1024px;#}
+        {#height: 500px;#}
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        padding: 0;
+    }
+    #inputs {
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding: 10px;
+    }
+</style>
+<div id="map"></div>
+<div id="inputs">
+    {% for section in sections %}
+       <input type="button" id="{{ section.libelle }}" value="{{ section.libelle }}">
+    {% endfor %}
+
+
+{#    <input type="button" id="goldenHourEnd" value="morning">#}
+{#    <input type="button" id="solarNoon" value="afternoon">#}
+{#    <input type="button" id="goldenHour" value="evening">#}
+{#    <input type="button" id="sunsetStart" value="sunset">#}
+{#    <input type="button" id="getlocal" value="local time">#}
+{#    <input type="button" id="next30mins" value="+30 mins">#}
+{#    <input type="button" id="prev30mins" value="-30 mins">#}
+{#    <input type="button" id="next30days" value="+30 days">#}
+{#    <input type="button" id="prev30days" value="-30 days">#}
+</div>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"></script>
+<script>
+	// TO MAKE THE MAP APPEAR YOU MUST
+	// ADD YOUR ACCESS TOKEN FROM
+	// https://account.mapbox.com
+	mapboxgl.accessToken = 'pk.eyJ1IjoicGFyaGV0bzEwIiwiYSI6ImNrazVjbGs2ZzBwMm0yd3FuN2J0Z3F6emsifQ.vJY5MZ83bP4spWhv9gDUsw';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            {#style: 'mapbox://styles/mapbox-map-design/ckhqrf2tz0dt119ny6azh975y',#}
+            style: 'mapbox://styles/parheto10/ckjvnluw700pd17lmspxdeqk9',
+            {#style: 'mapbox://styles/mapbox/streets-v11',#}
+            center: [-5.547545, 7.5455112],
+            zoom: 6.5,
+        });
+        map.addControl(
+            new mapboxgl.NavigationControl({
+                accessToken: mapboxgl.accessToken,
+                mapboxgl: mapboxgl,
+                defaultLanguage: 'fr'
+            }),
+        );
+
+        map.on('load', function () {
+            map.addSource('places', {
+                'type': 'geojson',
+                'data': {
+                'type': 'FeatureCollection',
+                'features': [{% for point in plantings %}
+                {
+                'type': 'Feature',
+                    'properties': {
+                        'image': 'https://farm9.staticflickr.com/8571/15844010757_63b093d527_n.jpg',
+                        'marker-size': 'large',
+                        'icon': 'park',
+                        'description':
+
+                            '<p><strong>CODE : {{ point.planting.parcelle.code }}</strong></p><strong>PRODUCTEUR : {{ point.planting.parcelle.producteur }}</strong><p><b>COOPERATIVE</b> : {{ point.planting.parcelle.producteur.cooperative }}</p><p><b>SECTION / SOUS SECTION</b> : {{ point.planting.parcelle.producteur.section}} / {{ point.planting.parcelle.sous_section}}</p><p><b>CULTURE</b> : {{ point.planting.parcelle.culture}}</p><p style:text-transform: uppercase;><b>CERTIFICATION</b> : <b>{{ point.planting.parcelle.certification }}</b></p><p><b>SUPERFICIE</b> : {{ point.planting.parcelle.superficie|floatformat:2 }}(Ha)</p><p><b>LOCALITE</b> : {{ point.planting.parcelle.producteur.localite}}</p><p><b>COORDONNEES</b> : ({{ point.planting.parcelle.coordonnees}})</p><p><b>PLANTS RECUS</b> : ({{ point.planting.plant_total}})</p><p><b>ESPECES</b> : ({{point.espece.libelle}})</p>'
+
+                    },
+                    'geometry': {
+                        'type': 'Point',
+                        'icon': {
+                            iconUrl: 'https://docs.mapbox.com/mapbox.js/assets/images/astronaut1.png',
+                            iconSize: [50, 50], // size of the icon
+                            iconAnchor: [25, 25], // point of the icon which will correspond to marker's location
+                            popupAnchor: [0, -25], // point from which the popup should open relative to the iconAnchor
+                            className: 'dot'
+                        },
+                        'coordinates': [{{ point.planting.parcelle.coordonnees }}]
+                    }
+                },
+                {% endfor %}
+            ]
+        }
+        });
+        // Add a layer showing the places.
+            map.addLayer({
+            'id': 'places',
+            'type': 'circle',
+            'source': 'places',
+            'paint': {
+            'circle-color': '#1E90FF',
+            'circle-radius': 6,
+            'circle-stroke-width': 2,
+            'circle-stroke-color': '#ffffff'
+            }
+        });
+
+        // Create a popup, but don't add it to the map yet.
+            var popup = new mapboxgl.Popup({
+        closeButton: true,
+        closeOnClick: true
+        });
+
+            map.on('mouseenter', 'places', function (e) {
+        // Change the cursor style as a UI indicator.
+        map.getCanvas().style.cursor = 'pointer';
+        {#map.getCanvas().icon = 'park';#}
+
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        var description = e.features[0].properties.description;
+
+        // Ensure that if the map is zoomed out such that multiple
+        // copies of the feature are visible, the popup appears
+        // over the copy being pointed to.
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        // Populate the popup and set its coordinates
+        // based on the feature found.
+        popup.setLngLat(coordinates).setHTML(description).addTo(map);
+        });
+
+            map.on('mouseleave', 'places', function () {
+        map.getCanvas().style.cursor = '';
+        popup.remove();
+        });
+    });
+</script>
+
+{% include '_partials/js.html' %}
+</body>
+</html>

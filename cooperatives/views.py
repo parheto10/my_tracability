@@ -3,6 +3,7 @@ import datetime
 import datetime
 
 import requests
+from rest_framework.response import Response
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import Group
@@ -21,6 +22,7 @@ import json
 from django.template.loader import get_template
 from django.views.generic import TemplateView
 from folium.plugins import MarkerCluster
+from rest_framework.decorators import api_view
 from xhtml2pdf import pisa
 from django.views import View
 from xlrd.formatting import Format
@@ -32,12 +34,14 @@ from rest_framework.parsers import JSONParser
 
 from parametres.forms import UserForm
 from parametres.models import Projet, Espece, Campagne
+from parametres.serializers import ParcelleSerializer
 from .forms import CoopForm, ProdForm, EditProdForm, ParcelleForm, SectionForm, Sous_SectionForm, \
     PepiniereForm, SemenceForm, RetraitForm, DetailRetraitForm, EditSemenceForm, FormationForm, \
     DetailFormation, EditPepiniereForm, EditFormationForm, EditParcelleForm, Edit_Sous_SectionForm, MonitoringForm, \
     PlantingForm, DetailPlantingForm
 from .models import Cooperative, Section, Sous_Section, Producteur, Parcelle, Planting, Formation, Detail_Formation, \
     Pepiniere, Semence_Pepiniere, Retrait_plant, Detail_Retrait_plant, DetailPlanting, Monitoring
+from .serializers import CooperativeSerliazer, ParcelleSerliazer
 
 
 def is_cooperative(user):
@@ -539,7 +543,7 @@ def export_prod_xls(request):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    columns = ['CODE', 'TYPE', 'SECTION', 'GENRE', 'NOM', 'PRENOMS', 'CONTACTS', 'LOCALITE']
+    columns = ['SECTION', 'LOCALITE', 'CODE', 'TYPE', 'GENRE', 'NOM', 'PRENOMS', 'CONTACTS']
 
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style)
@@ -548,14 +552,14 @@ def export_prod_xls(request):
     font_style = xlwt.XFStyle()
     cooperative = Cooperative.objects.get(user_id=request.user.id)
     rows = Producteur.objects.all().filter(cooperative_id=cooperative.id).values_list(
+        'section__libelle',
+        'localite',
         'code',
         'type_producteur',
-        'section__libelle',
         'genre',
         'nom',
         'prenoms',
         'contacts',
-        'localite',
     )
     for row in rows:
         row_num += 1
@@ -786,9 +790,12 @@ from django.http import HttpResponse
 def localisation(request):
     cooperative = Cooperative.objects.get(user_id=request.user.id)
     parcelles = Parcelle.objects.all().filter(producteur__cooperative_id=cooperative)
+    # section = Section.objects.all().filter(cooperative_id=cooperative)
+    sections = Section.objects.all().filter(cooperative_id=cooperative) #Parcelle.objects.filter(producteur__section_id__in=section)
     context = {
         'cooperative': cooperative,
-        'parcelles' : parcelles
+        'parcelles' : parcelles,
+        'sections' : sections
     }
     return render(request, 'cooperatives/carte_update.html', context)
 
@@ -1490,4 +1497,13 @@ def folium_palntings_map(request):
     }
     return render(request, "cooperatives/folium_planting_map.html", context)
 
+
+@api_view(['GET'])
+def getParcelleCoop(request, pk=None):
+    cooperative = Cooperative.objects.get(id=pk)
+    # cooperative = Cooperative.objects.get(user_id=request.user.id)
+    parcelles = Parcelle.objects.filter(producteur__cooperative_id=cooperative)
+    serializer = ParcelleSerializer(parcelles, many=False)
+    # serializer = CooperativeSerliazer(cooperative, many=False)
+    return Response(serializer.data)
 

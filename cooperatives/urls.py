@@ -32,7 +32,7 @@ from .views import (
     export_plant_xls, edit_semence, Stats_semence, Editpepiniere, site_pepiniere, Editformation,
     delete_semence, parcelle_update, update_section, delete_section, export_section_xls, update_sous_section,
     export_sous_section_xls, export_formation_xls, delete_sous_section, ParcellesMapView, parcelle_list, ReceptionView,
-    folium_map, PlantingList, detail_planting, coopdetailPlantings, CoopPlantings,
+    folium_map, PlantingList, detail_planting, coopdetailPlantings, CoopPlantings, getParcelleCoop,
     # delete_sous_section, export_sous_section_xls, export_formation_xls, my_parcelles, ParcellesView,
     # load_section
 )
@@ -98,4 +98,7 @@ urlpatterns = [
     #Export Données EN PDF
     path('producteurs/pdf/', export_prods_to_pdf, name='export_prods_to_pdf'),
     path('parcelles/pdf/', export_parcelles_to_pdf, name='export_parcelles_to_pdf'),
+
+
+    path('parcelleCoop/<str:pk>/', getParcelleCoop, name="parcelleCoop"),
 ]
